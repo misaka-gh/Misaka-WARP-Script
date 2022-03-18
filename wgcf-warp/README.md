@@ -30,7 +30,7 @@ wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master
 wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp6d.sh && bash warp6d.sh
 ```
 
-### 原生双栈 VPS + IPv6 WARP
+### 原生双栈 VPS + 双栈 WARP
 
 ```shell
 wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warpd.sh && bash warpd.sh
