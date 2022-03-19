@@ -40,9 +40,11 @@ WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep 
 if [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; then
     wg-quick down wgcf >/dev/null 2>&1
     green "Wgcf-WARP关闭成功！"
+    exit 1
 fi
 
 if [[ $WgcfWARP4Status == off ]] || [[ $WgcfWARP6Status == off ]]; then
     systemctl restart wg-quick@wgcf >/dev/null 2>&1
     green "Wgcf-WARP启动成功！"
+    exit 1
 fi
