@@ -12,6 +12,19 @@
 wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
 ```
 
+修改WARP-Cli代理端口
+
+```shell
+wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/changeport.sh && bash changeport.sh
+```
+
+开启/关闭WARP-Cli代理模式
+
+```shell
+wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/switch.sh && bash switch.sh
+```
+
+
 卸载WARP-Cli
 
 ```shell
