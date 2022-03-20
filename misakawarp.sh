@@ -28,6 +28,7 @@ for ((int = 0; int < ${#REGEX[@]}; int++)); do
 done
 
 [[ -z $SYSTEM ]] && red "不支持当前VPS的系统，请使用主流操作系统" && exit 1
+[[ -z $(type -P curl) ]] && ${PACKAGE_UPDATE[int]} && ${PACKAGE_INSTALL[int]} curl
 
 arch=$(uname -m)
 wgcfcli=0 # 变量说明：0为Wgcf、1为WARP-Cli
@@ -114,18 +115,18 @@ uninstall(){
 menu(){
     clear
     get_status
-    red "=========================="
-    red "    Misaka WARP Script    "
-    red "   Site: owo.misaka.rest  "
+    red "==============================="
+    red "      Misaka WARP Script       "
+    red " Site: https://owo.misaka.rest "
     echo "                          "
-    green "VPS IPv4状态：$WARPIPv4Status"
-    green "VPS IPv6状态：$WARPIPv6Status"
+    yellow "VPS IPv4状态：$WARPIPv4Status"
+    yellow "VPS IPv6状态：$WARPIPv6Status"
     if [[ $WARPSocks5Status == "已启动" ]]; then
-        green "VPS Socks5代理：127.0.0.1:$WARPSocks5Port"
+        yellow "VPS Socks5代理：127.0.0.1:$WARPSocks5Port"
     fi
-    green "Wgcf状态：$WgcfStatus"
-    green "WARP-Cli状态：$WARPSocks5Status"
-    red "=========================="
+    yellow "Wgcf状态：$WgcfStatus"
+    yellow "WARP-Cli状态：$WARPSocks5Status"
+    red "================================"
     echo "   "
     if [[ $WARPIPv6Status == "原生IPv6" && $WARPIPv4Status == "无法检测IPv4状态" ]]; then
         green "1. 安装Wgcf IPv6 WARP"
