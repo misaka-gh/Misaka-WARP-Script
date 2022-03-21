@@ -10,6 +10,11 @@ wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master
 
 快捷方式 `bash misakawarp.sh`
 
+## WARP+或WARP Teams账户获取
+
+WARP+：https://owo.misaka.rest/cfwarp-plus/
+WARP Teams：https://owo.misaka.rest/cf-teams/
+
 ## 赞助我们
 
 ![afdian-MisakaNo.jpg](https://s2.loli.net/2021/12/25/SimocqwhVg89NQJ.jpg)
