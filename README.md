@@ -13,6 +13,7 @@ wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master
 ## WARP+或WARP Teams账户获取
 
 WARP+：https://owo.misaka.rest/cfwarp-plus/
+
 WARP Teams：https://owo.misaka.rest/cf-teams/
 
 ## 赞助我们
