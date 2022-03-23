@@ -122,7 +122,9 @@ generate_wgcf_config(){
     fi
     wgcf generate
     chmod +x wgcf-profile.conf
-    sed -i '/0\.\0\/0/d' wgcf-profile.conf | sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf-profile.conf | sed -i 's/1.1.1.1/9.9.9.10,8.8.8.8,1.1.1.1/g' wgcf-profile.conf
+    sed -i '/0\.\0\/0/d' wgcf-profile.conf
+    sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf-profile.conf
+    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
 }
 
 get_best_mtu(){
@@ -165,7 +167,7 @@ cpto_wireguard(){
 }
 
 start_wgcf(){
-    yellow "Wgcf-WARP 正在启动"
+    yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
