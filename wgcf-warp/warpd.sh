@@ -164,7 +164,7 @@ get_best_mtu(){
 }
 
 cpto_wireguard(){
-    mkdir /etc/wireguard
+    [[ $SYSTEM == "CentOS" ]] && mkdir /etc/wireguard >/dev/null 2>&1
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
 }
@@ -180,7 +180,7 @@ start_wgcf(){
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 5
+        sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
     green "Wgcf-WARP 已启动成功"
