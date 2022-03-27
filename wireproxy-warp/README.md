@@ -9,3 +9,11 @@
 ### IPv6 Only
 
 待更新脚本，先挖个坑
+
+## 赞助我们
+
+![afdian-MisakaNo.jpg](https://s2.loli.net/2021/12/25/SimocqwhVg89NQJ.jpg)
+
+## 交流群
+[Telegram](https://t.me/misakanetcn)
+
