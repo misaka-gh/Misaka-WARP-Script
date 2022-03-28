@@ -31,7 +31,7 @@ for ((int = 0; int < ${#REGEX[@]}; int++)); do
 done
 
 [[ -z $SYSTEM ]] && red "不支持当前VPS的系统，请使用主流操作系统" && exit 1
-# [[ -n $(type -P wgcf) ]] && red "Wgcf-WARP已经安装，脚本即将退出" && rm -f warp4d.sh && exit 1
+[[ -n $(type -P wireproxy) ]] && red "WireProxy-WARP代理模式已经安装，脚本即将退出" && rm -f warp4d.sh && exit 1
 
 arch=`uname -m`
 main=`uname  -r | awk -F . '{print $1}'`
@@ -80,7 +80,8 @@ generate_wgcf_config(){
 }
 
 make_wireproxy_file(){
-    read -p "请输入将要设置的Socks5端口：" socks5Port
+    read -p "请输入将要设置的Socks5端口（默认40000）：" WireProxyPort
+    [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
     cat <<EOF > ~/WireProxy_WARP.conf
@@ -91,10 +92,25 @@ PeerEndpoint = 162.159.193.10:2408
 DNS = 1.1.1.1,8.8.8.8,8.8.4.4
 
 [Socks5]
-BindAddress = 127.0.0.1:$socks5Port
+BindAddress = 127.0.0.1:$WireProxyPort
 EOF
-    green "WireProxy-WARP 配置文件已生成成功！"
+    green "WireProxy-WARP代理模式配置文件已生成成功！"
     yellow "已保存到 /root/WireProxy_WARP.conf"
+    cat <<'TEXT' > /etc/systemd/system/wireproxy-warp.service
+[Unit]
+Description=CloudFlare WARP based for WireProxy, script by owo.misaka.rest
+After=network.target
+[Install]
+WantedBy=multi-user.target
+[Service]
+Type=simple
+WorkingDirectory=/root
+ExecStart=/usr/local/bin/wireproxy /root/WireProxy_WARP.conf
+Restart=always
+TEXT
+    green "Systemd 系统守护服务设置成功！"
+    rm -f wgcf-profile.conf
+    rm -f wgcf-account.toml
 }
 
 download_wireproxy(){
@@ -114,23 +130,31 @@ download_wireproxy(){
 
 start_wireproxy_warp(){
     yellow "正在启动WireProxy-WARP代理模式"
-    screen -USdm WireProxy_WARP wireproxy ~/WireProxy_WARP.conf
-    socks5Status=$(curl -sx socks5h://localhost:$socks5Port https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    systemctl start wireproxy-warp
+    socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
     until [[ $socks5Status =~ on|plus ]]; do
         red "启动WireProxy-WARP代理模式失败，正在尝试重启"
-        screen -S WireProxy_WARP -X quit
-        screen -USdm WireProxy_WARP wireproxy ~/WireProxy_WARP.conf
-        socks5Status=$(curl -sx socks5h://localhost:$socks5Port https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+        systemctl stop wireproxy-warp
+        systemctl start wireproxy-warp
+        socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         sleep 8
     done
+    systemctl enable wireproxy-warp
     green "WireProxy-WARP代理模式已启动成功！"
-    yellow "本地Socks5代理为： 127.0.0.1:$socks5Port"
+    yellow "本地Socks5代理为： 127.0.0.1:$WireProxyPort"
 }
 
-check_tun
-install_wgcf
-register_wgcf
-generate_wgcf_config
-make_wireproxy_file
-download_wireproxy
-start_wireproxy_warp
+install(){
+    ${PACKAGE_UPDATE[int]}
+    [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
+    [[ -z $(type -P sudo) ]] && ${PACKAGE_INSTALL[int]} sudo
+    check_tun
+    install_wgcf
+    register_wgcf
+    generate_wgcf_config
+    make_wireproxy_file
+    download_wireproxy
+    start_wireproxy_warp
+}
+
+install
