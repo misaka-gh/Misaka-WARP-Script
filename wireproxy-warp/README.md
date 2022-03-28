@@ -10,10 +10,22 @@
 wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp4.sh && bash warp4.sh
 ```
 
-### IPv6 Only
+### IPv6 Only VPS
 
 ```shell
 wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp6.sh && bash warp6.sh
+```
+
+### 修改WireProxy端口
+
+```shell
+wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/changeport.sh && bash changeport.sh
+```
+
+### 卸载WireProxy-WARP 代理模式
+
+```shell
+wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/uninstall.sh && bash uninstall.sh
 ```
 
 ## 赞助我们
