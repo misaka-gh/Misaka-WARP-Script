@@ -6,9 +6,15 @@
 
 ### IPv4 Only或原生双栈VPS
 
+```shell
+wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp4.sh && bash warp4.sh
+```
+
 ### IPv6 Only
 
-待更新脚本，先挖个坑
+```shell
+wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp6.sh && bash warp6.sh
+```
 
 ## 赞助我们
 
