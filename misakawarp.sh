@@ -31,7 +31,7 @@ done
 [[ -z $(type -P curl) ]] && ${PACKAGE_UPDATE[int]} && ${PACKAGE_INSTALL[int]} curl
 
 arch=$(uname -m)
-wgcfcli=0 # 变量说明：0为Wgcf、1为WARP-Cli
+wgcfcli=0 # 变量说明：0为Wgcf、1为WARP-Cli、2为WireProxy-WARP
 wgcfmode=0 # 变量说明：0为Wgcf单栈模式、1为双栈模式
 
 # 检查TUN模块状态
@@ -45,18 +45,23 @@ get_status(){
     WARPIPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WARPIPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WARPSocks5Port=$(warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}')
-    WARPSocks5Status=$(curl -sx socks5h://localhost:$WARPSocks5Port https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2)
+    WARPSocks5Status=$(curl -sx socks5h://localhost:$WARPSocks5Port https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    WireProxyPort=$(grep BindAddress WireProxy_WARP.conf 2>/dev/null | sed "s/BindAddress = 127.0.0.1://g")
+    WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
     [[ $WARPIPv4Status =~ "on"|"plus" ]] && WARPIPv4Status="WARP IPv4"
     [[ $WARPIPv4Status == "off" ]] && WARPIPv4Status="原生IPv4"
     [[ $WARPIPv6Status =~ "on"|"plus" ]] && WARPIPv6Status="WARP IPv6"
     [[ $WARPIPv6Status == "off" ]] && WARPIPv6Status="原生IPv6"
     [[ -z $WARPIPv4Status ]] && WARPIPv4Status="无法检测IPv4状态"
     [[ -z $WARPIPv6Status ]] && WARPIPv6Status="无法检测IPv6状态"
-    [[ ! -f /usr/local/bin/wgcf ]] && WgcfStatus="未安装"
-    [[ -f /usr/local/bin/wgcf ]] && WgcfStatus="未启动" && [[ -n $(wg) ]] && WgcfStatus="已启动"
+    [[ -z $(type -P wg-quick) ]] && WgcfStatus="未安装"
+    [[ -n $(type -P wg-quick) ]] && WgcfStatus="未启动" && [[ -n $(wg) ]] && WgcfStatus="已启动"
     [[ -z $WARPSocks5Port ]] && WARPSocks5Status="未安装"
     [[ $WARPSocks5Status == "off" ]] && WARPSocks5Status="未启动"
     [[ $WARPSocks5Status =~ "on"|"plus" ]] && WARPSocks5Status="已启动"
+    [[ -z $WireProxyPort ]] && WireProxyStatus="未安装"
+    [[ $WireProxyStatus == "off" ]] && WireProxyStatus="未启动"
+    [[ $WireProxyStatus =~ "on"|"plus" ]] && WireProxyStatus="已启动"
 }
 
 install(){
@@ -91,6 +96,16 @@ install(){
         if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
             wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
         fi
+        if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "WARP IPv6" ]]; then
+            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
+        fi
+    fi
+    if [[ $wgcfcli == 2 ]]; then
+        if [[ $WARPIPv4Status == "无法检测IPv4状态" && $WARPIPv6Status == "原生IPv6" || $WARPIPv4Status == "WARP IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
+            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp6.sh && bash warp6.sh
+        else
+            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp4.sh && bash warp4.sh
+        fi
     fi
 }
 
@@ -106,9 +121,14 @@ warpcliport(){
     wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/changeport.sh && bash changeport.sh
 }
 
+wireproxychangeport(){
+    wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/changeport.sh && bash changeport.sh
+}
+
 uninstall(){
-    [[ -n $(type -P wgcf) ]] && wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/uninstall.sh && bash uninstall.sh
+    [[ -n $(type -P wg-quick) ]] && wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/uninstall.sh && bash uninstall.sh
     [[ -n $(type -P warp-cli) ]] && wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/uninstall.sh && bash uninstall.sh
+    [[ -n $(type -P wireproxy) ]] && wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/uninstall.sh && bash uninstall.sh
 }
 
 # 菜单
@@ -122,16 +142,25 @@ menu(){
     yellow "VPS IPv4状态：$WARPIPv4Status"
     yellow "VPS IPv6状态：$WARPIPv6Status"
     if [[ $WARPSocks5Status == "已启动" ]]; then
-        yellow "VPS Socks5代理：127.0.0.1:$WARPSocks5Port"
+        yellow "WARP-Cli Socks5代理：127.0.0.1:$WARPSocks5Port"
+    fi
+    if [[ $WireProxyStatus == "已启动" ]]; then
+        yellow "WireProxy Socks5代理：127.0.0.1:$WireProxyPort"
     fi
     yellow "Wgcf状态：$WgcfStatus"
     yellow "WARP-Cli状态：$WARPSocks5Status"
+    yellow "WireProxy-WARP状态：$WireProxyStatus"
     red "================================"
     echo "   "
     if [[ $WARPIPv6Status == "原生IPv6" && $WARPIPv4Status == "无法检测IPv4状态" ]]; then
         green "1. 安装Wgcf IPv4 WARP"
         green "2. 安装Wgcf 双栈 WARP"
         green "3. IPv6 Only VPS无法安装WARP-Cli代理模式"
+        if [[ $WireProxyStatus == "未启动" || $WireProxyStatus == "已启动" ]]; then
+            green "4. 已安装WireProxy-WARP代理模式"
+        else
+            green "4. 安装WireProxy-WARP代理模式"
+        fi
     fi
     if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "无法检测IPv6状态" ]]; then
         green "1. 安装Wgcf IPv6 WARP"
@@ -144,6 +173,11 @@ menu(){
             fi
         else
             green "3. 非AMD64 CPU架构的VPS，无法安装WARP-Cli代理模式"
+        fi
+        if [[ $WireProxyStatus == "未启动" || $WireProxyStatus == "已启动" ]]; then
+            green "4. 已安装WireProxy-WARP代理模式"
+        else
+            green "4. 安装WireProxy-WARP代理模式"
         fi
     fi
     if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
@@ -158,24 +192,31 @@ menu(){
         else
             green "3. 非AMD64 CPU架构的VPS，无法安装WARP-Cli代理模式"
         fi
+        if [[ $WireProxyStatus == "未启动" || $WireProxyStatus == "已启动" ]]; then
+            green "4. 已安装WireProxy-WARP代理模式"
+        else
+            green "4. 安装WireProxy-WARP代理模式"
+        fi
     fi
     if [[ $WARPIPv4Status == "WARP IPv4" && $WARPIPv6Status == "WARP IPv6" ]]; then
         green "1. 已经安装Wgcf WARP、请先卸载再更改代理模式"
         green "2. 已经安装Wgcf WARP、请先卸载再更改代理模式"
-        if [[ $arch == "amd64" || $arch == "x86_64" ]]; then
-            if [[ $WARPSocks5Status == "未启动" || $WARPSocks5Status == "已启动" ]]; then
-                green "3. 已安装WARP-Cli代理模式"
-            else
-                green "3. 安装WARP-Cli代理模式"
-            fi
+        green "3. 由于启动了双栈Wgcf-WARP模式，脚本无法判断是否允许安装WARP-Cli代理模式"
+        if [[ $WireProxyStatus == "未启动" || $WireProxyStatus == "已启动" ]]; then
+            green "4. 已安装WireProxy-WARP代理模式"
         else
-            green "3. 非AMD64 CPU架构的VPS，无法安装WARP-Cli代理模式"
+            green "4. 安装WireProxy-WARP代理模式"
         fi
     fi
     if [[ $WARPIPv4Status == "WARP IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
         green "1. 已经安装Wgcf WARP、请先卸载再更改代理模式"
         green "2. 已经安装Wgcf WARP、请先卸载再更改代理模式"
         green "3. IPv6 Only VPS无法安装WARP-Cli代理模式"
+        if [[ $WireProxyStatus == "未启动" || $WireProxyStatus == "已启动" ]]; then
+            green "4. 已安装WireProxy-WARP代理模式"
+        else
+            green "4. 安装WireProxy-WARP代理模式"
+        fi
     fi
     if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "WARP IPv6" ]]; then
         green "1. 已经安装Wgcf WARP、请先卸载再更改代理模式"
@@ -189,20 +230,28 @@ menu(){
         else
             green "3. 非AMD64 CPU架构的VPS，无法安装WARP-Cli代理模式"
         fi
+        if [[ $WireProxyStatus == "未启动" || $WireProxyStatus == "已启动" ]]; then
+            green "4. 已安装WireProxy-WARP代理模式"
+        else
+            green "4. 安装WireProxy-WARP代理模式"
+        fi
     fi
-    green "4. Wgcf-WARP 临时开关"
-    green "5. WARP-Cli代理模式临时开关"
-    green "6. WARP-Cli代理模式更换Socks5端口"
-    green "7. 卸载WARP"
+    green "5. Wgcf-WARP 临时开关"
+    green "6. WARP-Cli代理模式临时开关"
+    green "7. WARP-Cli代理模式更换Socks5端口"
+    green "8. WireProxy-WARP代理模式更换Socks5端口"
+    green "9. 卸载WARP"
     read -p "请输入选项：" menuNumberInput
     case "$menuNumberInput" in
         1 ) install ;;
         2 ) wgcfmode=1 && install ;;
         3 ) wgcfcli=1 && install ;;
-        4 ) wgcfswitch ;;
-        5 ) warpcliswitch ;;
-        6 ) warpcliport ;;
-        7 ) uninstall ;;
+        4 ) wgcfcli=2 && install ;;
+        5 ) wgcfswitch ;;
+        6 ) warpcliswitch ;;
+        7 ) warpcliport ;;
+        8 ) wireproxychangeport ;;
+        9 ) uninstall ;;
         * ) exit 1 ;;
     esac
 }
