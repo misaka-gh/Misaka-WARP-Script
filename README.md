@@ -10,6 +10,10 @@ wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master
 
 快捷方式 `bash misakawarp.sh`
 
+## 各客户端差异及对比
+
+![image](https://user-images.githubusercontent.com/96560028/160945334-9572ec6d-7b10-4081-a83a-2d1c475ea2e3.png)
+
 ## WARP+或WARP Teams账户获取
 
 WARP+：https://owo.misaka.rest/cfwarp-plus/
