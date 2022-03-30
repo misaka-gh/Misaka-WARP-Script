@@ -18,7 +18,7 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 ## 常见问题
 
-### 1. 为什么连不上Wgcf-WARP
+### 1. 为什么连不上Wgcf-WARP或WireProxy-WARP代理模式
 
 查看 https://www.cloudflarestatus.com/ ，如你的VPS区域后面出现Re-routed即为无法连接。请等待官方修复
 
