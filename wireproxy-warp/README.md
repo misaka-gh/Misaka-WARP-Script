@@ -28,6 +28,14 @@ wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master
 wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/uninstall.sh && bash uninstall.sh
 ```
 
+### 刷Netfilx IP
+
+```shell
+wget -N https://raw.githubusercontent.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh
+```
+
+可搭配 [Screen 管理脚本](https://github.com/Misaka-blog/screenManager) 使用最佳
+
 ## 赞助我们
 
 ![afdian-MisakaNo.jpg](https://s2.loli.net/2021/12/25/SimocqwhVg89NQJ.jpg)
