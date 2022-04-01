@@ -45,8 +45,8 @@ check(){
 }
 
 retry(){
-    wg-quick down wgcf
-    wg-quick up wgcf
+    wg-quick down wgcf >/dev/null 2>&1
+    wg-quick up wgcf >/dev/null 2>&1
     check
 }
 
@@ -62,8 +62,8 @@ failed(){
     WireProxyIP=$(curl -sx socks5h://localhost:$WireProxyPort https://ip.gs -k --connect-timeout 8)
     red "当前WireProxy-WARP的IP：$WireProxyIP 未解锁Netfilx，脚本将在15秒后重新测试Netfilx解锁情况"
     sleep 15
-    wg-quick down wgcf
-    wg-quick up wgcf
+    wg-quick down wgcf >/dev/null 2>&1
+    wg-quick up wgcf >/dev/null 2>&1
     check
 }
 
