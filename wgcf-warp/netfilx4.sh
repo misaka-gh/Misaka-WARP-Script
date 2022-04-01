@@ -45,8 +45,8 @@ check(){
 }
 
 retry(){
-    wg-quick down wgcf
-    wg-quick up wgcf
+    wg-quick down wgcf >/dev/null 2>&1
+    wg-quick up wgcf >/dev/null 2>&1
     check
 }
 
@@ -62,8 +62,8 @@ failed(){
     WgcfWARPIP=$(curl -s4m8 https://ip.gs -k)
     red "当前WireProxy-WARP的IP：$WgcfWARPIP 未解锁Netfilx，脚本将在15秒后重新测试Netfilx解锁情况"
     sleep 15
-    wg-quick down wgcf
-    wg-quick up wgcf
+    wg-quick down wgcf >/dev/null 2>&1
+    wg-quick up wgcf >/dev/null 2>&1
     check
 }
 
