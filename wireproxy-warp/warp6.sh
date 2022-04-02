@@ -148,7 +148,7 @@ WantedBy=multi-user.target
 [Service]
 Type=simple
 WorkingDirectory=/root
-ExecStart=/usr/local/bin/wireproxy /root/WireProxy_WARP.conf
+ExecStart=/usr/local/bin/wireproxy -c /root/WireProxy_WARP.conf
 Restart=always
 TEXT
     green "Systemd 系统守护服务设置成功！"
