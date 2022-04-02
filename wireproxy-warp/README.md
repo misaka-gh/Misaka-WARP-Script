@@ -36,6 +36,16 @@ wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master
 
 可搭配 [Screen 管理脚本](https://github.com/Misaka-blog/screenManager) 使用最佳
 
+## 开关WireProxy WARP
+
+启动：`systemctl start wireproxy-warp`
+
+关闭：`systemctl stop wireproxy-warp`
+
+设置开机自启：`systemctl enable wireproxy-warp`
+
+取消开机自启：`systemctl disable wireproxy-warp`
+
 ## 赞助我们
 
 ![afdian-MisakaNo.jpg](https://s2.loli.net/2021/12/25/SimocqwhVg89NQJ.jpg)
