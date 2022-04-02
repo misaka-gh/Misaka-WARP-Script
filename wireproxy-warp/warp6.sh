@@ -119,8 +119,6 @@ make_wireproxy_file(){
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
     cat <<EOF > ~/WireProxy_WARP.conf
-[Socks5]
-BindAddress = 127.0.0.1:$WireProxyPort
 [Interface]
 Address = 172.16.0.2/32
 MTU = $MTU
