@@ -2,6 +2,8 @@
 
 支持手工菜单+全自动化脚本安装。支持AMD64、ARM64和S390X CPU架构的VPS、支持KVM、ZVM、OpenVZ和LXC虚拟化架构的VPS
 
+已集成至：https://github.com/Misaka-blog/Xray-script
+
 ## 使用方法
 
 ```shell
