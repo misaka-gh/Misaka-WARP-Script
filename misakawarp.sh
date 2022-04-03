@@ -277,7 +277,7 @@ menu(){
         5 ) wgcfswitch ;;
         6 ) warpcliswitch ;;
         7 ) changeport ;;
-        8 ) wireproxychangeport ;;
+        8 ) warpNetFilx ;;
         9 ) uninstall ;;
         * ) exit 1 ;;
     esac
