@@ -36,7 +36,6 @@ wgcfcli=0 # 变量说明：0为Wgcf、1为WARP-Cli、2为WireProxy-WARP
 wgcfmode=0 # 变量说明：0为Wgcf单栈模式、1为双栈模式
 
 # 检查TUN模块状态
-
 check_tun(){
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
     if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
