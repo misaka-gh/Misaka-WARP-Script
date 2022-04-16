@@ -30,6 +30,12 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 ![image](https://user-images.githubusercontent.com/96560028/160244784-25c40a97-d398-4d4f-9deb-d82c5e9b69ef.png)
 
+### 2. 在申请Wgcf-WARP或WireProxy-WARP账号出现429 Too Many Requests错误
+
+![image](https://user-images.githubusercontent.com/96560028/163660825-bb989575-f165-4bd3-aa59-a8f747c4589e.png)
+
+由于这个时间段WARP的服务繁忙，可能会拒绝访问。因此脚本自带重试申请账号功能，直到申请到账号才过下一步的安装启动WARP工作
+
 ## 赞助我们
 
 ![afdian-MisakaNo.jpg](https://s2.loli.net/2021/12/25/SimocqwhVg89NQJ.jpg)
