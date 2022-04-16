@@ -41,6 +41,23 @@ check_tun(){
     [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]] && red "检测到未开启TUN模块，请到VPS控制面板处开启" && exit 1
 }
 
+checkCentOS8(){
+    if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
+        yellow "检测到当前VPS系统为CentOS 8，是否升级为CentOS Stream 8以确保软件包正常安装？"
+        read -p "请输入选项 [y/n]：" comfirmCentOSStream
+        if [[ $comfirmCentOSStream == "y" ]]; then
+            yellow "正在为你升级到CentOS Stream 8，大概需要10-30分钟的时间"
+            sleep 1
+            sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
+            yum clean all && yum makecache
+            dnf swap centos-linux-repos centos-stream-repos distro-sync -y
+        else
+            red "已取消升级过程，脚本即将退出！"
+            exit 1
+        fi
+    fi
+}
+
 install_warpcli_centos(){
     ${PACKAGE_INSTALL[int]} epel-release
     ${PACKAGE_INSTALL[int]} net-tools
@@ -96,21 +113,22 @@ start_warpcli(){
         warp-cli --accept-tos disconnect >/dev/null 2>&1
         warp-cli --accept-tos connect >/dev/null 2>&1
         socks5Status=$(curl -sx socks5h://localhost:$WARPCliPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2)
-        sleep 5
+        sleep 8
     done
     warp-cli --accept-tos enable-always-on >/dev/null 2>&1
+    socks5IP=$(curl -sx socks5h://localhost:$WARPCliPort ip.gs -k --connect-timeout 8)
     green "WARP-Cli代理模式已启动成功！"
     yellow "本地Socks5代理为： 127.0.0.1:$WARPCliPort"
+    yellow "WARP-Cli代理模式的IP为：$socks5IP"
     rm -f warp-cli.sh
 }
 
 install(){
-    [[ -z $(curl -s4m8 ip.gs ) ]] && red "WARP-Cli代理模式不支持IPv6 Only的VPS，脚本退出" && exit 1
+    [[ -z $(curl -s4m8 ip.gs ) ]] && red "WARP-Cli代理模式目前不支持IPv6 Only的VPS，脚本退出" && exit 1
     if [[ $arch == "amd64" || $arch == "x86_64" ]]; then
         [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：Centos $vsid \nWARP-Cli代理模式仅支持Centos 8系统"
         [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统"
         [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/20.04系统"
-        [[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "WARP-Cli代理模式正在运行中"
         ${PACKAGE_UPDATE[int]}
         [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
         [[ -z $(type -P sudo) ]] && ${PACKAGE_INSTALL[int]} sudo
@@ -126,4 +144,5 @@ install(){
 }
 
 check_tun
+checkCentOS8
 install
