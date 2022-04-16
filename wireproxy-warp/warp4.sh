@@ -38,11 +38,6 @@ main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
 vpsvirt=`systemd-detect-virt`
 
-check_tun(){
-    TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
-    [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]] && red "检测到未开启TUN模块，请到VPS控制面板处开启" && exit 1
-}
-
 install_wgcf(){
     if [[ $arch == "amd64" || $arch == "x86_64" ]]; then
         wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/wgcf_2.2.12_linux_amd64 -O /usr/local/bin/wgcf
@@ -194,7 +189,6 @@ install(){
     ${PACKAGE_UPDATE[int]}
     [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
     [[ -z $(type -P sudo) ]] && ${PACKAGE_INSTALL[int]} sudo
-    check_tun
     [[ -z $(type -P wgcf) ]] && install_wgcf
     register_wgcf
     generate_wgcf_config
