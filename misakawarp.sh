@@ -36,9 +36,17 @@ wgcfcli=0 # 变量说明：0为Wgcf、1为WARP-Cli、2为WireProxy-WARP
 wgcfmode=0 # 变量说明：0为Wgcf单栈模式、1为双栈模式
 
 # 检查TUN模块状态
+
 check_tun(){
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
-    [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]] && red "检测到未开启TUN模块，请到VPS控制面板处开启" && exit 1
+    if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
+        if [[ $vpsvirt == "openvz" ]]; then
+            wget -N https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
+        else
+            red "检测到未开启TUN模块，请到VPS控制面板处开启" 
+            exit 1
+        fi
+    fi
 }
 
 # 获取VPS IP特征及WARP状态
