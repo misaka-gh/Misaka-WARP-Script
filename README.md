@@ -12,6 +12,12 @@ wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master
 
 快捷方式 `bash misakawarp.sh`
 
+## 调整IPv4或IPv6优先
+
+为了防止安装时脚本修改优先级情况导致失联，故使用VPS的默认IP优先级。如有需要配置可以参考P3Terx的文章：
+
+https://p3terx.com/archives/use-cloudflare-warp-to-add-extra-ipv4-or-ipv6-network-support-to-vps-servers-for-free.html#toc_8
+
 ## 各客户端差异及对比
 
 ![image](https://user-images.githubusercontent.com/96560028/160945334-9572ec6d-7b10-4081-a83a-2d1c475ea2e3.png)
