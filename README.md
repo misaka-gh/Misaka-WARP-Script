@@ -36,3 +36,15 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 ## 交流群
 [Telegram](https://t.me/misakanetcn)
+
+## 鸣谢列表
+
+Fscarmen：https://github.com/fscarmen/warp
+
+P3Terx：https://github.com/P3TERX/warp.sh
+
+WireProxy：https://github.com/octeep/wireproxy
+
+Wgcf：https://github.com/ViRb3/wgcf
+
+CloudFlare WARP Linux Client：https://blog.cloudflare.com/zh-cn/announcing-warp-for-linux-and-proxy-mode-zh-cn/
