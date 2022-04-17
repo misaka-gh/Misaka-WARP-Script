@@ -32,6 +32,7 @@ done
 [[ -z $(type -P curl) ]] && ${PACKAGE_UPDATE[int]} && ${PACKAGE_INSTALL[int]} curl
 
 arch=$(uname -m)
+vpsvirt=$(systemd-detect-virt)
 wgcfcli=0 # 变量说明：0为Wgcf、1为WARP-Cli、2为WireProxy-WARP
 wgcfmode=0 # 变量说明：0为Wgcf单栈模式、1为双栈模式
 
