@@ -56,6 +56,7 @@ install_wgcf(){
 register_wgcf(){
     rm -f wgcf-account.toml
     until [[ -a wgcf-account.toml ]]; do
+        yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
         yes | wgcf register
         sleep 5
     done
