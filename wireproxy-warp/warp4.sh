@@ -40,15 +40,15 @@ vpsvirt=`systemd-detect-virt`
 
 install_wgcf(){
     if [[ $arch == "amd64" || $arch == "x86_64" ]]; then
-        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/wgcf_2.2.12_linux_amd64 -O /usr/local/bin/wgcf
+        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.13_linux_amd64 -O /usr/local/bin/wgcf
         chmod +x /usr/local/bin/wgcf
     fi
     if [[ $arch == "armv8" || $arch == "arm64" || $arch == "aarch64" ]]; then
-        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/wgcf_2.2.12_linux_arm64 -O /usr/local/bin/wgcf
+        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.13_linux_arm64 -O /usr/local/bin/wgcf
         chmod +x /usr/local/bin/wgcf
     fi
     if [[ $arch == "s390x" ]]; then
-        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/wgcf_2.2.12_linux_s390x -O /usr/local/bin/wgcf
+        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.13_linux_s390x -O /usr/local/bin/wgcf
         chmod +x /usr/local/bin/wgcf
     fi
 }
@@ -153,15 +153,15 @@ TEXT
 
 download_wireproxy(){
     if [[ $arch == "amd64" || $arch == "x86_64" ]]; then
-        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/wireproxy-amd64 -O /usr/local/bin/wireproxy
+        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-amd64 -O /usr/local/bin/wireproxy
         chmod +x /usr/local/bin/wireproxy
     fi
     if [[ $arch == "armv8" || $arch == "arm64" || $arch == "aarch64" ]]; then
-        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/wireproxy-arm64 -O /usr/local/bin/wireproxy
+        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-arm64 -O /usr/local/bin/wireproxy
         chmod +x /usr/local/bin/wireproxy
     fi
     if [[ $arch == "s390x" ]]; then
-        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/wireproxy-s390x -O /usr/local/bin/wireproxy
+        wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-s390x -O /usr/local/bin/wireproxy
         chmod +x /usr/local/bin/wireproxy
     fi
 }
