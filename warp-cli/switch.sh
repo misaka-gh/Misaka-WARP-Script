@@ -32,7 +32,7 @@ done
 
 switch(){
     if [[ $(warp-cli --accept-tos status) =~ Connected ]]; then
-        warp-cli --accept-tos disconnect
+        warp-cli --accept-tos disconnect >/dev/null 2>&1
         green "WARP-Cli代理模式关闭成功！"
         rm -f switch.sh
         exit 1
