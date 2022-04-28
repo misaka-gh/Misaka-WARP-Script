@@ -143,7 +143,7 @@ warpNetFilx(){
     green "2. Wgcf-WARP IPv6模式"
     green "3. WARP-Cli 代理模式"
     green "4. WireProxy-WARP 代理模式"
-    read -p "请输入需要卸载的客户端 [1-3]：" uninstallClient
+    read -p "请输入需要卸载的客户端 [1-4]：" uninstallClient
     case "$uninstallClient" in
         1 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
         2 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
