@@ -41,7 +41,7 @@ check_tun(){
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
     if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
         if [[ $vpsvirt == "openvz" ]]; then
-            wget -N https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
+            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块，请到VPS控制面板处开启" 
             exit 1
@@ -77,10 +77,10 @@ install(){
     if [[ $wgcfcli == 0 ]]; then
         if [[ $wgcfmode == 0 ]]; then
             if [[ $WARPIPv6Status == "原生IPv6" && $WARPIPv4Status == "无法检测IPv4状态" ]]; then
-                wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp64.sh && bash warp64.sh
+                wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp64.sh && bash warp64.sh
             fi
             if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "无法检测IPv6状态" ]]; then
-                wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp46.sh && bash warp46.sh
+                wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp46.sh && bash warp46.sh
             fi
             if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
                 exit 1
@@ -88,42 +88,42 @@ install(){
         fi
         if [[ $wgcfmode == 1 ]]; then
             if [[ $WARPIPv6Status == "原生IPv6" && $WARPIPv4Status == "无法检测IPv4状态" ]]; then
-                wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp6d.sh && bash warp6d.sh
+                wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp6d.sh && bash warp6d.sh
             fi
             if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "无法检测IPv6状态" ]]; then
-                wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp4d.sh && bash warp4d.sh
+                wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warp4d.sh && bash warp4d.sh
             fi
             if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
-                wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warpd.sh && bash warpd.sh
+                wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/warpd.sh && bash warpd.sh
             fi
         fi
     fi
     if [[ $wgcfcli == 1 ]]; then
         if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "无法检测IPv6状态" ]]; then
-            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
+            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
         fi
         if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
-            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
+            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
         fi
         if [[ $WARPIPv4Status == "原生IPv4" && $WARPIPv6Status == "WARP IPv6" ]]; then
-            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
+            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/warp-cli.sh && bash warp-cli.sh
         fi
     fi
     if [[ $wgcfcli == 2 ]]; then
         if [[ $WARPIPv4Status == "无法检测IPv4状态" && $WARPIPv6Status == "原生IPv6" || $WARPIPv4Status == "WARP IPv4" && $WARPIPv6Status == "原生IPv6" ]]; then
-            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp6.sh && bash warp6.sh
+            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp6.sh && bash warp6.sh
         else
-            wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp4.sh && bash warp4.sh
+            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/warp4.sh && bash warp4.sh
         fi
     fi
 }
 
 wgcfswitch(){
-    wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/switchwarp.sh && bash switchwarp.sh
+    wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/switchwarp.sh && bash switchwarp.sh
 }
 
 warpcliswitch(){
-    wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/switch.sh && bash switch.sh
+    wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/switch.sh && bash switch.sh
 }
 
 changeport(){
@@ -132,8 +132,8 @@ changeport(){
     green "2. WireProxy-WARP 代理模式"
     read -p "请输入需要卸载的客户端 [1-2]：" changePortClient
     case "$changePortClient" in
-        1 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/changeport.sh && bash changeport.sh ;;
-        2 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/changeport.sh && bash changeport.sh ;;
+        1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/changeport.sh && bash changeport.sh ;;
+        2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/changeport.sh && bash changeport.sh ;;
     esac
 }
 
@@ -145,10 +145,10 @@ warpNetFilx(){
     green "4. WireProxy-WARP 代理模式"
     read -p "请输入需要卸载的客户端 [1-4]：" uninstallClient
     case "$uninstallClient" in
-        1 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
-        2 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
-        3 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
-        4 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
+        1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
+        2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
+        3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
+        4 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
     esac
 }
 
@@ -159,9 +159,9 @@ uninstall(){
     green "3. WireProxy-WARP 代理模式"
     read -p "请输入需要卸载的客户端 [1-3]：" uninstallClient
     case "$uninstallClient" in
-        1 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/uninstall.sh && bash uninstall.sh ;;
-        2 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/uninstall.sh && bash uninstall.sh ;;
-        3 ) wget -N https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/uninstall.sh && bash uninstall.sh ;;
+        1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/uninstall.sh && bash uninstall.sh ;;
+        2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/uninstall.sh && bash uninstall.sh ;;
+        3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/uninstall.sh && bash uninstall.sh ;;
     esac
 }
 
