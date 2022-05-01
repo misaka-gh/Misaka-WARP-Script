@@ -4,6 +4,8 @@
 
 已集成至：https://github.com/Misaka-blog/Xray-script
 
+如对脚本不放心，可使用此沙箱先测一遍再使用：https://killercoda.com/playgrounds/scenario/ubuntu
+
 ## 使用方法
 
 ```shell
