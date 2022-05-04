@@ -114,12 +114,12 @@ set_proxy_port(){
 start_warpcli(){
     yellow "正在启动Warp-Cli代理模式"
     warp-cli --accept-tos connect >/dev/null 2>&1
-    socks5Status=$(curl -sx socks5h://localhost:$WARPCliPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2)
-    until [[ $socks5Status =~ on|plus ]]; do
+    # socks5Status=$(curl -sx socks5h://localhost:$WARPCliPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2)
+    until [[ $(warp-cli --accept-tos status) =~ Connected ]]; do
         red "启动Warp-Cli代理模式失败，正在尝试重启"
         warp-cli --accept-tos disconnect >/dev/null 2>&1
         warp-cli --accept-tos connect >/dev/null 2>&1
-        socks5Status=$(curl -sx socks5h://localhost:$WARPCliPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2)
+        # socks5Status=$(curl -sx socks5h://localhost:$WARPCliPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2)
         sleep 8
     done
     warp-cli --accept-tos enable-always-on >/dev/null 2>&1
