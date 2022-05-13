@@ -85,10 +85,10 @@ install_wireguard_debian(){
     ${PACKAGE_INSTALL[int]} lsb-release
     echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
     ${PACKAGE_UPDATE[int]}
-    ${PACKAGE_INSTALL} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
+    ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
     if [ "$main" -lt 5 ] || [ "$minor" -lt 6 ]; then
         if [[ ${vpsvirt} == "kvm" || ${vpsvirt} == "xen" || ${vpsvirt} == "microsoft" ]]; then
-            ${PACKAGE_INSTALL} --no-install-recommends linux-headers-$(uname -r);apt -y --no-install-recommends install wireguard-dkms
+            ${PACKAGE_INSTALL[int]} --no-install-recommends linux-headers-$(uname -r);apt -y --no-install-recommends install wireguard-dkms
         fi
     fi
 }
