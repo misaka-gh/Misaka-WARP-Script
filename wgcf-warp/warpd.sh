@@ -76,7 +76,7 @@ install_wireguard_centos(){
         if [[ ${vpsvirt} == "kvm" || ${vpsvirt} == "xen" || ${vpsvirt} == "microsoft" ]]; then
             vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
             curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-$vsid/jdoss-wireguard-epel-$vsid.repo
-            yum -y install epel-release wireguard-dkms
+            ${PACKAGE_INSTALL[int]} wireguard-dkms
         fi
     fi
 }
@@ -226,7 +226,9 @@ start_wgcf(){
 
 install(){
     install_wireguard
-    [[ -z $(type -P wgcf) ]] && install_wgcf
+    if [[ ! -d "/etc/wireguard" ]]; then
+        mkdir /etc/wireguard
+    fi
     register_wgcf
     generate_wgcf_config
     get_best_mtu
