@@ -118,16 +118,14 @@ install_wireguard(){
 install_wgcf(){
     if [[ $arch == "amd64" || $arch == "x86_64" ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.14_linux_amd64 -O /usr/local/bin/wgcf
-        chmod +x /usr/local/bin/wgcf
     fi
     if [[ $arch == "armv8" || $arch == "arm64" || $arch == "aarch64" ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.14_linux_arm64 -O /usr/local/bin/wgcf
-        chmod +x /usr/local/bin/wgcf
     fi
     if [[ $arch == "s390x" ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.14_linux_s390x -O /usr/local/bin/wgcf
-        chmod +x /usr/local/bin/wgcf
     fi
+    chmod +x /usr/local/bin/wgcf
 }
 
 register_wgcf(){
