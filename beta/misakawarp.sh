@@ -41,8 +41,8 @@ done
 archAffix(){
     case "$(uname -m)" in
         x86_64|amd64) echo 'amd64' ;;
-        *armv8*|aarch64) echo 'arm64' ;;
-        *s390x*) echo 's390x' ;;
+        armv8|arm64|aarch64) echo 'arm64' ;;
+        s390x) echo 's390x' ;;
         *) red " 不支持的CPU架构！" && exit 1 ;;
     esac
 }
