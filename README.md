@@ -12,6 +12,12 @@
 wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh
 ```
 
+### Beta 版
+
+```shell
+wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/beta/misakawarp.sh && bash misakawarp.sh
+```
+
 快捷方式 `bash misakawarp.sh`
 
 ## 调整IPv4或IPv6优先
