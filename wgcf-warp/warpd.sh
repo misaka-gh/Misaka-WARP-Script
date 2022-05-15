@@ -195,7 +195,9 @@ get_best_mtu(){
 }
 
 cpto_wireguard(){
-    [[ $SYSTEM == "CentOS" ]] && mkdir /etc/wireguard >/dev/null 2>&1
+    if [[ ! -d "/etc/wireguard" ]]; then
+        mkdir /etc/wireguard
+    fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
 }
@@ -224,9 +226,7 @@ start_wgcf(){
 
 install(){
     install_wireguard
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-    fi
+    install_wgcf
     register_wgcf
     generate_wgcf_config
     get_best_mtu
