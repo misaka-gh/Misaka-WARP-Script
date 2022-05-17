@@ -3,7 +3,6 @@
 RED="\033[31m"
 GREEN="\033[32m"
 YELLOW="\033[33m"
-BLUE="\033[36m"
 PLAIN='\033[0m'
 
 red() {
@@ -43,7 +42,7 @@ archAffix(){
         x86_64|amd64) echo 'amd64' ;;
         armv8|arm64|aarch64) echo 'arm64' ;;
         s390x) echo 's390x' ;;
-        *) red " 不支持的CPU架构！" && exit 1 ;;
+        *) red "不支持的CPU架构！" && exit 1 ;;
     esac
 }
 
@@ -120,8 +119,6 @@ wgcf44(){
 
 wgcf46(){
     sed -i '/0\.\0\/0/d' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
     sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf-profile.conf
     sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
     
@@ -181,8 +178,6 @@ wgcf4d(){
 
 wgcf64(){
     sed -i '/\:\:\/0/d' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
     sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' wgcf-profile.conf
     sed -i 's/1.1.1.1/2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844,1.1.1.1,8.8.8.8,8.8.4.4/g' wgcf-profile.conf
     
@@ -273,8 +268,6 @@ wgcfd4(){
     sed -i '/\:\:\/0/d' wgcf-profile.conf
     sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
     sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "9 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "10 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
     sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
     
     if [[ ! -d "/etc/wireguard" ]]; then
@@ -301,10 +294,8 @@ wgcfd4(){
 
 wgcfd6(){
     sed -i '/0\.\0\/0/d' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "9 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "10 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
+    sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
+    sed -i "8 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
     sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
     
     if [[ ! -d "/etc/wireguard" ]]; then
@@ -372,7 +363,7 @@ wireproxy4(){
 Address = 172.16.0.2/32
 MTU = $MTU
 PrivateKey = $WgcfPrivateKey
-DNS = 1.1.1.1,8.8.8.8,8.8.4.4
+DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
 
 [Peer]
 PublicKey = $WgcfPublicKey
@@ -393,7 +384,7 @@ wireproxy6(){
 Address = 172.16.0.2/32
 MTU = $MTU
 PrivateKey = $WgcfPrivateKey
-DNS = 1.1.1.1,8.8.8.8,8.8.4.4
+DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
 
 [Peer]
 PublicKey = $WgcfPublicKey
@@ -406,6 +397,10 @@ EOF
 
 install_wgcf(){
     check_tun
+    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：Centos $vsid \n Wgcf-WARP模式仅支持Centos 7-8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \n Wgcf-WARP模式仅支持Debian 10-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n Wgcf-WARP模式仅支持Ubuntu 18.04/20.04/22.04系统" && exit 1
     vpsvirt=$(systemd-detect-virt)
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
@@ -435,7 +430,7 @@ install_wgcf(){
     fi
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
     fi
 
@@ -564,19 +559,19 @@ install_warpcli(){
     fi
 
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：Centos $vsid \nWARP-Cli代理模式仅支持Centos 8系统"
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统"
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统"
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：Centos $vsid \n WARP-Cli代理模式仅支持Centos 8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \n WARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n WARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} net-tools
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el$vsid.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} lsb-release
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
         [[ -z $(type -P gpg 2>/dev/null) ]] && ${PACKAGE_INSTALL[int]} gnupg
         [[ -z $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && ${PACKAGE_INSTALL[int]} apt-transport-https
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
@@ -586,7 +581,7 @@ install_warpcli(){
     fi
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} lsb-release
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
         echo "deb http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
         ${PACKAGE_UPDATE[int]}
