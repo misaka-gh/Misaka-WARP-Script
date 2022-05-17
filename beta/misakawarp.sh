@@ -39,10 +39,10 @@ done
 
 archAffix(){
     case "$(uname -m)" in
-        x86_64|amd64) echo 'amd64' ;;
-        armv8|arm64|aarch64) echo 'arm64' ;;
-        s390x) echo 's390x' ;;
-        *) red "不支持的CPU架构！" && exit 1 ;;
+        x86_64 | amd64 ) echo 'amd64' ;;
+        armv8 | arm64 | aarch64 ) echo 'arm64' ;;
+        s390x ) echo 's390x' ;;
+        * ) red "不支持的CPU架构！" && exit 1 ;;
     esac
 }
 
@@ -354,7 +354,7 @@ wgcfd(){
 }
 
 wireproxy4(){
-    read -p "请输入将要设置的Socks5端口（默认40000）：" WireProxyPort
+    read -p "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
@@ -375,7 +375,7 @@ EOF
 }
 
 wireproxy6(){
-    read -p "请输入将要设置的Socks5端口（默认40000）：" WireProxyPort
+    read -p "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
@@ -407,8 +407,8 @@ install_wgcf(){
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables
-        if [ "$main" -lt 5 ] || [ "$minor" -lt 6 ]; then 
-            if [[ ${vpsvirt} == "kvm" || ${vpsvirt} == "xen" || ${vpsvirt} == "microsoft" ]]; then
+        if [[ "$main" -lt 5 ]] || [[ "$minor" -lt 6 ]]; then 
+            if [[ ${vpsvirt} =~ "kvm" | "xen" | "microsoft" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
                 curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-$vsid/jdoss-wireguard-epel-$vsid.repo
                 ${PACKAGE_INSTALL[int]} wireguard-dkms
@@ -421,8 +421,8 @@ install_wgcf(){
         echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
-        if [ "$main" -lt 5 ] || [ "$minor" -lt 6 ]; then
-            if [[ ${vpsvirt} == "kvm" || ${vpsvirt} == "xen" || ${vpsvirt} == "microsoft" ]]; then
+        if [[ "$main" -lt 5 ] || [[ "$minor" -lt 6 ]]; then
+            if [[ ${vpsvirt} =~ "kvm" | "xen" | "microsoft" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends linux-headers-$(uname -r)
                 ${PACKAGE_INSTALL[int]} --no-install-recommends wireguard-dkms
             fi
@@ -554,7 +554,7 @@ uninstall_wgcf(){
 install_warpcli(){
     check_tun
     if [[ $(archAffix) != "amd64" ]]; then
-        red "不支持的CPU架构，请使用amd64架构的VPS"
+        red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
         exit 1
     fi
 
@@ -601,7 +601,7 @@ install_warpcli(){
     fi
     warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
 
-    read -p "请输入WARP Cli使用的代理端口（默认40000）：" WARPCliPort
+    read -p "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
 
@@ -619,7 +619,7 @@ change_warpcli_port() {
     if [[ $(warp-cli --accept-tos status) =~ Connected ]]; then
         warp-cli --accept-tos disconnect >/dev/null 2>&1
     fi
-    read -p "请输入WARP Cli使用的代理端口（默认40000）：" WARPCliPort
+    read -p "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
     yellow "正在启动Warp-Cli代理模式"
@@ -715,7 +715,7 @@ install_wireproxy(){
 
     cat <<'TEXT' > /etc/systemd/system/wireproxy-warp.service
 [Unit]
-Description=CloudFlare WARP based for WireProxy, script by owo.misaka.rest
+Description=CloudFlare WARP Socks5 mode based for WireProxy, script by owo.misaka.rest
 After=network.target
 [Install]
 WantedBy=multi-user.target
@@ -885,7 +885,8 @@ menu2(){
 }
 
 if [[ $# > 0 ]]; then
-    echo ""
+    # 暂时没开发、以后再说
+    menu
 else
     menu
 fi
