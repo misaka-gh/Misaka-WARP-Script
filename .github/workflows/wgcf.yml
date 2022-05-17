@@ -20,3 +20,8 @@ jobs:
           git add .
           git commit -m "Uploaded by Github Actions"
           git push
+      - name: Refreshing Jsdelivr
+        run: |
+          curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_amd64
+          curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_arm64
+          curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_s390x
