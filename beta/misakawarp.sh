@@ -650,6 +650,31 @@ change_warpcli_port() {
     yellow "WARP-Cli代理模式的IP为：$socks5IP"
 }
 
+warpcli_switch(){
+    if [[ $(warp-cli --accept-tos status) =~ Connected ]]; then
+        warp-cli --accept-tos disconnect >/dev/null 2>&1
+        green "WARP-Cli代理模式关闭成功！"
+        rm -f switch.sh
+        exit 1
+    fi
+    if [[ $(warp-cli --accept-tos status) =~ Disconnected ]]; then
+        yellow "正在启动Warp-Cli代理模式"
+        warp-cli --accept-tos connect >/dev/null 2>&1
+        until [[ $(warp-cli --accept-tos status) =~ Connected ]]; do
+            red "启动Warp-Cli代理模式失败，正在尝试重启"
+            warp-cli --accept-tos disconnect >/dev/null 2>&1
+            warp-cli --accept-tos connect >/dev/null 2>&1
+            sleep 5
+        done
+        warp-cli --accept-tos enable-always-on >/dev/null 2>&1
+        WARPCliPort=$(warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}')
+        green "WARP-Cli代理模式启动成功！"
+        yellow "本地Socks5代理为：127.0.0.1:$WARPCliPort"
+        rm -f switch.sh
+        exit 1
+    fi
+}
+
 uninstall_warpcli(){
     warp-cli --accept-tos disconnect >/dev/null 2>&1
     warp-cli --accept-tos disable-always-on >/dev/null 2>&1
