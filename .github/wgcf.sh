@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -f ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_amd64 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_arm64 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_s390x
+
 repo_last_ver=$(curl -Ls "https://api.github.com/repos/ViRb3/wgcf/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 repo_ver_name=$(curl -Ls "https://api.github.com/repos/ViRb3/wgcf/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed "s/v//g")
 
