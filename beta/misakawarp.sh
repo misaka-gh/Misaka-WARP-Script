@@ -537,6 +537,25 @@ install_wgcf(){
     fi
 }
 
+wgcf_switch(){
+    WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+
+    if [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; then
+        wg-quick down wgcf >/dev/null 2>&1
+        systemctl disable wg-quick@wgcf >/dev/null 2>&1
+        green "Wgcf-WARP关闭成功！"
+        exit 1
+    fi
+
+    if [[ $WgcfWARP4Status == off ]] || [[ $WgcfWARP6Status == off ]]; then
+        wg-quick up wgcf >/dev/null 2>&1
+        systemctl enable wg-quick@wgcf >/dev/null 2>&1
+        green "Wgcf-WARP启动成功！"
+        exit 1
+    fi
+}
+
 uninstall_wgcf(){
     wg-quick down wgcf 2>/dev/null
     systemctl disable wg-quick@wgcf 2>/dev/null
