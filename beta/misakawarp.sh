@@ -435,11 +435,7 @@ install_wgcf(){
         chmod +x /usr/bin/wireguard-go
     fi
 
-    wgcf_last_version=$(curl -Ls "https://api.github.com/repos/ViRb3/wgcf/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed "s/v//g")
-    if [[ -z $wgcf_last_version ]]; then
-        wgcf_last_version="2.2.14"
-    fi
-    wget -N --no-check-certificate https://github.com/ViRb3/wgcf/releases/latest/download/wgcf_"$wgcf_last_version"_linux_$(archAffix) -O /usr/local/bin/wgcf || wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.14_linux_$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
     until [[ -a wgcf-account.toml ]]; do
