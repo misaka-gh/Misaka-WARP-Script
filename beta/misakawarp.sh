@@ -817,19 +817,19 @@ menu0(){
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
     echo -e ""
-    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生IPv6)${PLAIN}"
+    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv6)${PLAIN}"
     echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}4.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
+    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
+    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}5.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}6.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}7.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}8.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
+    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
     echo -e ""
@@ -838,9 +838,14 @@ menu0(){
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
         3 ) wgcfmode=2 && install_wgcf ;;
-        4 ) uninstall_wgcf ;;
-        8 ) install_wireproxy ;;
-        9 ) uninstall_wireproxy ;;
+        4 ) wgcf_switch ;;
+        5 ) uninstall_wgcf ;;
+        6 ) install_warpcli ;;
+        7 ) change_warpcli_port ;;
+        8 ) warpcli_switch ;;
+        9 ) uninstall_warpcli ;;
+        10 ) install_wireproxy ;;
+        11 ) uninstall_wireproxy ;;
         * ) exit 1 ;;
     esac
 }
@@ -853,34 +858,37 @@ menu1(){
     echo -e "# ${GREEN}网址${PLAIN}: https://owo.misaka.rest                             #"
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
+    echo -e ""
     echo "#############################################################"
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
     echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}4.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
+    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
+    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}5.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}6.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}7.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}8.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
+    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
     echo -e ""
-    read -p " 请输入选项 [0-9]:" menu1Input
+    read -p " 请输入选项 [0-11]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
         3 ) wgcfmode=2 && install_wgcf ;;
-        4 ) uninstall_wgcf ;;
-        5 ) install_warpcli ;;
-        6 ) change_warpcli_port ;;
-        7 ) uninstall_warpcli ;;
-        8 ) install_wireproxy ;;
-        9 ) uninstall_wireproxy ;;
+        4 ) wgcf_switch ;;
+        5 ) uninstall_wgcf ;;
+        6 ) install_warpcli ;;
+        7 ) change_warpcli_port ;;
+        8 ) warpcli_switch ;;
+        9 ) uninstall_warpcli ;;
+        10 ) install_wireproxy ;;
+        11 ) uninstall_wireproxy ;;
         * ) exit 1 ;;
     esac
 }
@@ -894,33 +902,38 @@ menu2(){
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
+    echo -e ""
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生IPv6)${PLAIN}"
+    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
     echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}4.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
+    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
+    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}5.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}6.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}7.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}8.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
+    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
     echo -e ""
-    read -p " 请输入选项 [0-9]:" menu2Input
+    read -p " 请输入选项 [0-11]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
         3 ) wgcfmode=2 && install_wgcf ;;
-        4 ) uninstall_wgcf ;;
-        5 ) install_warpcli ;;
-        6 ) change_warpcli_port ;;
-        7 ) uninstall_warpcli ;;
-        8 ) install_wireproxy ;;
-        9 ) uninstall_wireproxy ;;
+        4 ) wgcf_switch ;;
+        5 ) uninstall_wgcf ;;
+        6 ) install_warpcli ;;
+        7 ) change_warpcli_port ;;
+        8 ) warpcli_switch ;;
+        9 ) uninstall_warpcli ;;
+        10 ) install_wireproxy ;;
+        11 ) uninstall_wireproxy ;;
         * ) exit 1 ;;
     esac
 }
