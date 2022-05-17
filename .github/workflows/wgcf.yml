@@ -2,6 +2,9 @@ name: Fetch wgcf latest version
 
 on:
   workflow_dispatch:
+  schedule:
+    # UTC time (国内 UTC+8)
+    - cron: '30 14 * * *'
 
 jobs:
   build:
