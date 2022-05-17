@@ -354,10 +354,6 @@ wgcfd(){
 }
 
 wireproxy4(){
-    read -p "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
-    [[ -z $WireProxyPort ]] && WireProxyPort=40000
-    WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-    WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
     cat <<EOF > ~/WireProxy_WARP.conf
 [Interface]
 Address = 172.16.0.2/32
@@ -375,10 +371,6 @@ EOF
 }
 
 wireproxy6(){
-    read -p "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
-    [[ -z $WireProxyPort ]] && WireProxyPort=40000
-    WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-    WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
     cat <<EOF > ~/WireProxy_WARP.conf
 [Interface]
 Address = 172.16.0.2/32
@@ -748,6 +740,11 @@ install_wireproxy(){
     MTU=$((${MTUy} - 80))
     green "MTU 最佳值=$MTU 已设置完毕"
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
+    
+    read -p "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
+    [[ -z $WireProxyPort ]] && WireProxyPort=40000
+    WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+    WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
 
     if [[ $VPSIP == 0 ]]; then
         wireproxy6
