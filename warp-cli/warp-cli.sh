@@ -97,7 +97,7 @@ register_warpcli(){
     yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
     read -p "按键许可证密钥(26个字符):" WPPlusKey
     if [[ -n $WPPlusKey ]]; then
-        warp-cli --accept-tos set-license "$LICENSE" >/dev/null 2>&1 && sleep 1
+        warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
         if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
             green "WARP+账户启用成功"
         else
