@@ -16,9 +16,12 @@ jobs:
           wget -N https://raw.githubusercontent.com/Misaka-blog/Misaka-WARP-Script/master/.github/wgcf.sh
           bash wgcf.sh
       - name: Git uploading
+        env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --global user.email "$GIT_EMAIL"
+          git config --global user.name "$GIT_USERNAME"
           git add .
           git commit -m "Uploaded by Github Actions, Date: $(date)"
           git push
