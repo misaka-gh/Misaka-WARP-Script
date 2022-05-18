@@ -35,10 +35,22 @@ done
 [[ -z $SYSTEM ]] && red "不支持当前VPS的系统，请使用主流操作系统" && exit 1
 [[ -n $(type -P wg-quick) ]] && red "Wgcf-WARP已经安装，脚本即将退出" && rm -f warpd.sh && exit 1
 
-arch=`uname -m`
 main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
 vpsvirt=`systemd-detect-virt`
+
+archAffix(){
+    case "$(uname -m)" in
+        i686 | i386) echo '386' ;;
+        x86_64 | amd64 ) echo 'amd64' ;;
+        armv5tel) echo 'armv5' ;;
+        armv6l) echo 'armv6' ;;
+        armv7 | armv7l) echo 'armv7' ;;
+        armv8 | arm64 | aarch64 ) echo 'arm64' ;;
+        s390x ) echo 's390x' ;;
+        * ) red "不支持的CPU架构！" && exit 1 ;;
+    esac
+}
 
 check_tun(){
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
@@ -116,15 +128,7 @@ install_wireguard(){
 }
 
 install_wgcf(){
-    if [[ $arch == "amd64" || $arch == "x86_64" ]]; then
-        wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.14_linux_amd64 -O /usr/local/bin/wgcf
-    fi
-    if [[ $arch == "armv8" || $arch == "arm64" || $arch == "aarch64" ]]; then
-        wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.14_linux_arm64 -O /usr/local/bin/wgcf
-    fi
-    if [[ $arch == "s390x" ]]; then
-        wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_2.2.14_linux_s390x -O /usr/local/bin/wgcf
-    fi
+    wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 }
 
