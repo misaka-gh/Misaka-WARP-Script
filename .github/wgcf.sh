@@ -12,3 +12,5 @@ wget -N https://github.com/ViRb3/wgcf/releases/download/$repo_last_ver/wgcf_"$re
 wget -N https://github.com/ViRb3/wgcf/releases/download/$repo_last_ver/wgcf_"$repo_ver_name"_linux_armv7 -O ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_armv7
 wget -N https://github.com/ViRb3/wgcf/releases/download/$repo_last_ver/wgcf_"$repo_ver_name"_linux_arm64 -O ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_arm64
 wget -N https://github.com/ViRb3/wgcf/releases/download/$repo_last_ver/wgcf_"$repo_ver_name"_linux_s390x -O ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_s390x
+
+rm -f wgcf.sh
