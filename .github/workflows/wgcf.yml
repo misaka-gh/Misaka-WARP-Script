@@ -3,8 +3,7 @@ name: Fetch wgcf latest version
 on:
   workflow_dispatch:
   schedule:
-    # UTC time (国内 UTC+8)
-    - cron: '30 14 * * *'
+    - cron: 30 12 * * *
 
 jobs:
   build:
@@ -25,6 +24,10 @@ jobs:
           git push
       - name: Refreshing Jsdelivr
         run: |
+          curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_386
           curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_amd64
+          curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_armv5
+          curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_armv6
+          curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_armv7
           curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_arm64
           curl https://purge.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_s390x
