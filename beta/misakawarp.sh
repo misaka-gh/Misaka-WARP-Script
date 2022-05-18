@@ -568,6 +568,19 @@ install_warpcli(){
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
         exit 1
     fi
+    
+    v66=`curl -s6m8 https://ip.gs -k`
+    v44=`curl -s4m8 https://ip.gs -k`
+    WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    
+    if [[ -n ${v66} && -z ${v44} ]]; then
+        red "WARP-Cli 代理模式不支持纯IPv6的VPS！！"
+        exit 1
+    elif [[ $WgcfWARP4Status =~ "on" | "plus" ]]; then
+        red "检测到IPv4出口已被Wgcf-WARP接管，无法启用WARP-Cli代理模式！"
+        exit 1
+    fi
 
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：Centos $vsid \n WARP-Cli代理模式仅支持Centos 8系统" && exit 1
