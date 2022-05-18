@@ -19,6 +19,6 @@ cat <<EOF > ${GITHUB_WORKSPACE}/files/wgcf-fetchlog.txt
 
 Last Version: $repo_last_ver
 Fetch Date: $actions_date
-TEXT
+EOF
 
 rm -f wgcf.sh
