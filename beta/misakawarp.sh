@@ -39,7 +39,11 @@ done
 
 archAffix(){
     case "$(uname -m)" in
+        i686 | i386) echo '386' ;;
         x86_64 | amd64 ) echo 'amd64' ;;
+        armv5tel) echo 'armv5' ;;
+        armv6l) echo 'armv6' ;;
+        armv7 | armv7l) echo 'armv7' ;;
         armv8 | arm64 | aarch64 ) echo 'arm64' ;;
         s390x ) echo 's390x' ;;
         * ) red "不支持的CPU架构！" && exit 1 ;;
