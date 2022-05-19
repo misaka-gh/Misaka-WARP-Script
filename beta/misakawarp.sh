@@ -551,7 +551,7 @@ wgcf_switch(){
 uninstall_wgcf(){
     wg-quick down wgcf 2>/dev/null
     systemctl disable wg-quick@wgcf 2>/dev/null
-    ${PACKAGE_UNINSTALL[int]} wireguard-tools wireguard-dkms 2>/dev/null
+    ${PACKAGE_UNINSTALL[int]} wireguard-tools wireguard-dkms
     [[ -z $(type -P wireproxy) ]] && rm -f /usr/local/bin/wgcf 
     rm -f /etc/wireguard/wgcf.conf
     rm -f /etc/wireguard/wgcf-account.toml
@@ -684,7 +684,7 @@ uninstall_warpcli(){
     warp-cli --accept-tos disconnect >/dev/null 2>&1
     warp-cli --accept-tos disable-always-on >/dev/null 2>&1
     warp-cli --accept-tos delete >/dev/null 2>&1
-    ${PACKAGE_UNINSTALL[int]} cloudflare-warp 2>/dev/null
+    ${PACKAGE_UNINSTALL[int]} cloudflare-warp
     systemctl disable --now warp-svc >/dev/null 2>&1
     green "WARP-Cli代理模式已彻底卸载成功！"
 }
