@@ -70,7 +70,7 @@ checkCentOS8(){
 install_warpcli_centos(){
     ${PACKAGE_INSTALL[int]} epel-release
     ${PACKAGE_INSTALL[int]} net-tools
-    rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el$vsid.rpm
+    rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
     ${PACKAGE_INSTALL[int]} cloudflare-warp
 }
 
