@@ -590,7 +590,7 @@ install_warpcli(){
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools
-        rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el$vsid.rpm
+        rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
     if [[ $SYSTEM == "Debian" ]]; then
