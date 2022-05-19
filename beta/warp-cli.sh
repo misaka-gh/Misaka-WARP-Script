@@ -68,8 +68,8 @@ checkCentOS8(){
 }
 
 install_warpcli_centos(){
-    ${PACKAGE_INSTALL[int]} curl wget sudo epel-release
-    ${PACKAGE_INSTALL[int]} net-tools
+    ${PACKAGE_INSTALL[int]} epel-release
+    ${PACKAGE_INSTALL[int]} curl wget sudo net-tools
     rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm >/dev/null 2>&1
 	# CentOS 7，需要用 Cloudflare CentOS 8 的库以安装 Client，并在线编译升级 C 运行库 Glibc 2.28
     if [[ $vsid =~ 7 && ! $(strings /lib64/libc.so.6 ) =~ GLIBC_2.28 ]]; then
