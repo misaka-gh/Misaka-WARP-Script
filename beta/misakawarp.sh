@@ -358,7 +358,7 @@ wgcfd(){
 }
 
 wireproxy4(){
-    cat <<EOF > ~/WireProxy_WARP.conf
+    cat <<EOF > /etc/wireguard/proxy.conf
 [Interface]
 Address = 172.16.0.2/32
 MTU = $MTU
@@ -375,7 +375,7 @@ EOF
 }
 
 wireproxy6(){
-    cat <<EOF > ~/WireProxy_WARP.conf
+    cat <<EOF > /etc/wireguard/proxy.conf
 [Interface]
 Address = 172.16.0.2/32
 MTU = $MTU
@@ -776,12 +776,12 @@ WantedBy=multi-user.target
 [Service]
 Type=simple
 WorkingDirectory=/root
-ExecStart=/usr/local/bin/wireproxy -c /root/WireProxy_WARP.conf
+ExecStart=/usr/local/bin/wireproxy -c /etc/wireguard/proxy.conf
 Restart=always
 TEXT
 
     rm -f wgcf-profile.conf
-    rm -f wgcf-account.toml
+    mv wgcf-account.toml /etc/wireguard/wgcf-account.toml
 
     yellow "正在启动WireProxy-WARP代理模式"
     systemctl start wireproxy-warp
