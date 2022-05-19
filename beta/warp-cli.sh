@@ -68,28 +68,30 @@ checkCentOS8(){
 }
 
 install_warpcli_centos(){
-    ${PACKAGE_INSTALL[int]} epel-release
+    ${PACKAGE_INSTALL[int]} curl wget sudo epel-release
     ${PACKAGE_INSTALL[int]} net-tools
     rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm >/dev/null 2>&1
 	# CentOS 7，需要用 Cloudflare CentOS 8 的库以安装 Client，并在线编译升级 C 运行库 Glibc 2.28
-	if	[[ $vsid == 7 && ! $(strings /lib64/libc.so.6 ) =~ GLIBC_2.28 ]]; then
-		{ wget -O /usr/bin/make https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/make
-		wget https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/glibc-2.28.tar.gz
-		tar -xzvf glibc-2.28.tar.gz; }&
-		sed -i "s/\$releasever/8/g" /etc/yum.repos.d/cloudflare.repo
-		${PACKAGE_UPDATE[int]}; ${PACKAGE_INSTALL[int]} cloudflare-warp
-		${PACKAGE_INSTALL[int]} gcc bison make centos-release-scl
-		${PACKAGE_INSTALL[int]} devtoolset-8-gcc devtoolset-8-gcc-c++ devtoolset-8-binutils
-		source /opt/rh/devtoolset-8/enable
-		wait
-		cd ./glibc-2.28/build
-		../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin
-		make install
-		cd ../..; rm -rf glibc-2.28*
-	else
+    if [[ $vsid =~ 7 && ! $(strings /lib64/libc.so.6 ) =~ GLIBC_2.28 ]]; then
+        wget -N https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/make -O /usr/bin/make
+        wget -N https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/glibc-2.28.tar.gz
+        tar -xzvf glibc-2.28.tar.gz
+        sed -i "s/\$releasever/8/g" /etc/yum.repos.d/cloudflare.repo
+		${PACKAGE_UPDATE[int]}
+        ${PACKAGE_INSTALL[int]} cloudflare-warp
+        ${PACKAGE_INSTALL[int]} gcc bison make centos-release-scl
+        ${PACKAGE_INSTALL[int]} devtoolset-8-gcc devtoolset-8-gcc-c++ devtoolset-8-binutils
+        source /opt/rh/devtoolset-8/enable
+        wait
+        cd ./glibc-2.28/build
+        ../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin
+        make install
+        cd ../..
+        rm -rf glibc-2.28*
+    else
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} cloudflare-warp
-	fi
+    fi
 }
 
 install_warpcli_debian(){
