@@ -85,7 +85,7 @@ install_warpcli_debian(){
 }
 
 install_warpcli_ubuntu(){
-    ${PACKAGE_INSTALL[int]} lsb-release
+    ${PACKAGE_INSTALL[int]} curl wget sudo lsb-release
     curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
     echo "deb http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
     ${PACKAGE_UPDATE[int]}
