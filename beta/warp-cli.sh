@@ -73,8 +73,8 @@ install_warpcli_centos(){
     rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm >/dev/null 2>&1
     # CentOS 7，需要用 Cloudflare CentOS 8 的库以安装 Client，并在线编译升级 C 运行库 Glibc 2.28
     if [[ $vsid =~ 7 && ! $(strings /lib64/libc.so.6 ) =~ GLIBC_2.28 ]]; then
-        wget -N https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/make -O /usr/bin/make
-        wget -N https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/glibc-2.28.tar.gz
+        wget -N --no-check-certificate https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/make -O /usr/bin/make
+        wget -N --no-check-certificate https://github.com/Misaka-blog/Misaka-WARP-Script/releases/download/Glibc/glibc-2.28.tar.gz
         tar -xzvf glibc-2.28.tar.gz
         sed -i "s/\$releasever/8/g" /etc/yum.repos.d/cloudflare.repo
         ${PACKAGE_UPDATE[int]}
