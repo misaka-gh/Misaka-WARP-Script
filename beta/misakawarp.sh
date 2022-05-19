@@ -797,7 +797,8 @@ TEXT
         socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         sleep 8
     done
-    systemctl enable wireproxy-warp
+    sleep 5
+    systemctl enable wireproxy-warp >/dev/null 2>&1
     socks5IP=$(curl -sx socks5h://localhost:$WireProxyPort https://ip.gs -k --connect-timeout 8)
     green "WireProxy-WARP代理模式已启动成功！"
     yellow "本地Socks5代理为： 127.0.0.1:$WireProxyPort"
