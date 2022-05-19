@@ -95,6 +95,7 @@ install_warpcli_centos(){
 }
 
 install_warpcli_debian(){
+    ${PACKAGE_UPDATE[int]}
     ${PACKAGE_INSTALL[int]} lsb-release
     [[ -z $(type -P gpg 2>/dev/null) ]] && ${PACKAGE_INSTALL[int]} gnupg
     [[ -z $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && ${PACKAGE_INSTALL[int]} apt-transport-https
@@ -105,6 +106,7 @@ install_warpcli_debian(){
 }
 
 install_warpcli_ubuntu(){
+    ${PACKAGE_UPDATE[int]}
     ${PACKAGE_INSTALL[int]} lsb-release
     curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
     echo "deb http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
@@ -157,9 +159,6 @@ install(){
         [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：Centos $vsid \nWARP-Cli代理模式仅支持Centos 7-8系统" && exit 1
         [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
         [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/20.04系统" && exit 1
-        ${PACKAGE_UPDATE[int]}
-        [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
-        [[ -z $(type -P sudo) ]] && ${PACKAGE_INSTALL[int]} sudo
         [[ $SYSTEM == "CentOS" ]] && install_warpcli_centos
         [[ $SYSTEM == "Debian" ]] && install_warpcli_debian
         [[ $SYSTEM == "Ubuntu" ]] && install_warpcli_ubuntu
