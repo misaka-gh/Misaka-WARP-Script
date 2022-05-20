@@ -403,8 +403,8 @@ install_wgcf(){
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables
-        if [[ "$main" -lt 5 ]] || [[ "$minor" -lt 6 ]]; then 
-            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft" ]]; then
+        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then 
+            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
                 curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-$vsid/jdoss-wireguard-epel-$vsid.repo
                 ${PACKAGE_INSTALL[int]} wireguard-dkms
@@ -417,8 +417,8 @@ install_wgcf(){
         echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
-        if [[ "$main" -lt 5 ] || [[ "$minor" -lt 6 ]]; then
-            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft" ]]; then
+        if [[ $main -lt 5 ] || [[ $minor -lt 6 ]]; then
+            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends linux-headers-$(uname -r)
                 ${PACKAGE_INSTALL[int]} --no-install-recommends wireguard-dkms
             fi
