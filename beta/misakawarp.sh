@@ -396,7 +396,7 @@ install_wgcf(){
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：Centos $vsid \n Wgcf-WARP模式仅支持Centos 7-8系统" && exit 1
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \n Wgcf-WARP模式仅支持Debian 10-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n Wgcf-WARP模式仅支持Ubuntu 18.04/20.04/22.04系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n Wgcf-WARP模式仅支持Ubuntu 18.04/20.04/22.04系统" && exit 1
     vpsvirt=$(systemd-detect-virt)
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
