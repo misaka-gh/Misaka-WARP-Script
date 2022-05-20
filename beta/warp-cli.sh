@@ -37,6 +37,7 @@ done
 
 arch=`uname -m`
 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
+vpsvirt=`systemd-detect-virt`
 
 check_tun(){
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
