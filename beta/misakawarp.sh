@@ -427,6 +427,9 @@ install_wgcf(){
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
+        if [[ $vsid =~ 16 ]]; then
+            add-apt-repository ppa:wireguard/wireguard
+        fi
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
     fi
 
