@@ -580,7 +580,7 @@ install_warpcli(){
     if [[ -n ${v66} && -z ${v44} ]]; then
         red "WARP-Cli 代理模式不支持纯IPv6的VPS！！"
         exit 1
-    elif [[ $WgcfWARP4Status =~ "on" | "plus" ]]; then
+    elif [[ $WgcfWARP4Status =~ on|plus ]]; then
         red "检测到IPv4出口已被Wgcf-WARP接管，无法启用WARP-Cli代理模式！"
         exit 1
     fi
