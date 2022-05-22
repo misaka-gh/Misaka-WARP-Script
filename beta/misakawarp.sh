@@ -55,6 +55,29 @@ archAffix(){
 check_status(){
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    v4=$(curl -s4m8 https://ip.gs -k)
+    v6=$(curl -s6m8 https://ip.gs -k)
+    c4=$(curl -s4m8 https://ip.gs/country -k)
+    c6=$(curl -s6m8 https://ip.gs/country -k)
+
+    if [[ $IPv4Status == "off" ]]; then
+        w4="${RED}未启用WARP${PLAIN}"
+    fi
+    if [[ $IPv6Status == "off" ]]; then
+        w6="${RED}未启用WARP${PLAIN}"
+    fi
+    if [[ $IPv4Status == "on" ]]; then
+        w4="${YELLOW}WARP 免费账户${PLAIN}"
+    fi
+    if [[ $IPv6Status == "on" ]]; then
+        w6="${YELLOW}WARP 免费账户${PLAIN}"
+    fi
+    if [[ $IPv4Status =~ "on"|"plus" ]]; then
+        w4="${GREEN}WARP + / Teams${PLAIN}"
+    fi
+    if [[ $IPv6Status =~ "on"|"plus" ]]; then
+        w6="${PLAIN}WARP + / Teams${PLAIN}"
+    fi
 
     if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
         # 关闭Wgcf-WARP，以防识别有误
@@ -75,6 +98,11 @@ check_status(){
     elif [[ -n $v66 ]] && [[ -n $v44 ]]; then
         VPSIP=2
     fi
+
+    statustext=$(
+        echo -e "IPv4 地址：$v4 地区：$c4 WARP：$w4"
+        echo -e "IPv6 地址：$v6 地区：$c6 WARP：$w6"
+    )
 }
 
 check_tun(){
@@ -853,6 +881,7 @@ menu0(){
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
+    statustext
     echo -e ""
     read -p " 请输入选项 [0-9]:" menu0Input
     case "$menu0Input" in
@@ -898,6 +927,7 @@ menu1(){
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
+    statustext
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu1Input
     case "$menu1Input" in
@@ -943,6 +973,7 @@ menu2(){
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
+    statustext
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu2Input
     case "$menu2Input" in
