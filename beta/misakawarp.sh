@@ -72,10 +72,10 @@ check_status(){
     if [[ $IPv6Status == "on" ]]; then
         w6="${YELLOW}WARP 免费账户${PLAIN}"
     fi
-    if [[ $IPv4Status =~ "on"|"plus" ]]; then
+    if [[ $IPv4Status == "plus" ]]; then
         w4="${GREEN}WARP + / Teams${PLAIN}"
     fi
-    if [[ $IPv6Status =~ "on"|"plus" ]]; then
+    if [[ $IPv6Status == "plus" ]]; then
         w6="${GREEN}WARP + / Teams${PLAIN}"
     fi
 
