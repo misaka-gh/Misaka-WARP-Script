@@ -55,29 +55,23 @@ archAffix(){
 check_status(){
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+
+    if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
+        wg-quick down wgcf >/dev/null 2>&1
+        v66=`curl -s6m8 https://ip.gs -k`
+        v44=`curl -s4m8 https://ip.gs -k`
+        wg-quick up wgcf >/dev/null 2>&1
+    else
+        v66=`curl -s6m8 https://ip.gs -k`
+        v44=`curl -s4m8 https://ip.gs -k`
+    fi
+
     # VPSIP变量说明：0为纯IPv6 VPS、1为纯IPv4 VPS、2为原生双栈VPS
-    if [[ -z $IPv4Status ]] && [[ $IPv6Status == "off" ]]; then
+    if [[ -n $v66 ]] && [[ -z $v44 ]]; then
         VPSIP=0
-    fi
-    if [[ -z $IPv4Status ]] && [[ $IPv6Status =~ "on"|"plus" ]]; then
-        VPSIP=0
-    fi
-    if [[ $IPv4Status =~ "on"|"plus" ]] && [[ $IPv6Status == "off" ]]; then
-        VPSIP=0
-    fi
-    if [[ $IPv4Status == "off" ]] && [[ -z $IPv6Status ]]; then
+    elif [[ -z $v66 ]] && [[ -n $v44 ]]; then
         VPSIP=1
-    fi
-    if [[ $IPv4Status =~ "on"|"plus" ]] && [[ -z $IPv6Status ]]; then
-        VPSIP=1
-    fi
-    if [[ $IPv4Status == "off" ]] && [[ $IPv6Status =~ "on"|"plus" ]]; then
-        VPSIP=1
-    fi
-    if [[ $IPv4Status == "off" ]] && [[ $IPv6Status == "off" ]]; then
-        VPSIP=2
-    fi
-    if [[ $IPv4Status =~ "on"|"plus" ]] && [[ $IPv6Status =~ "on"|"plus" ]]; then
+    elif [[ -n $v66 ]] && [[ -n $v44 ]]; then
         VPSIP=2
     fi
 }
