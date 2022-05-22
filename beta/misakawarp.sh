@@ -37,6 +37,8 @@ done
 
 [[ $EUID -ne 0 ]] && red "注意：请在root用户下运行脚本" && exit 1
 
+[[ -z $(type -P curl) ]] && ${PACKAGE_UPDATE[int]} && ${PACKAGE_INSTALL[int]} curl
+
 archAffix(){
     case "$(uname -m)" in
         i686 | i386) echo '386' ;;
