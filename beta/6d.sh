@@ -230,7 +230,7 @@ start_wgcf(){
 install(){
     install_wireguard
     [[ -z $(type -P wgcf) ]] && install_wgcf
-    register_wgcf
+    [[ ! -f wgcf-account.toml ]] && register_wgcf
     generate_wgcf_config
     get_best_mtu
     cpto_wireguard
