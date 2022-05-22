@@ -876,8 +876,12 @@ menu0(){
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
-    echo -e "IPv4 地址：$v4 地区：$c4 WARP：$w4"
-    echo -e "IPv6 地址：$v6 地区：$c6 WARP：$w6"
+    if [[ -n $v4 ]]; then
+        echo -e "IPv4 地址：$v4     地区：$c4     WARP状态：$w4"
+    fi
+    if [[ -n $v6 ]]; then
+        echo -e "IPv6 地址：$v6     地区：$c6     WARP状态：$w6"
+    fi
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu0Input
     case "$menu0Input" in
@@ -923,8 +927,12 @@ menu1(){
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
-    echo -e "IPv4 地址：$v4 地区：$c4 WARP：$w4"
-    echo -e "IPv6 地址：$v6 地区：$c6 WARP：$w6"
+    if [[ -n $v4 ]]; then
+        echo -e "IPv4 地址：$v4     地区：$c4     WARP状态：$w4"
+    fi
+    if [[ -n $v6 ]]; then
+        echo -e "IPv6 地址：$v6     地区：$c6     WARP状态：$w6"
+    fi
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu1Input
     case "$menu1Input" in
@@ -970,8 +978,12 @@ menu2(){
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
-    echo -e "IPv4 地址：$v4 地区：$c4 WARP：$w4"
-    echo -e "IPv6 地址：$v6 地区：$c6 WARP：$w6"
+    if [[ -n $v4 ]]; then
+        echo -e "IPv4 地址：$v4     地区：$c4     WARP状态：$w4"
+    fi
+    if [[ -n $v6 ]]; then
+        echo -e "IPv6 地址：$v6     地区：$c6     WARP状态：$w6"
+    fi
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu2Input
     case "$menu2Input" in
