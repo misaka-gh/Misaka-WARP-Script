@@ -872,6 +872,21 @@ uninstall_wireproxy(){
     green "WARP-Cli代理模式已彻底卸载成功！"
 }
 
+warpnf(){
+    yellow "请选择需要刷NetFilx IP的WARP客户端："
+    green "1. Wgcf-WARP IPv4模式"
+    green "2. Wgcf-WARP IPv6模式"
+    green "3. WARP-Cli 代理模式"
+    green "4. WireProxy-WARP 代理模式"
+    read -p "请输入需要卸载的客户端 [1-4]：" uninstallClient
+    case "$uninstallClient" in
+        1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
+        2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
+        3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
+        4 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
+    esac
+}
+
 menu(){
     check_status
     if [[ $VPSIP == 0 ]]; then
