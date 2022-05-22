@@ -57,6 +57,7 @@ check_status(){
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
 
     if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
+        # 关闭Wgcf-WARP，以防识别有误
         wg-quick down wgcf >/dev/null 2>&1
         v66=`curl -s6m8 https://ip.gs -k`
         v44=`curl -s4m8 https://ip.gs -k`
