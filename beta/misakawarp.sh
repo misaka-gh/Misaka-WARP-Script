@@ -808,9 +808,10 @@ TEXT
 uninstall_wireproxy(){
     systemctl stop wireproxy-warp
     systemctl disable wireproxy-warp
-    rm -f /etc/systemd/system/wireproxy-warp.service
-    rm -f /usr/local/bin/wireproxy
-    [[ ! -f /etc/wireguard/wgcf.conf ]] && rm -f /usr/local/bin/wgcf
+    rm -f /etc/systemd/system/wireproxy-warp.service /usr/local/bin/wireproxy /etc/wireguard/proxy.conf
+    if [[ ! -f /etc/wireguard/wgcf.conf ]]; then
+        rm -f /usr/local/bin/wgcf /etc/wireguard/wgcf-account.toml
+    fi
     green "WARP-Cli代理模式已彻底卸载成功！"
 }
 
