@@ -54,6 +54,10 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 建议安装好WARP后备份 `/etc/wireguard/wgcf-account.toml`文件，以防服务繁忙无法申请账号造成无法安装Wgcf-WARP或WireProxy-WARP代理模式
 
+### 3. 如何使用已备份的wgcf-account.toml账号文件
+
+只需要把文件放到`/root`文件夹，然后等待脚本自动识别即可
+
 ## 赞助我们
 
 ![afdian-MisakaNo.jpg](https://s2.loli.net/2021/12/25/SimocqwhVg89NQJ.jpg)
