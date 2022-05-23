@@ -872,54 +872,6 @@ uninstall_wireproxy(){
     green "WARP-Cli代理模式已彻底卸载成功！"
 }
 
-wgcfnf4(){
-    NetfilxStatus=$(curl -4 --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39" -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
-    if [[ $NetfilxStatus == "200" ]]; then
-        WgcfWARPIP=$(curl -s4m8 https://ip.gs -k)
-        green "当前Wgcf-WARP的IP：$WgcfWARPIP 已解锁Netfilx"
-        yellow "等待1小时后，脚本将会自动重新检查Netfilx解锁状态"
-        sleep 1h
-        wgcfnf4
-    fi
-    if [[ $NetfilxStatus =~ "403"|"404" ]]; then
-        WgcfWARPIP=$(curl -s4m8 https://ip.gs -k)
-        red "当前Wgcf-WARP的IP：$WgcfWARPIP 未解锁Netfilx，脚本将在15秒后重新测试Netfilx解锁情况"
-        sleep 15
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1 
-        wgcfnf4
-    fi
-    if [[ -z $NetfilxStatus ]] || [[ $NetfilxStatus == "000" ]]; then
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        wgcfnf4
-    fi
-}
-
-wgcfnf6(){
-    NetfilxStatus=$(curl -6 --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39" -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
-    if [[ $NetfilxStatus == "200" ]]; then
-        WgcfWARPIP=$(curl -s6m8 https://ip.gs -k)
-        green "当前Wgcf-WARP的IP：$WgcfWARPIP 已解锁Netfilx"
-        yellow "等待1小时后，脚本将会自动重新检查Netfilx解锁状态"
-        sleep 1h
-        wgcfnf6
-    fi
-    if [[ $NetfilxStatus =~ "403"|"404" ]]; then
-        WgcfWARPIP=$(curl -s6m8 https://ip.gs -k)
-        red "当前Wgcf-WARP的IP：$WgcfWARPIP 未解锁Netfilx，脚本将在15秒后重新测试Netfilx解锁情况"
-        sleep 15
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1 
-        wgcfnf6
-    fi
-    if [[ -z $NetfilxStatus ]] || [[ $NetfilxStatus == "000" ]]; then
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        wgcfnf6
-    fi
-}
-
 warpnf(){
     yellow "请选择需要刷NetFilx IP的WARP客户端："
     green "1. Wgcf-WARP IPv4模式"
