@@ -123,7 +123,14 @@ make_wireproxy_file(){
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
-    cat <<EOF > ~/WireProxy_WARP.conf
+
+    if [[ ! -d "/etc/wireguard" ]]; then
+        mkdir /etc/wireguard
+    fi
+    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
+
+
+    cat <<EOF > /etc/wireguard/proxy.conf
 [Interface]
 Address = 172.16.0.2/32
 MTU = $MTU
@@ -138,7 +145,6 @@ Endpoint = [2606:4700:d0::a29f:c001]:2408
 BindAddress = 127.0.0.1:$WireProxyPort
 EOF
     green "WireProxy-WARP代理模式配置文件已生成成功！"
-    yellow "已保存到 /root/WireProxy_WARP.conf"
     cat <<'TEXT' > /etc/systemd/system/wireproxy-warp.service
 [Unit]
 Description=CloudFlare WARP based for WireProxy, script by owo.misaka.rest
@@ -148,12 +154,11 @@ WantedBy=multi-user.target
 [Service]
 Type=simple
 WorkingDirectory=/root
-ExecStart=/usr/local/bin/wireproxy -c /root/WireProxy_WARP.conf
+ExecStart=/usr/local/bin/wireproxy -c /etc/wireguard/proxy.conf
 Restart=always
 TEXT
     green "Systemd 系统守护服务设置成功！"
     rm -f wgcf-profile.conf
-    rm -f wgcf-account.toml
 }
 
 download_wireproxy(){

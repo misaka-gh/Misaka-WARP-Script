@@ -38,6 +38,7 @@ uninstall(){
     systemctl disable wireproxy-warp
     rm -f /etc/systemd/system/wireproxy-warp.service
     rm -f /usr/local/bin/wireproxy
+    rm -f /etc/wireguard/proxy.conf
     [[ ! -f /etc/wireguard/wgcf.conf ]] && rm -f /usr/local/bin/wgcf
     green "WARP-Cli代理模式已彻底卸载成功！"
     rm -f uninstall.sh
