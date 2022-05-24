@@ -108,12 +108,6 @@ check_status(){
     w5i=$(curl -sx socks5h://localhost:$w5p https://ip.gs -k --connect-timeout 8)
     w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
 
-    if [[ $s5s == "off" ]]; then
-        w4="${RED}未启用WARP${PLAIN}"
-    fi
-    if [[ $w5s == "off" ]]; then
-        w6="${RED}未启用WARP${PLAIN}"
-    fi
     if [[ $s5s == "on" ]]; then
         w4="${YELLOW}WARP 免费账户${PLAIN}"
     fi
@@ -954,10 +948,18 @@ menu0(){
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
     if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4     地区：$c4     WARP状态：$w4"
+        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
     fi
     if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6     地区：$c6     WARP状态：$w6"
+        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
+    fi
+    if [[ -n $s5p ]]; then
+        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5s"
+        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+    fi
+    if [[ -n $w5p ]]; then
+        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5s"
+        echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu0Input
@@ -1005,10 +1007,18 @@ menu1(){
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
     if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4     地区：$c4     WARP状态：$w4"
+        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
     fi
     if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6     地区：$c6     WARP状态：$w6"
+        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
+    fi
+    if [[ -n $s5p ]]; then
+        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5s"
+        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+    fi
+    if [[ -n $w5p ]]; then
+        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5s"
+        echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu1Input
@@ -1056,10 +1066,18 @@ menu2(){
     echo -e ""
     echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
     if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4     地区：$c4     WARP状态：$w4"
+        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
     fi
     if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6     地区：$c6     WARP状态：$w6"
+        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
+    fi
+    if [[ -n $s5p ]]; then
+        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5s"
+        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+    fi
+    if [[ -n $w5p ]]; then
+        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5s"
+        echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
     read -p " 请输入选项 [0-11]:" menu2Input
