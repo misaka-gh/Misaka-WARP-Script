@@ -1006,7 +1006,7 @@ menu0(){
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
-    read -p " 请输入选项 [0-11]:" menu0Input
+    read -p " 请输入选项 [0-13]:" menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1069,7 +1069,7 @@ menu1(){
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
-    read -p " 请输入选项 [0-11]:" menu1Input
+    read -p " 请输入选项 [0-13]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1132,7 +1132,7 @@ menu2(){
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
-    read -p " 请输入选项 [0-11]:" menu2Input
+    read -p " 请输入选项 [0-13]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
