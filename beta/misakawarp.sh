@@ -487,6 +487,10 @@ install_wgcf(){
     wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
+    if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
+        cp -f /etc/wireguard/wgcf-account.toml /root/wgcf-account.toml
+    fi
+
     until [[ -a wgcf-account.toml ]]; do
         yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
         yes | wgcf register
@@ -740,6 +744,10 @@ install_wireproxy(){
 
     wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
+
+    if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
+        cp -f /etc/wireguard/wgcf-account.toml /root/wgcf-account.toml
+    fi
 
     until [[ -a wgcf-account.toml ]]; do
         yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
