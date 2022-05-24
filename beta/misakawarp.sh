@@ -55,10 +55,17 @@ archAffix(){
 check_status(){
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    v4=$(curl -s4m8 https://ip.gs -k)
-    v6=$(curl -s6m8 https://ip.gs -k)
-    c4=$(curl -s4m8 https://ip.gs/country -k)
-    c6=$(curl -s6m8 https://ip.gs/country -k)
+
+    if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
+        # 关闭Wgcf-WARP，以防识别有误
+        wg-quick down wgcf >/dev/null 2>&1
+        v66=`curl -s6m8 https://ip.gs -k`
+        v44=`curl -s4m8 https://ip.gs -k`
+        wg-quick up wgcf >/dev/null 2>&1
+    else
+        v66=`curl -s6m8 https://ip.gs -k`
+        v44=`curl -s4m8 https://ip.gs -k`
+    fi
 
     if [[ $IPv4Status == "off" ]]; then
         w4="${RED}未启用WARP${PLAIN}"
@@ -79,17 +86,6 @@ check_status(){
         w6="${GREEN}WARP+ / Teams${PLAIN}"
     fi
 
-    if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
-        # 关闭Wgcf-WARP，以防识别有误
-        wg-quick down wgcf >/dev/null 2>&1
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
-        wg-quick up wgcf >/dev/null 2>&1
-    else
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
-    fi
-
     # VPSIP变量说明：0为纯IPv6 VPS、1为纯IPv4 VPS、2为原生双栈VPS
     if [[ -n $v66 ]] && [[ -z $v44 ]]; then
         VPSIP=0
@@ -98,6 +94,19 @@ check_status(){
     elif [[ -n $v66 ]] && [[ -n $v44 ]]; then
         VPSIP=2
     fi
+
+    v4=$(curl -s4m8 https://ip.gs -k)
+    v6=$(curl -s6m8 https://ip.gs -k)
+    c4=$(curl -s4m8 https://ip.gs/country -k)
+    c6=$(curl -s6m8 https://ip.gs/country -k)
+    s5p=$(warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}')
+    s5s=$(curl -sx socks5h://localhost:$s5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    s5=$(curl -sx socks5h://localhost:$s5p https://ip.gs -k --connect-timeout 8)
+    s5c=$(curl -sx socks5h://localhost:$s5p https://ip.gs/country -k --connect-timeout 8)
+    w5p=$(grep BindAddress /etc/wireguard/proxy.conf 2>/dev/null | sed "s/BindAddress = 127.0.0.1://g")
+    w5s=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    w5=$(curl -sx socks5h://localhost:$w5p https://ip.gs -k --connect-timeout 8)
+    w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
 }
 
 check_tun(){
