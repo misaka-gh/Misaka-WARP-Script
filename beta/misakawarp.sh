@@ -101,12 +101,31 @@ check_status(){
     c6=$(curl -s6m8 https://ip.gs/country -k)
     s5p=$(warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}')
     s5s=$(curl -sx socks5h://localhost:$s5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-    s5=$(curl -sx socks5h://localhost:$s5p https://ip.gs -k --connect-timeout 8)
+    s5i=$(curl -sx socks5h://localhost:$s5p https://ip.gs -k --connect-timeout 8)
     s5c=$(curl -sx socks5h://localhost:$s5p https://ip.gs/country -k --connect-timeout 8)
     w5p=$(grep BindAddress /etc/wireguard/proxy.conf 2>/dev/null | sed "s/BindAddress = 127.0.0.1://g")
     w5s=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-    w5=$(curl -sx socks5h://localhost:$w5p https://ip.gs -k --connect-timeout 8)
+    w5i=$(curl -sx socks5h://localhost:$w5p https://ip.gs -k --connect-timeout 8)
     w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
+
+    if [[ $s5s == "off" ]]; then
+        w4="${RED}未启用WARP${PLAIN}"
+    fi
+    if [[ $w5s == "off" ]]; then
+        w6="${RED}未启用WARP${PLAIN}"
+    fi
+    if [[ $s5s == "on" ]]; then
+        w4="${YELLOW}WARP 免费账户${PLAIN}"
+    fi
+    if [[ $w5s == "on" ]]; then
+        w6="${YELLOW}WARP 免费账户${PLAIN}"
+    fi
+    if [[ $s5s == "plus" ]]; then
+        w4="${GREEN}WARP+ / Teams${PLAIN}"
+    fi
+    if [[ $w5s == "plus" ]]; then
+        w6="${GREEN}WARP+ / Teams${PLAIN}"
+    fi
 }
 
 check_tun(){
