@@ -22,6 +22,11 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Mi
 
 快捷方式 `bash misakawarp.sh`
 
+## 即将更新内容
+
+1. 全新菜单
+2. 更直观显示warp状态
+
 ## 调整IPv4或IPv6优先
 
 为了防止安装时脚本修改优先级情况导致失联，故使用VPS的默认IP优先级。如有需要配置可以参考P3Terx的文章：
