@@ -884,6 +884,40 @@ TEXT
     yellow "WireProxy-WARP代理模式的IP为：$socks5IP"
 }
 
+change_wireproxy_port(){
+    systemctl stop wireproxy-warp
+    read -p "请输入WARP Cli使用的代理端口（默认40000）：" WireProxyPort
+    [[ -z $WireProxyPort ]] && WireProxyPort=40000
+    CurrentPort=$(grep BindAddress /etc/wireguard/proxy.conf)
+    sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
+    yellow "正在启动WireProxy-WARP代理模式"
+    systemctl start wireproxy-warp
+    socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    until [[ $socks5Status =~ on|plus ]]; do
+        red "启动WireProxy-WARP代理模式失败，正在尝试重启"
+        systemctl stop wireproxy-warp
+        systemctl start wireproxy-warp
+        socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+        sleep 8
+    done
+    systemctl enable wireproxy-warp
+    green "WireProxy-WARP代理模式已启动成功！"
+    yellow "本地Socks5代理为： 127.0.0.1:$WireProxyPort"
+}
+
+wireproxy_switch(){
+    w5p=$(grep BindAddress /etc/wireguard/proxy.conf 2>/dev/null | sed "s/BindAddress = 127.0.0.1://g")
+    w5s=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    if [[ $w5s =~ "on"|"plus" ]]; then
+        systemctl stop wireproxy-warp
+        systemctl disable wireproxy-warp
+    fi
+    if [[ $w5s =~ "off" ]] || [[ -z $w5s ]]; then
+        systemctl start wireproxy-warp
+        systemctl enable wireproxy-warp
+    fi
+}
+
 uninstall_wireproxy(){
     systemctl stop wireproxy-warp
     systemctl disable wireproxy-warp
@@ -942,7 +976,9 @@ menu0(){
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -954,11 +990,11 @@ menu0(){
         echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
     fi
     if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5s"
+        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
         echo -e "WARP-Cli IP: $s5i  地区: $s5c"
     fi
     if [[ -n $w5p ]]; then
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5s"
+        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
@@ -974,7 +1010,9 @@ menu0(){
         8 ) warpcli_switch ;;
         9 ) uninstall_warpcli ;;
         10 ) install_wireproxy ;;
-        11 ) uninstall_wireproxy ;;
+        11 ) change_wireproxy_port ;;
+        12 ) wireproxy_switch ;;
+        13 ) uninstall_wireproxy ;;
         * ) exit 1 ;;
     esac
 }
@@ -1001,7 +1039,9 @@ menu1(){
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1013,11 +1053,11 @@ menu1(){
         echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
     fi
     if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5s"
+        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
         echo -e "WARP-Cli IP: $s5i  地区: $s5c"
     fi
     if [[ -n $w5p ]]; then
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5s"
+        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
@@ -1033,7 +1073,9 @@ menu1(){
         8 ) warpcli_switch ;;
         9 ) uninstall_warpcli ;;
         10 ) install_wireproxy ;;
-        11 ) uninstall_wireproxy ;;
+        11 ) change_wireproxy_port ;;
+        12 ) wireproxy_switch ;;
+        13 ) uninstall_wireproxy ;;
         * ) exit 1 ;;
     esac
 }
@@ -1060,7 +1102,9 @@ menu2(){
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1072,11 +1116,11 @@ menu2(){
         echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
     fi
     if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5s"
+        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
         echo -e "WARP-Cli IP: $s5i  地区: $s5c"
     fi
     if [[ -n $w5p ]]; then
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5s"
+        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
@@ -1092,7 +1136,9 @@ menu2(){
         8 ) warpcli_switch ;;
         9 ) uninstall_warpcli ;;
         10 ) install_wireproxy ;;
-        11 ) uninstall_wireproxy ;;
+        11 ) change_wireproxy_port ;;
+        12 ) wireproxy_switch ;;
+        13 ) uninstall_wireproxy ;;
         * ) exit 1 ;;
     esac
 }
