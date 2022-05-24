@@ -109,16 +109,16 @@ check_status(){
     w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
 
     if [[ $s5s == "on" ]]; then
-        w4="${YELLOW}WARP 免费账户${PLAIN}"
+        s5="${YELLOW}WARP 免费账户${PLAIN}"
     fi
     if [[ $w5s == "on" ]]; then
-        w6="${YELLOW}WARP 免费账户${PLAIN}"
+        w5="${YELLOW}WARP 免费账户${PLAIN}"
     fi
     if [[ $s5s == "plus" ]]; then
-        w4="${GREEN}WARP+ / Teams${PLAIN}"
+        s5="${GREEN}WARP+ / Teams${PLAIN}"
     fi
     if [[ $w5s == "plus" ]]; then
-        w6="${GREEN}WARP+ / Teams${PLAIN}"
+        w5="${GREEN}WARP+ / Teams${PLAIN}"
     fi
 }
 
