@@ -1044,7 +1044,6 @@ menu1(){
     echo -e "# ${GREEN}网址${PLAIN}: https://owo.misaka.rest                             #"
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
-    echo -e ""
     echo "#############################################################"
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
