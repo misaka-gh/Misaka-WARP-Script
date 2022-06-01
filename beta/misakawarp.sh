@@ -7,15 +7,15 @@ PLAIN='\033[0m'
 
 red() {
     echo -e "\033[31m\033[01m$1\033[0m"
-} 
+}
 
 green() {
     echo -e "\033[32m\033[01m$1\033[0m"
-} 
+}
 
 yellow() {
     echo -e "\033[33m\033[01m$1\033[0m"
-} 
+}
 
 # 判断系统及定义系统安装依赖方式
 REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
@@ -434,14 +434,22 @@ EOF
 }
 
 install_wgcf(){
+    if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
+        red "检测到地区为 Hong Kong 的VPS！"
+        yellow "由于 CloudFlare s对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
+        exit 1
+    fi
+
     vpsvirt=$(systemd-detect-virt)
     check_tun
+
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：Centos $vsid \n Wgcf-WARP模式仅支持Centos 7-8系统" && exit 1
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \n Wgcf-WARP模式仅支持Debian 10-11系统" && exit 1
     [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n Wgcf-WARP模式仅支持Ubuntu 18.04/20.04/22.04系统" && exit 1
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
+    
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables
@@ -744,6 +752,12 @@ uninstall_warpcli(){
 }
 
 install_wireproxy(){
+    if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
+        red "检测到地区为 Hong Kong 的VPS！"
+        yellow "由于 CloudFlare s对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
+        exit 1
+    fi
+
     wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
     chmod +x /usr/local/bin/wireproxy
 
@@ -1044,7 +1058,6 @@ menu1(){
     echo -e "# ${GREEN}网址${PLAIN}: https://owo.misaka.rest                             #"
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
-    echo -e ""
     echo "#############################################################"
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
