@@ -149,6 +149,7 @@ wgcf44(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -158,6 +159,7 @@ wgcf44(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
@@ -176,6 +178,7 @@ wgcf46(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -185,6 +188,7 @@ wgcf46(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
@@ -204,6 +208,7 @@ wgcf4d(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
@@ -215,6 +220,7 @@ wgcf4d(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
@@ -235,6 +241,7 @@ wgcf64(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+    
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -244,6 +251,7 @@ wgcf64(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
@@ -264,6 +272,7 @@ wgcf66(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -273,6 +282,7 @@ wgcf66(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
@@ -292,6 +302,7 @@ wgcf6d(){
 
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
@@ -303,6 +314,7 @@ wgcf6d(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
@@ -324,6 +336,7 @@ wgcfd4(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -333,6 +346,7 @@ wgcfd4(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
@@ -352,6 +366,7 @@ wgcfd6(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -361,6 +376,7 @@ wgcfd6(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
@@ -381,6 +397,7 @@ wgcfd(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
@@ -392,6 +409,7 @@ wgcfd(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
@@ -564,7 +582,7 @@ install_wgcf(){
         if [[ $wgcfmode == 0 ]]; then
             wgcf64
         fi
-        
+
         if [[ $wgcfmode == 1 ]]; then
             wgcf66
         fi
@@ -663,6 +681,7 @@ install_warpcli(){
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
+
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
@@ -673,6 +692,7 @@ install_warpcli(){
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
+    
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release

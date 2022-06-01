@@ -7,15 +7,15 @@ PLAIN='\033[0m'
 
 red() {
     echo -e "\033[31m\033[01m$1\033[0m"
-} 
+}
 
 green() {
     echo -e "\033[32m\033[01m$1\033[0m"
-} 
+}
 
 yellow() {
     echo -e "\033[33m\033[01m$1\033[0m"
-} 
+}
 
 # 判断系统及定义系统安装依赖方式
 REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
@@ -149,6 +149,7 @@ wgcf44(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -158,6 +159,7 @@ wgcf44(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
@@ -176,6 +178,7 @@ wgcf46(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -185,6 +188,7 @@ wgcf46(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
@@ -204,6 +208,7 @@ wgcf4d(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
@@ -215,6 +220,7 @@ wgcf4d(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
@@ -235,6 +241,7 @@ wgcf64(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+    
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -244,6 +251,7 @@ wgcf64(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
@@ -264,6 +272,7 @@ wgcf66(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -273,6 +282,7 @@ wgcf66(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
@@ -292,6 +302,7 @@ wgcf6d(){
 
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
@@ -303,6 +314,7 @@ wgcf6d(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
@@ -324,6 +336,7 @@ wgcfd4(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -333,6 +346,7 @@ wgcfd4(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
@@ -352,6 +366,7 @@ wgcfd6(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
         red "无法启动Wgcf-WARP，正在尝试重启"
@@ -361,6 +376,7 @@ wgcfd6(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
@@ -381,6 +397,7 @@ wgcfd(){
     
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
+
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
@@ -392,6 +409,7 @@ wgcfd(){
         sleep 8
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
+
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
@@ -434,14 +452,22 @@ EOF
 }
 
 install_wgcf(){
+    if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
+        red "检测到地区为 Hong Kong 的VPS！"
+        yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
+        exit 1
+    fi
+
     vpsvirt=$(systemd-detect-virt)
     check_tun
+
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：Centos $vsid \n Wgcf-WARP模式仅支持Centos 7-8系统" && exit 1
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \n Wgcf-WARP模式仅支持Debian 10-11系统" && exit 1
     [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n Wgcf-WARP模式仅支持Ubuntu 18.04/20.04/22.04系统" && exit 1
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
+    
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables
@@ -453,6 +479,7 @@ install_wgcf(){
             fi
         fi
     fi
+
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release
@@ -466,6 +493,7 @@ install_wgcf(){
             fi
         fi
     fi
+
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
@@ -479,6 +507,7 @@ install_wgcf(){
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
+
     if [[ $vpsvirt == zvm ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go-s390x -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
@@ -553,6 +582,7 @@ install_wgcf(){
         if [[ $wgcfmode == 0 ]]; then
             wgcf64
         fi
+
         if [[ $wgcfmode == 1 ]]; then
             wgcf66
         fi
@@ -563,9 +593,11 @@ install_wgcf(){
         if [[ $wgcfmode == 0 ]]; then
             wgcf44
         fi
+
         if [[ $wgcfmode == 1 ]]; then
             wgcf46
         fi
+
         if [[ $wgcfmode == 2 ]]; then
             wgcf4d
         fi
@@ -573,9 +605,11 @@ install_wgcf(){
         if [[ $wgcfmode == 0 ]]; then
             wgcfd4
         fi
+
         if [[ $wgcfmode == 1 ]]; then
             wgcfd6
         fi
+
         if [[ $wgcfmode == 2 ]]; then
             wgcfd
         fi
@@ -647,6 +681,7 @@ install_warpcli(){
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
+
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
@@ -657,6 +692,7 @@ install_warpcli(){
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
+    
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
@@ -744,6 +780,12 @@ uninstall_warpcli(){
 }
 
 install_wireproxy(){
+    if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
+        red "检测到地区为 Hong Kong 的VPS！"
+        yellow "由于 CloudFlare s对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
+        exit 1
+    fi
+
     wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
     chmod +x /usr/local/bin/wireproxy
 
