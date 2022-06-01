@@ -436,7 +436,7 @@ EOF
 install_wgcf(){
     if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
-        yellow "由于 CloudFlare s对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
+        yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
         exit 1
     fi
 
