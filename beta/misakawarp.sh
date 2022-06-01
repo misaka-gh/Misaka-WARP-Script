@@ -461,6 +461,7 @@ install_wgcf(){
             fi
         fi
     fi
+
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release
@@ -474,6 +475,7 @@ install_wgcf(){
             fi
         fi
     fi
+
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
@@ -487,6 +489,7 @@ install_wgcf(){
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
+
     if [[ $vpsvirt == zvm ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go-s390x -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
@@ -561,6 +564,7 @@ install_wgcf(){
         if [[ $wgcfmode == 0 ]]; then
             wgcf64
         fi
+        
         if [[ $wgcfmode == 1 ]]; then
             wgcf66
         fi
@@ -571,9 +575,11 @@ install_wgcf(){
         if [[ $wgcfmode == 0 ]]; then
             wgcf44
         fi
+
         if [[ $wgcfmode == 1 ]]; then
             wgcf46
         fi
+
         if [[ $wgcfmode == 2 ]]; then
             wgcf4d
         fi
@@ -581,9 +587,11 @@ install_wgcf(){
         if [[ $wgcfmode == 0 ]]; then
             wgcfd4
         fi
+
         if [[ $wgcfmode == 1 ]]; then
             wgcfd6
         fi
+
         if [[ $wgcfmode == 2 ]]; then
             wgcfd
         fi
