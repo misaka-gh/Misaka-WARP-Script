@@ -134,6 +134,19 @@ check_tun(){
     fi
 }
 
+docker_warn(){
+    if [[ -n $(type -P docker) ]]; then
+        yellow "检测到Docker已安装，如继续安装Wgcf-WARP，则有可能会影响你的Docker容器"
+        read -rp "是否继续安装？[Y/N]" yesno
+        if [[ $yesno =~ "Y"|"y" ]]; then
+            green "继续安装Wgcf-WARP"
+        else
+            red "取消安装Wgcf-WARP"
+            exit 1
+        fi
+    fi
+}
+
 wgcf44(){
     sed -i '/\:\:\/0/d' wgcf-profile.conf
     sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
@@ -460,6 +473,7 @@ install_wgcf(){
 
     vpsvirt=$(systemd-detect-virt)
     check_tun
+    docker_warn
 
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：Centos $vsid \n Wgcf-WARP模式仅支持Centos 7-8系统" && exit 1
