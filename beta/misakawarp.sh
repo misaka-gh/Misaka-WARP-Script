@@ -484,7 +484,7 @@ install_wgcf(){
     
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then 
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
@@ -496,7 +496,7 @@ install_wgcf(){
 
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release
+        ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release inetutils-ping
         echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
@@ -510,7 +510,7 @@ install_wgcf(){
 
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release inetutils-ping
         if [[ $vsid =~ 16 ]]; then
             add-apt-repository ppa:wireguard/wireguard
         fi
@@ -691,14 +691,14 @@ install_warpcli(){
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools iputils
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
 
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release inetutils-ping
         [[ -z $(type -P gpg 2>/dev/null) ]] && ${PACKAGE_INSTALL[int]} gnupg
         [[ -z $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && ${PACKAGE_INSTALL[int]} apt-transport-https
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
@@ -709,7 +709,7 @@ install_warpcli(){
     
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release inetutils-ping
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
         echo "deb http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
         ${PACKAGE_UPDATE[int]}
@@ -798,6 +798,14 @@ install_wireproxy(){
         red "检测到地区为 Hong Kong 的VPS！"
         yellow "由于 CloudFlare s对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
         exit 1
+    fi
+
+    if [[ -z $(type -P ping) ]]; then
+        if [[ $SYSTEM == "CentOS" ]]; then
+            ${PACKAGE_INSTALL[int]} iputils
+        else
+            ${PACKAGE_INSTALL[int]} inetutils-ping
+        fi
     fi
 
     wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
