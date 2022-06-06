@@ -471,16 +471,16 @@ install_wgcf(){
         exit 1
     fi
 
-    vpsvirt=$(systemd-detect-virt)
     check_tun
     docker_warn
 
-    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：Centos $vsid \n Wgcf-WARP模式仅支持Centos 7-8系统" && exit 1
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \n Wgcf-WARP模式仅支持Debian 10-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n Wgcf-WARP模式仅支持Ubuntu 18.04/20.04/22.04系统" && exit 1
+    vpsvirt=$(systemd-detect-virt)
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
+    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：CentOS $vsid \nWgcf-WARP模式仅支持CentOS 7-8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
     
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
@@ -493,7 +493,6 @@ install_wgcf(){
             fi
         fi
     fi
-
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release inetutils-ping
@@ -507,7 +506,6 @@ install_wgcf(){
             fi
         fi
     fi
-
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release inetutils-ping
@@ -521,7 +519,6 @@ install_wgcf(){
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
-
     if [[ $vpsvirt == zvm ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go-s390x -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
@@ -542,12 +539,12 @@ install_wgcf(){
     done
     chmod +x wgcf-account.toml
 
-    if [[ ! wgcfFile == 1 ]]; then
+    if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-        read -p "按键许可证密钥(26个字符):" WPPlusKey
+        read -rp "按键许可证密钥(26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
-            read -p "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
+            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
             green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
@@ -600,6 +597,7 @@ install_wgcf(){
         if [[ $wgcfmode == 1 ]]; then
             wgcf66
         fi
+        
         if [[ $wgcfmode == 2 ]]; then
             wgcf6d
         fi
@@ -685,9 +683,9 @@ install_warpcli(){
     fi
 
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：Centos $vsid \n WARP-Cli代理模式仅支持Centos 8系统" && exit 1
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \n WARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \n WARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：CentOS $vsid \nWARP-Cli代理模式仅支持CentOS 8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
@@ -718,7 +716,7 @@ install_warpcli(){
 
     warp-cli --accept-tos register >/dev/null 2>&1
     yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-    read -p "按键许可证密钥(26个字符):" WPPlusKey
+    read -rp "按键许可证密钥(26个字符):" WPPlusKey
     if [[ -n $WPPlusKey ]]; then
         warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
         if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
@@ -729,7 +727,7 @@ install_warpcli(){
     fi
     warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
 
-    read -p "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+    read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
 
@@ -747,7 +745,7 @@ change_warpcli_port() {
     if [[ $(warp-cli --accept-tos status) =~ Connected ]]; then
         warp-cli --accept-tos disconnect >/dev/null 2>&1
     fi
-    read -p "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+    read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
     yellow "正在启动Warp-Cli代理模式"
@@ -796,7 +794,7 @@ uninstall_warpcli(){
 install_wireproxy(){
     if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
-        yellow "由于 CloudFlare s对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
+        yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 WireProxy-WARP 代理模式。请使用其他地区的VPS"
         exit 1
     fi
 
@@ -828,10 +826,10 @@ install_wireproxy(){
 
     if [[ ! wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-        read -p "按键许可证密钥(26个字符):" WPPlusKey
+        read -rp "按键许可证密钥(26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
-            read -p "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
+            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
             green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
@@ -914,7 +912,7 @@ install_wireproxy(){
     green "MTU 最佳值=$MTU 已设置完毕"
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
     
-    read -p "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
+    read -rp "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
@@ -967,7 +965,7 @@ TEXT
 
 change_wireproxy_port(){
     systemctl stop wireproxy-warp
-    read -p "请输入WARP Cli使用的代理端口（默认40000）：" WireProxyPort
+    read -rp "请输入WARP Cli使用的代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     CurrentPort=$(grep BindAddress /etc/wireguard/proxy.conf)
     sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
@@ -1015,7 +1013,7 @@ warpnf(){
     green "2. Wgcf-WARP IPv6模式"
     green "3. WARP-Cli 代理模式"
     green "4. WireProxy-WARP 代理模式"
-    read -p "请输入需要卸载的客户端 [1-4]：" uninstallClient
+    read -rp "请输入需要卸载的客户端 [1-4]：" uninstallClient
     case "$uninstallClient" in
         1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
         2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
@@ -1080,7 +1078,7 @@ menu0(){
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
-    read -p " 请输入选项 [0-14]:" menu0Input
+    read -rp " 请输入选项 [0-14]:" menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1144,7 +1142,7 @@ menu1(){
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
-    read -p " 请输入选项 [0-14]:" menu1Input
+    read -rp " 请输入选项 [0-14]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1209,7 +1207,7 @@ menu2(){
         echo -e "WireProxy IP: $w5i  地区: $w5c"
     fi
     echo -e ""
-    read -p " 请输入选项 [0-14]:" menu2Input
+    read -rp " 请输入选项 [0-14]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
