@@ -146,7 +146,7 @@ check_tun(){
         if [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
         else
-            red "检测到未开启TUN模块，请到VPS控制面板处开启" 
+            red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
             exit 1
         fi
     fi
