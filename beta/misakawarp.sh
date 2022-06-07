@@ -535,7 +535,6 @@ install_wgcf(){
     check_tun
     docker_warn
 
-    vpsvirt=$(systemd-detect-virt)
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
@@ -694,7 +693,6 @@ uninstall_wgcf(){
 }
 
 install_warpcli(){
-    vpsvirt=$(systemd-detect-virt)
     check_tun
     if [[ $(archAffix) != "amd64" ]]; then
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
