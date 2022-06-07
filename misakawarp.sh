@@ -141,6 +141,7 @@ check_status(){
 
 check_tun(){
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
+    vpsvirt=$(systemd-detect-virt)
     if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
         if [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
