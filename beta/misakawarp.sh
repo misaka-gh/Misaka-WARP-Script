@@ -138,6 +138,40 @@ check_tun(){
     fi
 }
 
+check_best_mtu(){
+    yellow "正在设置MTU最佳值，请稍等..."
+    v66=`curl -s6m8 https://ip.gs -k`
+    v44=`curl -s4m8 https://ip.gs -k`
+    MTUy=1500
+    MTUc=10
+    if [[ -n ${v66} && -z ${v44} ]]; then
+        ping='ping6'
+        IP1='2606:4700:4700::1001'
+        IP2='2001:4860:4860::8888'
+    else
+        ping='ping'
+        IP1='1.1.1.1'
+        IP2='8.8.8.8'
+    fi
+    while true; do
+        if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
+            MTUc=1
+            MTUy=$((${MTUy} + ${MTUc}))
+        else
+            MTUy=$((${MTUy} - ${MTUc}))
+            if [[ ${MTUc} = 1 ]]; then
+                break
+            fi
+        fi
+        if [[ ${MTUy} -le 1360 ]]; then
+            MTUy='1360'
+            break
+        fi
+    done
+    MTU=$((${MTUy} - 80))
+    green "MTU 最佳值=$MTU 已设置完毕"
+}
+
 docker_warn(){
     if [[ -n $(type -P docker) ]]; then
         yellow "检测到Docker已安装，如继续安装Wgcf-WARP，则有可能会影响你的Docker容器"
@@ -561,36 +595,7 @@ install_wgcf(){
     wgcf generate
     chmod +x wgcf-profile.conf
 
-    v66=`curl -s6m8 https://ip.gs -k`
-    v44=`curl -s4m8 https://ip.gs -k`
-    MTUy=1500
-    MTUc=10
-    if [[ -n ${v66} && -z ${v44} ]]; then
-        ping='ping6'
-        IP1='2606:4700:4700::1001'
-        IP2='2001:4860:4860::8888'
-    else
-        ping='ping'
-        IP1='1.1.1.1'
-        IP2='8.8.8.8'
-    fi
-    while true; do
-        if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-            MTUc=1
-            MTUy=$((${MTUy} + ${MTUc}))
-        else
-            MTUy=$((${MTUy} - ${MTUc}))
-            if [[ ${MTUc} = 1 ]]; then
-                break
-            fi
-        fi
-        if [[ ${MTUy} -le 1360 ]]; then
-            MTUy='1360'
-            break
-        fi
-    done
-    MTU=$((${MTUy} - 80))
-    green "MTU 最佳值=$MTU 已设置完毕"
+    check_best_mtu
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
 
     if [[ $VPSIP == 0 ]]; then
@@ -851,66 +856,10 @@ install_wireproxy(){
 
     if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
         wg-quick down wgcf >/dev/null 2>&1
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
-        MTUy=1500
-        MTUc=10
-        if [[ -n ${v66} && -z ${v44} ]]; then
-            ping='ping6'
-            IP1='2606:4700:4700::1001'
-            IP2='2001:4860:4860::8888'
-        else
-            ping='ping'
-            IP1='1.1.1.1'
-            IP2='8.8.8.8'
-        fi
-        while true; do
-            if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-                MTUc=1
-                MTUy=$((${MTUy} + ${MTUc}))
-            else
-                MTUy=$((${MTUy} - ${MTUc}))
-                if [[ ${MTUc} = 1 ]]; then
-                    break
-                fi
-            fi
-            if [[ ${MTUy} -le 1360 ]]; then
-                MTUy='1360'
-                break
-            fi
-        done
-        MTU=$((${MTUy} - 80))
+        check_best_mtu
         wg-quick up wgcf >/dev/null 2>&1
     else
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
-        MTUy=1500
-        MTUc=10
-        if [[ -n ${v66} && -z ${v44} ]]; then
-            ping='ping6'
-            IP1='2606:4700:4700::1001'
-            IP2='2001:4860:4860::8888'
-        else
-            ping='ping'
-            IP1='1.1.1.1'
-            IP2='8.8.8.8'
-        fi
-        while true; do
-            if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-                MTUc=1
-                MTUy=$((${MTUy} + ${MTUc}))
-            else
-                MTUy=$((${MTUy} - ${MTUc}))
-                if [[ ${MTUc} = 1 ]]; then
-                    break
-                fi
-            fi
-            if [[ ${MTUy} -le 1360 ]]; then
-                MTUy='1360'
-                break
-            fi
-        done
-        MTU=$((${MTUy} - 80))
+        check_best_mtu
     fi
 
     green "MTU 最佳值=$MTU 已设置完毕"
