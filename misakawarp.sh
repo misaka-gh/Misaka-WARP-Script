@@ -37,15 +37,13 @@ done
 
 [[ $EUID -ne 0 ]] && red "注意：请在root用户下运行脚本" && exit 1
 
-[[ -z $(type -P curl) ]] && ${PACKAGE_UPDATE[int]} && ${PACKAGE_INSTALL[int]} curl
-
 archAffix(){
     case "$(uname -m)" in
-        i686 | i386) echo '386' ;;
+        i686 | i386 ) echo '386' ;;
         x86_64 | amd64 ) echo 'amd64' ;;
-        armv5tel) echo 'armv5' ;;
-        armv6l) echo 'armv6' ;;
-        armv7 | armv7l) echo 'armv7' ;;
+        armv5tel ) echo 'armv5' ;;
+        armv6l ) echo 'armv6' ;;
+        armv7 | armv7l ) echo 'armv7' ;;
         armv8 | arm64 | aarch64 ) echo 'arm64' ;;
         s390x ) echo 's390x' ;;
         * ) red "不支持的CPU架构！" && exit 1 ;;
@@ -53,6 +51,15 @@ archAffix(){
 }
 
 check_status(){
+    yellow "正在检查VPS系统状态..."
+    if [[ -z $(type -P curl) ]]; then
+        yellow "检测curl未安装，正在安装中..."
+        if [[ ! $SYSTEM == "CentOS" ]]; then
+            ${PACKAGE_UPDATE[int]}
+        fi
+        ${PACKAGE_INSTALL[int]} curl
+    fi
+
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
 
@@ -112,6 +119,12 @@ check_status(){
         w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
     fi
 
+    if [[ -z $s5s ]] || [[ $s5s == "off" ]]; then
+        s5="${RED}未启动${PLAIN}"
+    fi
+    if [[ -z $w5s ]] || [[ $w5s == "off" ]]; then
+        w5="${RED}未启动${PLAIN}"
+    fi
     if [[ $s5s == "on" ]]; then
         s5="${YELLOW}WARP 免费账户${PLAIN}"
     fi
@@ -138,6 +151,40 @@ check_tun(){
     fi
 }
 
+check_best_mtu(){
+    yellow "正在设置MTU最佳值，请稍等..."
+    v66=`curl -s6m8 https://ip.gs -k`
+    v44=`curl -s4m8 https://ip.gs -k`
+    MTUy=1500
+    MTUc=10
+    if [[ -n ${v66} && -z ${v44} ]]; then
+        ping='ping6'
+        IP1='2606:4700:4700::1001'
+        IP2='2001:4860:4860::8888'
+    else
+        ping='ping'
+        IP1='1.1.1.1'
+        IP2='8.8.8.8'
+    fi
+    while true; do
+        if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
+            MTUc=1
+            MTUy=$((${MTUy} + ${MTUc}))
+        else
+            MTUy=$((${MTUy} - ${MTUc}))
+            if [[ ${MTUc} = 1 ]]; then
+                break
+            fi
+        fi
+        if [[ ${MTUy} -le 1360 ]]; then
+            MTUy='1360'
+            break
+        fi
+    done
+    MTU=$((${MTUy} - 80))
+    green "MTU 最佳值=$MTU 已设置完毕"
+}
+
 docker_warn(){
     if [[ -n $(type -P docker) ]]; then
         yellow "检测到Docker已安装，如继续安装Wgcf-WARP，则有可能会影响你的Docker容器"
@@ -160,6 +207,7 @@ wgcf44(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -189,6 +237,7 @@ wgcf46(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -219,6 +268,7 @@ wgcf4d(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -252,6 +302,7 @@ wgcf64(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -283,6 +334,7 @@ wgcf66(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -313,6 +365,7 @@ wgcf6d(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -347,6 +400,7 @@ wgcfd4(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -377,6 +431,7 @@ wgcfd6(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -408,6 +463,7 @@ wgcfd(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -561,36 +617,7 @@ install_wgcf(){
     wgcf generate
     chmod +x wgcf-profile.conf
 
-    v66=`curl -s6m8 https://ip.gs -k`
-    v44=`curl -s4m8 https://ip.gs -k`
-    MTUy=1500
-    MTUc=10
-    if [[ -n ${v66} && -z ${v44} ]]; then
-        ping='ping6'
-        IP1='2606:4700:4700::1001'
-        IP2='2001:4860:4860::8888'
-    else
-        ping='ping'
-        IP1='1.1.1.1'
-        IP2='8.8.8.8'
-    fi
-    while true; do
-        if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-            MTUc=1
-            MTUy=$((${MTUy} + ${MTUc}))
-        else
-            MTUy=$((${MTUy} - ${MTUc}))
-            if [[ ${MTUc} = 1 ]]; then
-                break
-            fi
-        fi
-        if [[ ${MTUy} -le 1360 ]]; then
-            MTUy='1360'
-            break
-        fi
-    done
-    MTU=$((${MTUy} - 80))
-    green "MTU 最佳值=$MTU 已设置完毕"
+    check_best_mtu
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
 
     if [[ $VPSIP == 0 ]]; then
@@ -851,69 +878,12 @@ install_wireproxy(){
 
     if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
         wg-quick down wgcf >/dev/null 2>&1
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
-        MTUy=1500
-        MTUc=10
-        if [[ -n ${v66} && -z ${v44} ]]; then
-            ping='ping6'
-            IP1='2606:4700:4700::1001'
-            IP2='2001:4860:4860::8888'
-        else
-            ping='ping'
-            IP1='1.1.1.1'
-            IP2='8.8.8.8'
-        fi
-        while true; do
-            if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-                MTUc=1
-                MTUy=$((${MTUy} + ${MTUc}))
-            else
-                MTUy=$((${MTUy} - ${MTUc}))
-                if [[ ${MTUc} = 1 ]]; then
-                    break
-                fi
-            fi
-            if [[ ${MTUy} -le 1360 ]]; then
-                MTUy='1360'
-                break
-            fi
-        done
-        MTU=$((${MTUy} - 80))
+        check_best_mtu
         wg-quick up wgcf >/dev/null 2>&1
     else
-        v66=`curl -s6m8 https://ip.gs -k`
-        v44=`curl -s4m8 https://ip.gs -k`
-        MTUy=1500
-        MTUc=10
-        if [[ -n ${v66} && -z ${v44} ]]; then
-            ping='ping6'
-            IP1='2606:4700:4700::1001'
-            IP2='2001:4860:4860::8888'
-        else
-            ping='ping'
-            IP1='1.1.1.1'
-            IP2='8.8.8.8'
-        fi
-        while true; do
-            if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-                MTUc=1
-                MTUy=$((${MTUy} + ${MTUc}))
-            else
-                MTUy=$((${MTUy} - ${MTUc}))
-                if [[ ${MTUc} = 1 ]]; then
-                    break
-                fi
-            fi
-            if [[ ${MTUy} -le 1360 ]]; then
-                MTUy='1360'
-                break
-            fi
-        done
-        MTU=$((${MTUy} - 80))
+        check_best_mtu
     fi
 
-    green "MTU 最佳值=$MTU 已设置完毕"
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
     
     read -rp "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
@@ -923,6 +893,7 @@ install_wireproxy(){
 
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
 
     if [[ $VPSIP == 0 ]]; then
@@ -1070,7 +1041,9 @@ menu0(){
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        echo -e "WireProxy IP: $w5i  地区: $w5c"
+        if [[ -n $w5i ]]; then
+            echo -e "WireProxy IP: $w5i  地区: $w5c"
+        fi
     fi
     echo -e ""
     read -rp " 请输入选项 [0-14]:" menu0Input
@@ -1126,11 +1099,15 @@ menu1(){
     fi
     if [[ -n $s5p ]]; then
         echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        if [[ -n $s5i ]]; then
+            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        fi
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        echo -e "WireProxy IP: $w5i  地区: $w5c"
+        if [[ -n $w5i ]]; then
+            echo -e "WireProxy IP: $w5i  地区: $w5c"
+        fi
     fi
     echo -e ""
     read -rp " 请输入选项 [0-14]:" menu1Input
@@ -1191,11 +1168,15 @@ menu2(){
     fi
     if [[ -n $s5p ]]; then
         echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        if [[ -n $s5i ]]; then
+            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        fi
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        echo -e "WireProxy IP: $w5i  地区: $w5c"
+        if [[ -n $w5i ]]; then
+            echo -e "WireProxy IP: $w5i  地区: $w5c"
+        fi
     fi
     echo -e ""
     read -rp " 请输入选项 [0-14]:" menu2Input

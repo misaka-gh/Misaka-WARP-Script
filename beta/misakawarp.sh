@@ -207,6 +207,7 @@ wgcf44(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -236,6 +237,7 @@ wgcf46(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -266,6 +268,7 @@ wgcf4d(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -299,6 +302,7 @@ wgcf64(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -330,6 +334,7 @@ wgcf66(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -360,6 +365,7 @@ wgcf6d(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -394,6 +400,7 @@ wgcfd4(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -424,6 +431,7 @@ wgcfd6(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -455,6 +463,7 @@ wgcfd(){
     
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
@@ -884,6 +893,7 @@ install_wireproxy(){
 
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
     fi
 
     if [[ $VPSIP == 0 ]]; then
