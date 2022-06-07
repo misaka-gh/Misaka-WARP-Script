@@ -1013,8 +1013,8 @@ warpnf(){
     green "2. Wgcf-WARP IPv6模式"
     green "3. WARP-Cli 代理模式"
     green "4. WireProxy-WARP 代理模式"
-    read -rp "请输入需要卸载的客户端 [1-4]：" uninstallClient
-    case "$uninstallClient" in
+    read -rp "请选择客户端 [1-4]：" client
+    case "$client" in
         1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
         2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
         3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
@@ -1049,17 +1049,12 @@ menu0(){
     echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
     echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
-    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
-    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}10.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
@@ -1068,10 +1063,6 @@ menu0(){
     fi
     if [[ -n $v6 ]]; then
         echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
@@ -1085,15 +1076,11 @@ menu0(){
         3 ) wgcfmode=2 && install_wgcf ;;
         4 ) wgcf_switch ;;
         5 ) uninstall_wgcf ;;
-        6 ) install_warpcli ;;
-        7 ) change_warpcli_port ;;
-        8 ) warpcli_switch ;;
-        9 ) uninstall_warpcli ;;
-        10 ) install_wireproxy ;;
-        11 ) change_wireproxy_port ;;
-        12 ) wireproxy_switch ;;
-        13 ) uninstall_wireproxy ;;
-        14 ) warpnf ;;
+        6 ) install_wireproxy ;;
+        7 ) change_wireproxy_port ;;
+        8 ) wireproxy_switch ;;
+        9 ) uninstall_wireproxy ;;
+        10 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1113,7 +1100,7 @@ menu1(){
     echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
     echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
     echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
     echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
@@ -1178,7 +1165,7 @@ menu2(){
     echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
     echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
     echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
     echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
