@@ -37,15 +37,13 @@ done
 
 [[ $EUID -ne 0 ]] && red "注意：请在root用户下运行脚本" && exit 1
 
-[[ -z $(type -P curl) ]] && ${PACKAGE_UPDATE[int]} && ${PACKAGE_INSTALL[int]} curl
-
 archAffix(){
     case "$(uname -m)" in
-        i686 | i386) echo '386' ;;
+        i686 | i386 ) echo '386' ;;
         x86_64 | amd64 ) echo 'amd64' ;;
-        armv5tel) echo 'armv5' ;;
-        armv6l) echo 'armv6' ;;
-        armv7 | armv7l) echo 'armv7' ;;
+        armv5tel ) echo 'armv5' ;;
+        armv6l ) echo 'armv6' ;;
+        armv7 | armv7l ) echo 'armv7' ;;
         armv8 | arm64 | aarch64 ) echo 'arm64' ;;
         s390x ) echo 's390x' ;;
         * ) red "不支持的CPU架构！" && exit 1 ;;
@@ -53,6 +51,15 @@ archAffix(){
 }
 
 check_status(){
+    yellow "正在检查VPS系统状态..."
+    if [[ -z $(type -P curl) ]]; then
+        yellow "检测curl未安装，正在安装中..."
+        if [[ ! $SYSTEM == "CentOS" ]]; then
+            ${PACKAGE_UPDATE[int]}
+        fi
+        ${PACKAGE_INSTALL[int]} curl
+    fi
+
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
 
@@ -112,6 +119,12 @@ check_status(){
         w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
     fi
 
+    if [[ -z $s5s ]] || [[ $s5s == "off" ]]; then
+        s5="${RED}未启动${PLAIN}"
+    fi
+    if [[ -z $w5s ]] || [[ $w5s == "off" ]]; then
+        w5="${RED}未启动${PLAIN}"
+    fi
     if [[ $s5s == "on" ]]; then
         s5="${YELLOW}WARP 免费账户${PLAIN}"
     fi
@@ -1018,7 +1031,9 @@ menu0(){
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        echo -e "WireProxy IP: $w5i  地区: $w5c"
+        if [[ -n $w5i ]]; then
+            echo -e "WireProxy IP: $w5i  地区: $w5c"
+        fi
     fi
     echo -e ""
     read -rp " 请输入选项 [0-14]:" menu0Input
@@ -1074,11 +1089,15 @@ menu1(){
     fi
     if [[ -n $s5p ]]; then
         echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        if [[ -n $s5i ]]; then
+            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        fi
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        echo -e "WireProxy IP: $w5i  地区: $w5c"
+        if [[ -n $w5i ]]; then
+            echo -e "WireProxy IP: $w5i  地区: $w5c"
+        fi
     fi
     echo -e ""
     read -rp " 请输入选项 [0-14]:" menu1Input
@@ -1139,11 +1158,15 @@ menu2(){
     fi
     if [[ -n $s5p ]]; then
         echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        if [[ -n $s5i ]]; then
+            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
+        fi
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        echo -e "WireProxy IP: $w5i  地区: $w5c"
+        if [[ -n $w5i ]]; then
+            echo -e "WireProxy IP: $w5i  地区: $w5c"
+        fi
     fi
     echo -e ""
     read -rp " 请输入选项 [0-14]:" menu2Input
