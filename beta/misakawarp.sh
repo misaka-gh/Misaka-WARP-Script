@@ -862,7 +862,6 @@ install_wireproxy(){
         check_best_mtu
     fi
 
-    green "MTU 最佳值=$MTU 已设置完毕"
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
     
     read -rp "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
