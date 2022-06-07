@@ -28,11 +28,19 @@ PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "
 CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')") 
 
 for i in "${CMD[@]}"; do
-    SYS="$i" && [[ -n $SYS ]] && break
+    SYS="$i" 
+    if [[ -n $SYS ]]; then
+        break
+    fi
 done
 
 for ((int = 0; int < ${#REGEX[@]}; int++)); do
-    [[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]] && SYSTEM="${RELEASE[int]}" && [[ -n $SYSTEM ]] && break
+    if [[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]]; then
+        SYSTEM="${RELEASE[int]}"
+        if [[ -n $SYSTEM ]]; then
+            break
+        fi
+    fi
 done
 
 [[ $EUID -ne 0 ]] && red "注意：请在root用户下运行脚本" && exit 1
