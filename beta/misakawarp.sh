@@ -5,15 +5,15 @@ GREEN="\033[32m"
 YELLOW="\033[33m"
 PLAIN='\033[0m'
 
-red() {
+red(){
     echo -e "\033[31m\033[01m$1\033[0m"
 }
 
-green() {
+green(){
     echo -e "\033[32m\033[01m$1\033[0m"
 }
 
-yellow() {
+yellow(){
     echo -e "\033[33m\033[01m$1\033[0m"
 }
 
