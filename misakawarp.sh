@@ -5,15 +5,15 @@ GREEN="\033[32m"
 YELLOW="\033[33m"
 PLAIN='\033[0m'
 
-red() {
+red(){
     echo -e "\033[31m\033[01m$1\033[0m"
 }
 
-green() {
+green(){
     echo -e "\033[32m\033[01m$1\033[0m"
 }
 
-yellow() {
+yellow(){
     echo -e "\033[33m\033[01m$1\033[0m"
 }
 
@@ -100,13 +100,17 @@ check_status(){
     c4=$(curl -s4m8 https://ip.gs/country -k)
     c6=$(curl -s6m8 https://ip.gs/country -k)
     s5p=$(warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}')
-    s5s=$(curl -sx socks5h://localhost:$s5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-    s5i=$(curl -sx socks5h://localhost:$s5p https://ip.gs -k --connect-timeout 8)
-    s5c=$(curl -sx socks5h://localhost:$s5p https://ip.gs/country -k --connect-timeout 8)
     w5p=$(grep BindAddress /etc/wireguard/proxy.conf 2>/dev/null | sed "s/BindAddress = 127.0.0.1://g")
-    w5s=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-    w5i=$(curl -sx socks5h://localhost:$w5p https://ip.gs -k --connect-timeout 8)
-    w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
+    if [[ -n $s5p ]]; then
+        s5s=$(curl -sx socks5h://localhost:$s5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+        s5i=$(curl -sx socks5h://localhost:$s5p https://ip.gs -k --connect-timeout 8)
+        s5c=$(curl -sx socks5h://localhost:$s5p https://ip.gs/country -k --connect-timeout 8)
+    fi
+    if [[ -n $w5p ]]; then
+        w5s=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+        w5i=$(curl -sx socks5h://localhost:$w5p https://ip.gs -k --connect-timeout 8)
+        w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
+    fi
 
     if [[ $s5s == "on" ]]; then
         s5="${YELLOW}WARP 免费账户${PLAIN}"
@@ -1049,17 +1053,12 @@ menu0(){
     echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
     echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
-    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
-    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}10.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
@@ -1068,10 +1067,6 @@ menu0(){
     fi
     if [[ -n $v6 ]]; then
         echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        echo -e "WARP-Cli IP: $s5i  地区: $s5c"
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
@@ -1085,15 +1080,11 @@ menu0(){
         3 ) wgcfmode=2 && install_wgcf ;;
         4 ) wgcf_switch ;;
         5 ) uninstall_wgcf ;;
-        6 ) install_warpcli ;;
-        7 ) change_warpcli_port ;;
-        8 ) warpcli_switch ;;
-        9 ) uninstall_warpcli ;;
-        10 ) install_wireproxy ;;
-        11 ) change_wireproxy_port ;;
-        12 ) wireproxy_switch ;;
-        13 ) uninstall_wireproxy ;;
-        14 ) warpnf ;;
+        6 ) install_wireproxy ;;
+        7 ) change_wireproxy_port ;;
+        8 ) wireproxy_switch ;;
+        9 ) uninstall_wireproxy ;;
+        10 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1113,7 +1104,7 @@ menu1(){
     echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
     echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
     echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
     echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
@@ -1178,7 +1169,7 @@ menu2(){
     echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
     echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持纯IPv4或原生双栈、CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
     echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
     echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
