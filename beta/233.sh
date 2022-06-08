@@ -499,40 +499,6 @@ wgcfd(){
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
 }
 
-wireproxy4(){
-    cat <<EOF > /etc/wireguard/proxy.conf
-[Interface]
-Address = 172.16.0.2/32
-MTU = $MTU
-PrivateKey = $WgcfPrivateKey
-DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
-
-[Peer]
-PublicKey = $WgcfPublicKey
-Endpoint = 162.159.193.10:2408
-
-[Socks5]
-BindAddress = 127.0.0.1:$WireProxyPort
-EOF
-}
-
-wireproxy6(){
-    cat <<EOF > /etc/wireguard/proxy.conf
-[Interface]
-Address = 172.16.0.2/32
-MTU = $MTU
-PrivateKey = $WgcfPrivateKey
-DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
-
-[Peer]
-PublicKey = $WgcfPublicKey
-Endpoint = [2606:4700:d0::a29f:c001]:2408
-
-[Socks5]
-BindAddress = 127.0.0.1:$WireProxyPort
-EOF
-}
-
 install_wgcf(){
     if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
@@ -897,8 +863,8 @@ install_wireproxy(){
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
-    WgcfV4EndPoint="162.159.193.10:2408"
-    WgcfV6EndPoint="[2606:4700:d0::a29f:c001]:2408"
+    WgcfV4Endpoint="162.159.193.10:2408"
+    WgcfV6Endpoint="[2606:4700:d0::a29f:c001]:2408"
 
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
@@ -906,12 +872,27 @@ install_wireproxy(){
     fi
 
     if [[ $VPSIP == 0 ]]; then
-        wireproxy6
+        WireproxyEndpoint=$WgcfV6Endpoint
     elif [[ $VPSIP == 1 ]]; then
-        wireproxy4
+        WireproxyEndpoint=$WgcfV4Endpoint
     elif [[ $VPSIP == 2 ]]; then
-        wireproxy4
+        WireproxyEndpoint=$WgcfV4Endpoint
     fi
+    
+    cat <<EOF > /etc/wireguard/proxy.conf
+[Interface]
+Address = 172.16.0.2/32
+MTU = $MTU
+PrivateKey = $WgcfPrivateKey
+DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
+
+[Peer]
+PublicKey = $WgcfPublicKey
+Endpoint = $WireproxyEndpoint
+
+[Socks5]
+BindAddress = 127.0.0.1:$WireProxyPort
+EOF
 
     cat <<'TEXT' > /etc/systemd/system/wireproxy-warp.service
 [Unit]
