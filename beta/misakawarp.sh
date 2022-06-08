@@ -980,8 +980,8 @@ warpnf(){
     green "2. Wgcf-WARP IPv6模式"
     green "3. WARP-Cli 代理模式"
     green "4. WireProxy-WARP 代理模式"
-    read -rp "请选择客户端 [1-4]：" client
-    case "$client" in
+    read -rp "请选择客户端 [1-4]：" clientInput
+    case "$clientInput" in
         1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
         2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
         3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;

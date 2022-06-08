@@ -28,11 +28,19 @@ PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "
 CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')") 
 
 for i in "${CMD[@]}"; do
-    SYS="$i" && [[ -n $SYS ]] && break
+    SYS="$i" 
+    if [[ -n $SYS ]]; then
+        break
+    fi
 done
 
 for ((int = 0; int < ${#REGEX[@]}; int++)); do
-    [[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]] && SYSTEM="${RELEASE[int]}" && [[ -n $SYSTEM ]] && break
+    if [[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]]; then
+        SYSTEM="${RELEASE[int]}"
+        if [[ -n $SYSTEM ]]; then
+            break
+        fi
+    fi
 done
 
 [[ $EUID -ne 0 ]] && red "注意：请在root用户下运行脚本" && exit 1
@@ -146,7 +154,7 @@ check_tun(){
         if [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
         else
-            red "检测到未开启TUN模块，请到VPS控制面板处开启" 
+            red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
             exit 1
         fi
     fi
@@ -189,7 +197,7 @@ check_best_mtu(){
 docker_warn(){
     if [[ -n $(type -P docker) ]]; then
         yellow "检测到Docker已安装，如继续安装Wgcf-WARP，则有可能会影响你的Docker容器"
-        read -rp "是否继续安装？[Y/N]" yesno
+        read -rp "是否继续安装？[Y/N]：" yesno
         if [[ $yesno =~ "Y"|"y" ]]; then
             green "继续安装Wgcf-WARP"
         else
@@ -491,40 +499,6 @@ wgcfd(){
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
 }
 
-wireproxy4(){
-    cat <<EOF > /etc/wireguard/proxy.conf
-[Interface]
-Address = 172.16.0.2/32
-MTU = $MTU
-PrivateKey = $WgcfPrivateKey
-DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
-
-[Peer]
-PublicKey = $WgcfPublicKey
-Endpoint = 162.159.193.10:2408
-
-[Socks5]
-BindAddress = 127.0.0.1:$WireProxyPort
-EOF
-}
-
-wireproxy6(){
-    cat <<EOF > /etc/wireguard/proxy.conf
-[Interface]
-Address = 172.16.0.2/32
-MTU = $MTU
-PrivateKey = $WgcfPrivateKey
-DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
-
-[Peer]
-PublicKey = $WgcfPublicKey
-Endpoint = [2606:4700:d0::a29f:c001]:2408
-
-[Socks5]
-BindAddress = 127.0.0.1:$WireProxyPort
-EOF
-}
-
 install_wgcf(){
     if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
@@ -535,7 +509,6 @@ install_wgcf(){
     check_tun
     docker_warn
 
-    vpsvirt=$(systemd-detect-virt)
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
@@ -545,7 +518,7 @@ install_wgcf(){
     
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables iputils
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then 
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
@@ -556,7 +529,7 @@ install_wgcf(){
     fi
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release htop inetutils-ping
         echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
@@ -569,7 +542,7 @@ install_wgcf(){
     fi
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
         if [[ $vsid =~ 16 ]]; then
             add-apt-repository ppa:wireguard/wireguard
         fi
@@ -683,9 +656,11 @@ uninstall_wgcf(){
     wg-quick down wgcf 2>/dev/null
     systemctl disable wg-quick@wgcf 2>/dev/null
     ${PACKAGE_UNINSTALL[int]} wireguard-tools wireguard-dkms
-    [[ -z $(type -P wireproxy) ]] && rm -f /usr/local/bin/wgcf 
+    if [[ -z $(type -P wireproxy) ]]; then
+        rm -f /usr/local/bin/wgcf
+        rm -f /etc/wireguard/wgcf-account.toml
+    fi
     rm -f /etc/wireguard/wgcf.conf
-    rm -f /etc/wireguard/wgcf-account.toml
     rm -f /usr/bin/wireguard-go
     if [[ -e /etc/gai.conf ]]; then
         sed -i '/^precedence[ ]*::ffff:0:0\/96[ ]*100/d' /etc/gai.conf
@@ -694,7 +669,6 @@ uninstall_wgcf(){
 }
 
 install_warpcli(){
-    vpsvirt=$(systemd-detect-virt)
     check_tun
     if [[ $(archAffix) != "amd64" ]]; then
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
@@ -721,14 +695,14 @@ install_warpcli(){
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools iputils
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools htop iputils
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
 
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
         [[ -z $(type -P gpg 2>/dev/null) ]] && ${PACKAGE_INSTALL[int]} gnupg
         [[ -z $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && ${PACKAGE_INSTALL[int]} apt-transport-https
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
@@ -739,7 +713,7 @@ install_warpcli(){
     
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
         echo "deb http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
         ${PACKAGE_UPDATE[int]}
@@ -832,9 +806,9 @@ install_wireproxy(){
 
     if [[ -z $(type -P ping) ]]; then
         if [[ $SYSTEM == "CentOS" ]]; then
-            ${PACKAGE_INSTALL[int]} iputils
+            ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils
         else
-            ${PACKAGE_INSTALL[int]} inetutils-ping
+            ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping
         fi
     fi
 
@@ -891,6 +865,8 @@ install_wireproxy(){
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+    WgcfV4Endpoint="162.159.193.10:2408"
+    WgcfV6Endpoint="[2606:4700:d0::a29f:c001]:2408"
 
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
@@ -898,12 +874,27 @@ install_wireproxy(){
     fi
 
     if [[ $VPSIP == 0 ]]; then
-        wireproxy6
+        WireproxyEndpoint=$WgcfV6Endpoint
     elif [[ $VPSIP == 1 ]]; then
-        wireproxy4
+        WireproxyEndpoint=$WgcfV4Endpoint
     elif [[ $VPSIP == 2 ]]; then
-        wireproxy4
+        WireproxyEndpoint=$WgcfV4Endpoint
     fi
+    
+    cat <<EOF > /etc/wireguard/proxy.conf
+[Interface]
+Address = 172.16.0.2/32
+MTU = $MTU
+PrivateKey = $WgcfPrivateKey
+DNS = 1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844
+
+[Peer]
+PublicKey = $WgcfPublicKey
+Endpoint = $WireproxyEndpoint
+
+[Socks5]
+BindAddress = 127.0.0.1:$WireProxyPort
+EOF
 
     cat <<'TEXT' > /etc/systemd/system/wireproxy-warp.service
 [Unit]
@@ -989,8 +980,8 @@ warpnf(){
     green "2. Wgcf-WARP IPv6模式"
     green "3. WARP-Cli 代理模式"
     green "4. WireProxy-WARP 代理模式"
-    read -rp "请选择客户端 [1-4]：" client
-    case "$client" in
+    read -rp "请选择客户端 [1-4]：" clientInput
+    case "$clientInput" in
         1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
         2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
         3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
