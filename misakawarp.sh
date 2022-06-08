@@ -830,7 +830,7 @@ install_wireproxy(){
     done
     chmod +x wgcf-account.toml
 
-    if [[ ! wgcfFile == 1 ]]; then
+    if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
         read -rp "按键许可证密钥(26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
