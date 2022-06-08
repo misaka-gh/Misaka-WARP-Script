@@ -821,6 +821,8 @@ install_wireproxy(){
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
         cp -f /etc/wireguard/wgcf-account.toml /root/wgcf-account.toml
         wgcfFile=1
+    elif [[ -f /root/wgcf-account.toml ]]; then
+        wgcfFile=1
     fi
 
     until [[ -a wgcf-account.toml ]]; do
