@@ -897,6 +897,8 @@ install_wireproxy(){
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+    WgcfV4EndPoint="162.159.193.10:2408"
+    WgcfV6EndPoint="[2606:4700:d0::a29f:c001]:2408"
 
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
