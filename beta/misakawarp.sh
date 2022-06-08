@@ -197,7 +197,7 @@ check_best_mtu(){
 docker_warn(){
     if [[ -n $(type -P docker) ]]; then
         yellow "检测到Docker已安装，如继续安装Wgcf-WARP，则有可能会影响你的Docker容器"
-        read -rp "是否继续安装？[Y/N]" yesno
+        read -rp "是否继续安装？[Y/N]：" yesno
         if [[ $yesno =~ "Y"|"y" ]]; then
             green "继续安装Wgcf-WARP"
         else
