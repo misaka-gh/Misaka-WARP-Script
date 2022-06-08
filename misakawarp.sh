@@ -1038,7 +1038,7 @@ menu0(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-14]:" menu0Input
+    read -rp " 请输入选项 [0-10]:" menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
