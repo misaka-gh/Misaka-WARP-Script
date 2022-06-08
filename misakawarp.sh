@@ -565,6 +565,9 @@ install_wgcf(){
         cp -f /etc/wireguard/wgcf-account.toml /root/wgcf-account.toml
         wgcfFile=1
     fi
+    if [[ -f /root/wgcf-account.toml ]]; then
+        wgcfFile=1
+    fi
 
     until [[ -a wgcf-account.toml ]]; do
         yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
@@ -822,6 +825,9 @@ install_wireproxy(){
         cp -f /etc/wireguard/wgcf-account.toml /root/wgcf-account.toml
         wgcfFile=1
     fi
+    if [[ -f /root/wgcf-account.toml ]]; then
+        wgcfFile=1
+    fi
 
     until [[ -a wgcf-account.toml ]]; do
         yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
@@ -1038,7 +1044,7 @@ menu0(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-10]:" menu0Input
+    read -rp " 请输入选项 [0-14]:" menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
