@@ -1,6 +1,9 @@
 name: Sync to Bitbucket and Gitlab
 
-on: [push, delete]
+on: 
+  push:
+  delete:
+  workflow_dispatch:
 
 jobs:
   to_bitbucket:
