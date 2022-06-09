@@ -49,13 +49,15 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 ![image](https://user-images.githubusercontent.com/96560028/163660825-bb989575-f165-4bd3-aa59-a8f747c4589e.png)
 
-由于这个时间段WARP的服务繁忙，可能会拒绝访问。因此脚本自带重试申请账号功能，直到申请到账号才过下一步的安装启动WARP工作
+由于部分时间段WARP的服务繁忙，可能会出现此问题。因此脚本自带自动重试申请WARP账号功能，直到申请到账号才过下一步的安装启动WARP工作
 
 建议安装好WARP后备份 `/etc/wireguard/wgcf-account.toml`账号配置文件，以防部分情况下服务繁忙无法申请账号造成无法安装Wgcf-WARP或WireProxy-WARP代理模式
 
 ### 3. 如何使用已备份的wgcf-account.toml账号文件
 
 只需要把文件放到`/root`文件夹，然后等待脚本自动识别即可
+
+如使用本脚本安装wgcf-warp时，安装wireproxy-warp会自动使用wgcf-warp的账号配置文件，反之同理
 
 ## 赞助我们
 
