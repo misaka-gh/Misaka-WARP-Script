@@ -1009,10 +1009,13 @@ menu(){
 menu0(){
     clear
     echo "#############################################################"
-    echo -e "#                  ${RED} WARP  一键安装脚本${PLAIN}                      #"
+    echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
     echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-    echo -e "# ${GREEN}网址${PLAIN}: https://owo.misaka.rest                             #"
+    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
+    echo -e "# ${GREEN}GitHub${PLAIN}: https://github.com/Misaka-blog                    #"
+    echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
+    echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
     echo -e ""
@@ -1063,10 +1066,13 @@ menu0(){
 menu1(){
     clear
     echo "#############################################################"
-    echo -e "#                  ${RED} WARP  一键安装脚本${PLAIN}                      #"
+    echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
     echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-    echo -e "# ${GREEN}网址${PLAIN}: https://owo.misaka.rest                             #"
+    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
+    echo -e "# ${GREEN}GitHub${PLAIN}: https://github.com/Misaka-blog                    #"
+    echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
+    echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
@@ -1131,10 +1137,13 @@ menu1(){
 menu2(){
     clear
     echo "#############################################################"
-    echo -e "#                  ${RED} WARP  一键安装脚本${PLAIN}                      #"
+    echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
     echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-    echo -e "# ${GREEN}网址${PLAIN}: https://owo.misaka.rest                             #"
+    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
     echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
+    echo -e "# ${GREEN}GitHub${PLAIN}: https://github.com/Misaka-blog                    #"
+    echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
+    echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
     echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
     echo "#############################################################"
     echo -e ""
