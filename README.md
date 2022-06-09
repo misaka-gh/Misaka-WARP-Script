@@ -51,7 +51,7 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 由于这个时间段WARP的服务繁忙，可能会拒绝访问。因此脚本自带重试申请账号功能，直到申请到账号才过下一步的安装启动WARP工作
 
-建议安装好WARP后备份 `/etc/wireguard/wgcf-account.toml`文件，以防服务繁忙无法申请账号造成无法安装Wgcf-WARP或WireProxy-WARP代理模式
+建议安装好WARP后备份 `/etc/wireguard/wgcf-account.toml`账号配置文件，以防部分情况下服务繁忙无法申请账号造成无法安装Wgcf-WARP或WireProxy-WARP代理模式
 
 ### 3. 如何使用已备份的wgcf-account.toml账号文件
 
