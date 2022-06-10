@@ -225,12 +225,14 @@ wgcf44(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -255,12 +257,14 @@ wgcf46(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -287,13 +291,15 @@ wgcf4d(){
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -320,12 +326,14 @@ wgcf64(){
     wg-quick up wgcf >/dev/null 2>&1
     
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -352,12 +360,14 @@ wgcf66(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -384,13 +394,15 @@ wgcf6d(){
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -418,12 +430,14 @@ wgcfd4(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -449,12 +463,14 @@ wgcfd6(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -482,13 +498,15 @@ wgcfd(){
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
