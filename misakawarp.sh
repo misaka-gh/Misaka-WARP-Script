@@ -225,12 +225,25 @@ wgcf44(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -255,12 +268,25 @@ wgcf46(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -287,13 +313,26 @@ wgcf4d(){
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -320,12 +359,25 @@ wgcf64(){
     wg-quick up wgcf >/dev/null 2>&1
     
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -352,12 +404,25 @@ wgcf66(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -384,13 +449,26 @@ wgcf6d(){
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -418,12 +496,25 @@ wgcfd4(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -449,12 +540,25 @@ wgcfd6(){
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -482,13 +586,26 @@ wgcfd(){
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启"
+        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
         wg-quick down wgcf >/dev/null 2>&1
         wg-quick up wgcf >/dev/null 2>&1
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         sleep 8
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wgcf
+            echo ""
+            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+            green "建议如下："
+            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
+        fi
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -520,7 +637,7 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then 
-            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware" ]]; then
+            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
                 curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-$vsid/jdoss-wireguard-epel-$vsid.repo
                 ${PACKAGE_INSTALL[int]} wireguard-dkms
@@ -534,7 +651,7 @@ install_wgcf(){
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware" ]]; then
+            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends linux-headers-$(uname -r)
                 ${PACKAGE_INSTALL[int]} --no-install-recommends wireguard-dkms
             fi
@@ -545,8 +662,14 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
         if [[ $vsid =~ 16 ]]; then
             add-apt-repository ppa:wireguard/wireguard
+            ${PACKAGE_UPDATE[int]}
         fi
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
+        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
+                ${PACKAGE_INSTALL[int]} --no-install-recommends wireguard-dkms
+            fi
+        fi
     fi
 
     if [[ $vpsvirt =~ lxc|openvz ]]; then
