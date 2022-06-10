@@ -563,6 +563,7 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
         if [[ $vsid =~ 16 ]]; then
             add-apt-repository ppa:wireguard/wireguard
+            ${PACKAGE_UPDATE[int]}
         fi
         ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
     fi
