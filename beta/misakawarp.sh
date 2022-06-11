@@ -1205,7 +1205,9 @@ menu0(){
     echo -e " ${GREEN}8.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}10.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}11.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
@@ -1233,7 +1235,8 @@ menu0(){
         7 ) change_wireproxy_port ;;
         8 ) wireproxy_switch ;;
         9 ) uninstall_wireproxy ;;
-        10 ) warpnf ;;
+        10 ) warpup ;;
+        11 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1266,7 +1269,9 @@ menu1(){
     echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
@@ -1304,7 +1309,8 @@ menu1(){
         11 ) change_wireproxy_port ;;
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
-        14 ) warpnf ;;
+        14 ) warpup ;;
+        15 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1338,7 +1344,9 @@ menu2(){
     echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
@@ -1376,7 +1384,8 @@ menu2(){
         11 ) change_wireproxy_port ;;
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
-        14 ) warpnf ;;
+        14 ) warpup ;;
+        15 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
