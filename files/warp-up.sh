@@ -15,8 +15,10 @@ for ((i = 0; i < ${flowdata}; i++)); do
         sleep_max=600
         echo $(date) Mission $flowdata GB
     fi
+
     install_id=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 22)
     curl -X POST -m 10 -sA "okhttp/3.12.1" -H 'content-type: application/json' -H 'Host: api.cloudflareclient.com' --data "{\"key\": \"$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 43)=\",\"install_id\": \"$install_id\",\"fcm_token\": \"APA91b$install_id$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 134)\",\"referrer\": \"$license\",\"warp_enabled\": false,\"tos\": \"$(date -u +%FT%T.$(tr -dc '0-9' </dev/urandom | head -c 3)Z)\",\"type\": \"Android\",\"locale\": \"en_US\"}"  --url "https://api.cloudflareclient.com/v0a$(shuf -i 100-999 -n 1)/reg" | grep -qE "referral_count\":1" && status=0 || status=1
+    
     # cloudflare限制了请求频率,目前测试大概在20秒,失败时因延长sleep时间
     [[ $sleep_try > $sleep_max ]] && sleep_try=300
     [[ $sleep_try == $sleep_min ]] && sleep_try=$((sleep_try+1))
