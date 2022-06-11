@@ -153,6 +153,12 @@ check_tun(){
     if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
         if [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
+        elif [[ $vpsvirt == "lxc" ]]; then
+            if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+                yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
+            else
+                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
+            fi
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
             exit 1
@@ -630,10 +636,7 @@ install_wgcf(){
         exit 1
     fi
 
-    if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-        check_tun
-    fi
-
+    check_tun
     docker_warn
     
     if [[ $SYSTEM == "CentOS" ]]; then        
@@ -807,9 +810,7 @@ install_warpcli(){
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
     [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
 
-    if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-        check_tun
-    fi
+    check_tun
 
     if [[ $(archAffix) != "amd64" ]]; then
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
