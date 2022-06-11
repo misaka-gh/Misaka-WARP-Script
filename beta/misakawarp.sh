@@ -157,7 +157,8 @@ check_tun(){
             if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
                 yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
             else
-                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
+                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
+                exit 1
             fi
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
