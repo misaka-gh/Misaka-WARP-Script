@@ -623,7 +623,10 @@ install_wgcf(){
         exit 1
     fi
 
-    check_tun
+    if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+        check_tun
+    fi
+
     docker_warn
 
     main=`uname  -r | awk -F . '{print $1}'`
@@ -673,8 +676,10 @@ install_wgcf(){
     fi
 
     if [[ $vpsvirt =~ lxc|openvz ]]; then
-        wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
-        chmod +x /usr/bin/wireguard-go
+        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+            wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
+            chmod +x /usr/bin/wireguard-go
+        fi
     fi
     if [[ $vpsvirt == zvm ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go-s390x -O /usr/bin/wireguard-go
@@ -795,7 +800,10 @@ uninstall_wgcf(){
 }
 
 install_warpcli(){
-    check_tun
+    if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+        check_tun
+    fi
+    
     if [[ $(archAffix) != "amd64" ]]; then
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
         exit 1
