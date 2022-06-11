@@ -148,10 +148,19 @@ check_status(){
 }
 
 check_tun(){
-    TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
     vpsvirt=$(systemd-detect-virt)
+    main=`uname  -r | awk -F . '{print $1}'`
+    minor=`uname -r | awk -F . '{print $2}'`
+    TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
     if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
-        if [[ $vpsvirt == "openvz" ]]; then
+        if [[ $vpsvirt == lxc ]]; then
+            if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
+                exit 1
+            else
+                yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
+            fi
+        elif [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
@@ -617,6 +626,13 @@ wgcfd(){
 }
 
 install_wgcf(){
+    main=`uname  -r | awk -F . '{print $1}'`
+    minor=`uname -r | awk -F . '{print $2}'`
+    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：CentOS $vsid \nWgcf-WARP模式仅支持CentOS 7-8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
+
     if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
         yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
@@ -625,13 +641,6 @@ install_wgcf(){
 
     check_tun
     docker_warn
-
-    main=`uname  -r | awk -F . '{print $1}'`
-    minor=`uname -r | awk -F . '{print $2}'`
-    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：CentOS $vsid \nWgcf-WARP模式仅支持CentOS 7-8系统" && exit 1
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
     
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
@@ -673,8 +682,10 @@ install_wgcf(){
     fi
 
     if [[ $vpsvirt =~ lxc|openvz ]]; then
-        wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
-        chmod +x /usr/bin/wireguard-go
+        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+            wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
+            chmod +x /usr/bin/wireguard-go
+        fi
     fi
     if [[ $vpsvirt == zvm ]]; then
         wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go-s390x -O /usr/bin/wireguard-go
@@ -795,7 +806,15 @@ uninstall_wgcf(){
 }
 
 install_warpcli(){
+    main=`uname  -r | awk -F . '{print $1}'`
+    minor=`uname -r | awk -F . '{print $2}'`
+    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：CentOS $vsid \nWARP-Cli代理模式仅支持CentOS 8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
+
     check_tun
+
     if [[ $(archAffix) != "amd64" ]]; then
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
         exit 1
@@ -813,11 +832,6 @@ install_warpcli(){
         red "检测到IPv4出口已被Wgcf-WARP接管，无法启用WARP-Cli代理模式！"
         exit 1
     fi
-
-    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：CentOS $vsid \nWARP-Cli代理模式仅支持CentOS 8系统" && exit 1
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
