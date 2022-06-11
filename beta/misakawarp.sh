@@ -153,15 +153,15 @@ check_tun(){
     minor=`uname -r | awk -F . '{print $2}'`
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
     if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
-        if [[ $vpsvirt == "openvz" ]]; then
-            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
-        elif [[ $vpsvirt == "lxc" ]]; then
+        if [[ $vpsvirt == lxc ]]; then
             if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-                yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
-            else
-                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
+                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
                 exit 1
+            else
+                yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
             fi
+        elif [[ $vpsvirt == "openvz" ]]; then
+            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
             exit 1
