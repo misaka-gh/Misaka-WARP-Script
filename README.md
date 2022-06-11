@@ -6,6 +6,8 @@
 
 如对脚本不放心，可使用此沙箱先测一遍再使用：https://killercoda.com/playgrounds/scenario/ubuntu
 
+详细讲解视频：7月份会出
+
 ## 使用方法
 
 ### 正式版
