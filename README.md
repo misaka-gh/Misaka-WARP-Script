@@ -18,10 +18,6 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Mi
 
 快捷方式 `bash misakawarp.sh`
 
-### VPSFree.fr 测试版
-
-移步至此处：https://github.com/Misaka-blog/Misaka-WARP-Script/tree/master/special
-
 ## 即将更新内容
 
 1. 全新菜单
