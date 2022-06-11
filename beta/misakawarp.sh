@@ -617,6 +617,13 @@ wgcfd(){
 }
 
 install_wgcf(){
+    main=`uname  -r | awk -F . '{print $1}'`
+    minor=`uname -r | awk -F . '{print $2}'`
+    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：CentOS $vsid \nWgcf-WARP模式仅支持CentOS 7-8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
+
     if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
         yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
@@ -628,13 +635,6 @@ install_wgcf(){
     fi
 
     docker_warn
-
-    main=`uname  -r | awk -F . '{print $1}'`
-    minor=`uname -r | awk -F . '{print $2}'`
-    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：CentOS $vsid \nWgcf-WARP模式仅支持CentOS 7-8系统" && exit 1
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
     
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
@@ -800,10 +800,17 @@ uninstall_wgcf(){
 }
 
 install_warpcli(){
+    main=`uname  -r | awk -F . '{print $1}'`
+    minor=`uname -r | awk -F . '{print $2}'`
+    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：CentOS $vsid \nWARP-Cli代理模式仅支持CentOS 8系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
+
     if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
         check_tun
     fi
-    
+
     if [[ $(archAffix) != "amd64" ]]; then
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
         exit 1
@@ -821,11 +828,6 @@ install_warpcli(){
         red "检测到IPv4出口已被Wgcf-WARP接管，无法启用WARP-Cli代理模式！"
         exit 1
     fi
-
-    vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：CentOS $vsid \nWARP-Cli代理模式仅支持CentOS 8系统" && exit 1
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
