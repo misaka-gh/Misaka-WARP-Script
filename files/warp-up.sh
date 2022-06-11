@@ -8,7 +8,7 @@ flowdata=${1:-10}
 license=$2
 
 ########
-for((i = 0; i < ${flowdata}; i++)); do
+for ((i = 0; i < ${flowdata}; i++)); do
     [[ $i == 0 ]] && sleep_try=30 && sleep_min=20 && sleep_max=600 && echo $(date) Mission $flowdata GB
     install_id=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 22) && \
     curl -X POST -m 10 -sA "okhttp/3.12.1" -H 'content-type: application/json' -H 'Host: api.cloudflareclient.com' \
