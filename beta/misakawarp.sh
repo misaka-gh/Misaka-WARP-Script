@@ -1389,9 +1389,9 @@ warpsw3(){
 
 warpsw(){
     yellow "请选择需要刷NetFilx IP的WARP客户端:"
-    green "1. Wgcf-WARP"
-    green "2. WARP-Cli 代理模式"
-    green "3. WireProxy-WARP 代理模式"
+    echo -e " ${GREEN}1.${PLAIN} Wgcf-WARP"
+    echo -e " ${GREEN}2.${PLAIN} WARP-Cli 代理模式 ${RED}(目前仅支持升级WARP+账户)${PLAIN}"
+    echo -e " ${GREEN}3.${PLAIN} WireProxy-WARP 代理模式"
     read -rp "请选择客户端 [1-3]: " clientInput
     case "$clientInput" in
         1 ) warpsw1 ;;
