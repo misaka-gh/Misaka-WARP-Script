@@ -10,8 +10,6 @@
 
 ## 使用方法
 
-### 正式版
-
 ```shell
 wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh
 ```
