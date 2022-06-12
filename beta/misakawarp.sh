@@ -1647,7 +1647,9 @@ menu2(){
 
 if [[ $# > 0 ]]; then
     # 暂时没开发、以后再说
-    menu
+    case "$1" in
+        * ) menu ;;
+    esac
 else
     menu
 fi
