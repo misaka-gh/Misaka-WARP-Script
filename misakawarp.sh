@@ -1075,7 +1075,7 @@ TEXT
 
 change_wireproxy_port(){
     systemctl stop wireproxy-warp
-    read -rp "请输入WARP Cli使用的代理端口（默认40000）：" WireProxyPort
+    read -rp "请输入WARP Cli使用的代理端口 (默认40000): " WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     CurrentPort=$(grep BindAddress /etc/wireguard/proxy.conf)
     sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
@@ -1091,7 +1091,7 @@ change_wireproxy_port(){
     done
     systemctl enable wireproxy-warp
     green "WireProxy-WARP代理模式已启动成功！"
-    yellow "本地Socks5代理为： 127.0.0.1:$WireProxyPort"
+    yellow "本地Socks5代理为: 127.0.0.1:$WireProxyPort"
 }
 
 wireproxy_switch(){
@@ -1114,16 +1114,60 @@ uninstall_wireproxy(){
     if [[ ! -f /etc/wireguard/wgcf.conf ]]; then
         rm -f /usr/local/bin/wgcf /etc/wireguard/wgcf-account.toml
     fi
-    green "WARP-Cli代理模式已彻底卸载成功！"
+    green "WARP-Cli代理模式已彻底卸载成功!"
+}
+
+warpup(){
+    yellow "获取CloudFlare WARP账号信息方法："
+    green "电脑：下载并安装CloudFlare WARP→设置→偏好设置→复制设备ID到脚本中"
+    green "手机：下载并安装1.1.1.1 APP→菜单→高级→诊断→复制设备ID到脚本中"
+    echo ""
+    yellow "请按照下面指示，输入您的CloudFlare WARP账号信息："
+    read -rp "请输入您的WARP设备ID (36位字符): " WarpDeviceID
+    read -rp "请输入你期望刷到的流量 (单位: GB): " WarpFlowLimit
+    echo -e "你期望刷到的流量为：$WarpFlowLimit GB"
+    WarpFlowLimit=${1:-10}
+    for ((i = 0; i < ${WarpFlowLimit}; i++)); do
+        if [[ $i == 0 ]]; then
+            sleep_try=30
+            sleep_min=20
+            sleep_max=600
+        fi
+
+        install_id=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 22)
+        curl -X POST -m 10 -sA "okhttp/3.12.1" -H 'content-type: application/json' -H 'Host: api.cloudflareclient.com' --data "{\"key\": \"$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 43)=\",\"install_id\": \"$install_id\",\"fcm_token\": \"APA91b$install_id$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 134)\",\"referrer\": \"$WarpDeviceID\",\"warp_enabled\": false,\"tos\": \"$(date -u +%FT%T.$(tr -dc '0-9' </dev/urandom | head -c 3)Z)\",\"type\": \"Android\",\"locale\": \"en_US\"}"  --url "https://api.cloudflareclient.com/v0a$(shuf -i 100-999 -n 1)/reg" | grep -qE "referral_count\":1" && status=0 || status=1
+        
+        # cloudflare限制了请求频率,目前测试大概在20秒,失败时因延长sleep时间
+        [[ $sleep_try > $sleep_max ]] && sleep_try=300
+        [[ $sleep_try == $sleep_min ]] && sleep_try=$((sleep_try+1))
+
+        if [[ $status == 0 ]]; then
+            sleep_try=$((sleep_try-1))
+            sleep $sleep_try
+            rit[i]=$i
+            echo -n $i-o-
+            continue
+        fi
+
+        if [[ $status == 1 ]]; then
+            sleep_try=$((sleep_try+2))
+            sleep $sleep_try
+            bad[i]=$i
+            echo -n $i-x-
+            continue
+        fi
+    done
+    echo ""
+    echo -e "此次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
 warpnf(){
-    yellow "请选择需要刷NetFilx IP的WARP客户端："
+    yellow "请选择需要刷NetFilx IP的WARP客户端:"
     green "1. Wgcf-WARP IPv4模式"
     green "2. Wgcf-WARP IPv6模式"
     green "3. WARP-Cli 代理模式"
     green "4. WireProxy-WARP 代理模式"
-    read -rp "请选择客户端 [1-4]：" clientInput
+    read -rp "请选择客户端 [1-4]: " clientInput
     case "$clientInput" in
         1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
         2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
@@ -1167,7 +1211,9 @@ menu0(){
     echo -e " ${GREEN}8.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}10.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}11.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
@@ -1184,7 +1230,7 @@ menu0(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-10]:" menu0Input
+    read -rp " 请输入选项 [0-11]:" menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1195,7 +1241,8 @@ menu0(){
         7 ) change_wireproxy_port ;;
         8 ) wireproxy_switch ;;
         9 ) uninstall_wireproxy ;;
-        10 ) warpnf ;;
+        10 ) warpup ;;
+        11 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1228,7 +1275,9 @@ menu1(){
     echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
@@ -1251,7 +1300,7 @@ menu1(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-14]:" menu1Input
+    read -rp " 请输入选项 [0-15]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1266,7 +1315,8 @@ menu1(){
         11 ) change_wireproxy_port ;;
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
-        14 ) warpnf ;;
+        14 ) warpup ;;
+        15 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1300,7 +1350,9 @@ menu2(){
     echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
     echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
@@ -1323,7 +1375,7 @@ menu2(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-14]:" menu2Input
+    read -rp " 请输入选项 [0-15]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1338,7 +1390,8 @@ menu2(){
         11 ) change_wireproxy_port ;;
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
-        14 ) warpnf ;;
+        14 ) warpup ;;
+        15 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
