@@ -161,7 +161,7 @@ check_tun(){
                 yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
             fi
         elif [[ $vpsvirt == "openvz" ]]; then
-            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
+            wget -N --no-check-certificate https://gitlab.com/misaka-blog/tun-script/-/raw/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
             exit 1
@@ -683,16 +683,16 @@ install_wgcf(){
 
     if [[ $vpsvirt =~ lxc|openvz ]]; then
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-            wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
+            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go -O /usr/bin/wireguard-go
             chmod +x /usr/bin/wireguard-go
         fi
     fi
     if [[ $vpsvirt == zvm ]]; then
-        wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go-s390x -O /usr/bin/wireguard-go
+        wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-s390x -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
 
-    wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
@@ -952,10 +952,10 @@ install_wireproxy(){
         fi
     fi
 
-    wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
+    wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
     chmod +x /usr/local/bin/wireproxy
 
-    wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
@@ -1409,10 +1409,10 @@ warpnf(){
     green "4. WireProxy-WARP 代理模式"
     read -rp "请选择客户端 [1-4]: " clientInput
     case "$clientInput" in
-        1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
-        2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
-        3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
-        4 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
+        1 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
+        2 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
+        3 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
+        4 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
     esac
 }
 
@@ -1452,7 +1452,7 @@ menu0(){
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}10.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}11.${PLAIN} 切换 WARP+ 账户类型"
+    echo -e " ${GREEN}11.${PLAIN} 切换 WARP 账户类型"
     echo -e " ${GREEN}12.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
@@ -1518,7 +1518,7 @@ menu1(){
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 切换 WARP+ 账户类型"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
     echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
@@ -1595,7 +1595,7 @@ menu2(){
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 切换 WARP+ 账户类型"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
     echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
