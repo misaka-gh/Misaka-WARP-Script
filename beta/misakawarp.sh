@@ -944,12 +944,11 @@ install_wireproxy(){
         exit 1
     fi
 
-    if [[ -z $(type -P ping) ]]; then
-        if [[ $SYSTEM == "CentOS" ]]; then
-            ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils screen
-        else
-            ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping screen
-        fi
+    if [[ $SYSTEM == "CentOS" ]]; then
+        ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils screen
+    else
+        ${PACKAGE_UPDATE[int]}
+        ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping screen
     fi
 
     wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
