@@ -1282,6 +1282,21 @@ warpsw(){
     esac
 }
 
+warpsw2(){
+    yellow "请选择切换的账户类型"
+    green "1. WARP 免费账户"
+    green "2. WARP+"
+    read -rp "请选择账户类型 [1-2]: " accountInput
+}
+
+warpsw3(){
+    yellow "请选择切换的账户类型"
+    green "1. WARP 免费账户"
+    green "2. WARP+"
+    green "3. WARP Teams"
+    read -rp "请选择账户类型 [1-3]: " accountInput
+}
+
 warpnf(){
     yellow "请选择需要刷NetFilx IP的WARP客户端:"
     green "1. Wgcf-WARP IPv4模式"
