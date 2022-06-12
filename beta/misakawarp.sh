@@ -1239,7 +1239,7 @@ warpsw1(){
 
             sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/wgcf.conf;
             sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
-            
+
             wg-quick up wgcf >/dev/null 2>&1
             yellow "正在检查WARP Teams账户连通性，请稍等..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -1267,20 +1267,6 @@ warpsw1(){
     fi
 }
 
-warpsw(){
-    yellow "请选择需要刷NetFilx IP的WARP客户端:"
-    green "1. Wgcf-WARP"
-    green "2. WARP-Cli 代理模式"
-    green "3. WireProxy-WARP 代理模式"
-    read -rp "请选择客户端 [1-3]: " clientInput
-    case "$clientInput" in
-        1 ) warpsw1 ;;
-        2 ) warpsw2 ;;
-        3 ) warpsw3 ;;
-        * ) exit 1 ;;
-    esac
-}
-
 warpsw2(){
     warp-cli --accept-tos register >/dev/null 2>&1
     read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
@@ -1301,6 +1287,118 @@ warpsw3(){
     green "2. WARP+"
     green "3. WARP Teams"
     read -rp "请选择账户类型 [1-3]: " accountInput
+    if [[ $accountInput == 1 ]]; then
+        systemctl stop wireproxy-warp
+
+        cd /etc/wireguard
+        rm -f wgcf-account.toml
+
+        until [[ -a wgcf-account.toml ]]; do
+            yes | wgcf register
+            sleep 5
+        done
+        chmod +x wgcf-account.toml
+        
+        wgcf generate
+        chmod +x wgcf-profile.conf
+
+        warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+        warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+        sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+        sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+        rm -f wgcf-profile.conf
+
+        systemctl start wireproxy-warp
+        green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
+    fi
+    if [[ $accountInput == 2 ]]; then
+        cd /etc/wireguard
+        if [[ ! -f wgcf-account.toml ]]; then
+            until [[ -a wgcf-account.toml ]]; do
+                yes | wgcf register
+                sleep 5
+            done
+        fi
+        chmod +x wgcf-account.toml
+
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
+        if [[ -n $WPPlusKey ]]; then
+            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            if [[ -n $WPPlusName ]]; then
+                wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
+            else
+                wgcf update
+            fi
+
+            wgcf generate
+            chmod +x wgcf-profile.conf
+
+            systemctl stop wireproxy-warp
+
+            warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+            warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+            sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+            sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+            rm -f wgcf-profile.conf
+
+            systemctl start wireproxy-warp
+            green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
+        else
+            red "未输入WARP账户许可证密钥，无法升级！"
+        fi
+    fi
+    if [[ $accountInput == 3 ]]; then
+        read -rp "请输入WARP Teams配置文件中的PrivateKey：" wpteamprivatekey
+        read -rp "请输入WARP Teams配置文件中的IPv6地址：" wpteamv6address
+        yellow "请确认WARP Teams信息是否正确："
+        green "PrivateKey: $wpteamprivatekey"
+        green "IPv6 地址: $wpteamv6address"
+        read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+        if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
+            systemctl stop wireproxy-warp
+
+            sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/proxy.conf;
+            sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/proxy.conf;
+
+            systemctl start wireproxy-warp
+            yellow "正在检查WARP Teams账户连通性，请稍等..."
+            WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+            if [[ $WireProxyStatus == "plus" ]]; then
+                green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
+            else
+                systemctl stop wireproxy-warp
+
+                wgcf generate
+                chmod +x wgcf-profile.conf
+
+                warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+                warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+                rm -f wgcf-profile.conf
+
+                systemctl start wireproxy-warp
+                red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+            fi
+        else
+            red "已退出WARP Teams账号升级过程！"
+        fi
+    fi
+}
+
+warpsw(){
+    yellow "请选择需要刷NetFilx IP的WARP客户端:"
+    green "1. Wgcf-WARP"
+    green "2. WARP-Cli 代理模式"
+    green "3. WireProxy-WARP 代理模式"
+    read -rp "请选择客户端 [1-3]: " clientInput
+    case "$clientInput" in
+        1 ) warpsw1 ;;
+        2 ) warpsw2 ;;
+        3 ) warpsw3 ;;
+        * ) exit 1 ;;
+    esac
 }
 
 warpnf(){
