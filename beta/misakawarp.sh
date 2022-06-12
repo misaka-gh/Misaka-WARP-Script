@@ -1241,7 +1241,7 @@ warpsw1(){
             sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
 
             wg-quick up wgcf >/dev/null 2>&1
-            yellow "正在检查Wgcf-WARP账号连通性，请稍等..."
+            yellow "正在检查WARP Teams账户连通性，请稍等..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
