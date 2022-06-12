@@ -161,7 +161,7 @@ check_tun(){
                 yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
             fi
         elif [[ $vpsvirt == "openvz" ]]; then
-            wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/tun-script/master/tun.sh && bash tun.sh
+            wget -N --no-check-certificate https://gitlab.com/misaka-blog/tun-script/-/raw/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
             exit 1
@@ -633,7 +633,7 @@ install_wgcf(){
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
     [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
 
-    if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
+    if [[ $c4 == "Hong Kong" || $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
         yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
         exit 1
@@ -644,7 +644,7 @@ install_wgcf(){
     
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop iputils
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then 
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
@@ -658,7 +658,7 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release htop inetutils-ping
         echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
+        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv screen dnsutils wireguard-tools iptables
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends linux-headers-$(uname -r)
@@ -673,7 +673,7 @@ install_wgcf(){
             add-apt-repository ppa:wireguard/wireguard
             ${PACKAGE_UPDATE[int]}
         fi
-        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
+        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils screen wireguard-tools iptables
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends wireguard-dkms
@@ -683,16 +683,16 @@ install_wgcf(){
 
     if [[ $vpsvirt =~ lxc|openvz ]]; then
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-            wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go -O /usr/bin/wireguard-go
+            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go -O /usr/bin/wireguard-go
             chmod +x /usr/bin/wireguard-go
         fi
     fi
     if [[ $vpsvirt == zvm ]]; then
-        wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireguard-go-s390x -O /usr/bin/wireguard-go
+        wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-s390x -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
 
-    wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
@@ -712,7 +712,7 @@ install_wgcf(){
 
     if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-        read -rp "按键许可证密钥(26个字符):" WPPlusKey
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
@@ -835,14 +835,14 @@ install_warpcli(){
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools htop iputils
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools htop iputils screen
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
 
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping screen
         [[ -z $(type -P gpg 2>/dev/null) ]] && ${PACKAGE_INSTALL[int]} gnupg
         [[ -z $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && ${PACKAGE_INSTALL[int]} apt-transport-https
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
@@ -853,7 +853,7 @@ install_warpcli(){
     
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping screen
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
         echo "deb http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
         ${PACKAGE_UPDATE[int]}
@@ -862,7 +862,7 @@ install_warpcli(){
 
     warp-cli --accept-tos register >/dev/null 2>&1
     yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-    read -rp "按键许可证密钥(26个字符):" WPPlusKey
+    read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
     if [[ -n $WPPlusKey ]]; then
         warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
         if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
@@ -938,24 +938,23 @@ uninstall_warpcli(){
 }
 
 install_wireproxy(){
-    if [[ $c4 == "Hong Kong" ]] || [[ $c6 == "Hong Kong" ]]; then
+    if [[ $c4 == "Hong Kong" || $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
         yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 WireProxy-WARP 代理模式。请使用其他地区的VPS"
         exit 1
     fi
 
-    if [[ -z $(type -P ping) ]]; then
-        if [[ $SYSTEM == "CentOS" ]]; then
-            ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils
-        else
-            ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping
-        fi
+    if [[ $SYSTEM == "CentOS" ]]; then
+        ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils screen
+    else
+        ${PACKAGE_UPDATE[int]}
+        ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping screen
     fi
 
-    wget -N https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
+    wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
     chmod +x /usr/local/bin/wireproxy
 
-    wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Misaka-blog/Misaka-WARP-Script/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
@@ -975,7 +974,7 @@ install_wireproxy(){
 
     if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-        read -rp "按键许可证密钥(26个字符):" WPPlusKey
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
@@ -1160,6 +1159,247 @@ warpup(){
     echo -e "此次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
+warpsw1(){
+    yellow "请选择切换的账户类型"
+    green "1. WARP 免费账户"
+    green "2. WARP+"
+    green "3. WARP Teams"
+    read -rp "请选择账户类型 [1-3]: " accountInput
+    if [[ $accountInput == 1 ]]; then
+        wg-quick down wgcf >/dev/null 2>&1
+
+        cd /etc/wireguard
+        rm -f wgcf-account.toml
+
+        until [[ -a wgcf-account.toml ]]; do
+            yes | wgcf register
+            sleep 5
+        done
+        chmod +x wgcf-account.toml
+        
+        wgcf generate
+        chmod +x wgcf-profile.conf
+
+        warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+        warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+        sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+        sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+        rm -f wgcf-profile.conf
+
+        wg-quick up wgcf >/dev/null 2>&1
+        green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
+    fi
+    if [[ $accountInput == 2 ]]; then
+        cd /etc/wireguard
+        if [[ ! -f wgcf-account.toml ]]; then
+            until [[ -a wgcf-account.toml ]]; do
+                yes | wgcf register
+                sleep 5
+            done
+        fi
+        chmod +x wgcf-account.toml
+
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
+        if [[ -n $WPPlusKey ]]; then
+            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            if [[ -n $WPPlusName ]]; then
+                wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
+            else
+                wgcf update
+            fi
+
+            wgcf generate
+            chmod +x wgcf-profile.conf
+
+            wg-quick down wgcf >/dev/null 2>&1
+
+            warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+            warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+            sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+            sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+            rm -f wgcf-profile.conf
+
+            wg-quick up wgcf >/dev/null 2>&1
+            green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
+        else
+            red "未输入WARP账户许可证密钥，无法升级！"
+        fi
+    fi
+    if [[ $accountInput == 3 ]]; then
+        read -rp "请输入WARP Teams配置文件中的PrivateKey：" wpteamprivatekey
+        read -rp "请输入WARP Teams配置文件中的IPv6地址：" wpteamv6address
+        yellow "请确认WARP Teams信息是否正确："
+        green "PrivateKey: $wpteamprivatekey"
+        green "IPv6 地址: $wpteamv6address"
+        read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+        if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
+            wg-quick down wgcf >/dev/null 2>&1
+
+            sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/wgcf.conf;
+            sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
+
+            wg-quick up wgcf >/dev/null 2>&1
+            yellow "正在检查WARP Teams账户连通性，请稍等..."
+            WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+            WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+            if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
+                green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
+            else
+                wg-quick down wgcf >/dev/null 2>&1
+
+                wgcf generate
+                chmod +x wgcf-profile.conf
+
+                warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+                warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+                rm -f wgcf-profile.conf
+
+                wg-quick up wgcf >/dev/null 2>&1
+                red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+            fi
+        else
+            red "已退出WARP Teams账号升级过程！"
+        fi
+    fi
+}
+
+warpsw2(){
+    warp-cli --accept-tos register >/dev/null 2>&1
+    read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
+    if [[ -n $WPPlusKey ]]; then
+        warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
+        if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
+            green "WARP-Cli 账户类型切换为 WARP+ 成功！"
+        else
+            red "WARP+账户启用失败，即将使用WARP免费版账户"
+        fi
+    fi
+    warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
+}
+
+warpsw3(){
+    yellow "请选择切换的账户类型"
+    green "1. WARP 免费账户"
+    green "2. WARP+"
+    green "3. WARP Teams"
+    read -rp "请选择账户类型 [1-3]: " accountInput
+    if [[ $accountInput == 1 ]]; then
+        systemctl stop wireproxy-warp
+
+        cd /etc/wireguard
+        rm -f wgcf-account.toml
+
+        until [[ -a wgcf-account.toml ]]; do
+            yes | wgcf register
+            sleep 5
+        done
+        chmod +x wgcf-account.toml
+        
+        wgcf generate
+        chmod +x wgcf-profile.conf
+
+        warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+        warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+        sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+        sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+        rm -f wgcf-profile.conf
+
+        systemctl start wireproxy-warp
+        green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
+    fi
+    if [[ $accountInput == 2 ]]; then
+        cd /etc/wireguard
+        if [[ ! -f wgcf-account.toml ]]; then
+            until [[ -a wgcf-account.toml ]]; do
+                yes | wgcf register
+                sleep 5
+            done
+        fi
+        chmod +x wgcf-account.toml
+
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
+        if [[ -n $WPPlusKey ]]; then
+            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            if [[ -n $WPPlusName ]]; then
+                wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
+            else
+                wgcf update
+            fi
+
+            wgcf generate
+            chmod +x wgcf-profile.conf
+
+            systemctl stop wireproxy-warp
+
+            warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+            warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+            sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+            sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+            rm -f wgcf-profile.conf
+
+            systemctl start wireproxy-warp
+            green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
+        else
+            red "未输入WARP账户许可证密钥，无法升级！"
+        fi
+    fi
+    if [[ $accountInput == 3 ]]; then
+        read -rp "请输入WARP Teams配置文件中的PrivateKey：" wpteamprivatekey
+        read -rp "请输入WARP Teams配置文件中的IPv6地址：" wpteamv6address
+        yellow "请确认WARP Teams信息是否正确："
+        green "PrivateKey: $wpteamprivatekey"
+        green "IPv6 地址: $wpteamv6address"
+        read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+        if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
+            systemctl stop wireproxy-warp
+
+            sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/proxy.conf;
+            sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/proxy.conf;
+
+            systemctl start wireproxy-warp
+            yellow "正在检查WARP Teams账户连通性，请稍等..."
+            WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+            if [[ $WireProxyStatus == "plus" ]]; then
+                green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
+            else
+                systemctl stop wireproxy-warp
+
+                wgcf generate
+                chmod +x wgcf-profile.conf
+
+                warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+                warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+                rm -f wgcf-profile.conf
+
+                systemctl start wireproxy-warp
+                red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+            fi
+        else
+            red "已退出WARP Teams账号升级过程！"
+        fi
+    fi
+}
+
+warpsw(){
+    yellow "请选择需要切换WARP账户的WARP客户端:"
+    echo -e " ${GREEN}1.${PLAIN} Wgcf-WARP"
+    echo -e " ${GREEN}2.${PLAIN} WARP-Cli 代理模式 ${RED}(目前仅支持升级WARP+账户)${PLAIN}"
+    echo -e " ${GREEN}3.${PLAIN} WireProxy-WARP 代理模式"
+    read -rp "请选择客户端 [1-3]: " clientInput
+    case "$clientInput" in
+        1 ) warpsw1 ;;
+        2 ) warpsw2 ;;
+        3 ) warpsw3 ;;
+        * ) exit 1 ;;
+    esac
+}
+
 warpnf(){
     yellow "请选择需要刷NetFilx IP的WARP客户端:"
     green "1. Wgcf-WARP IPv4模式"
@@ -1168,10 +1408,10 @@ warpnf(){
     green "4. WireProxy-WARP 代理模式"
     read -rp "请选择客户端 [1-4]: " clientInput
     case "$clientInput" in
-        1 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
-        2 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
-        3 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
-        4 ) wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Misaka-WARP-Script/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
+        1 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
+        2 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
+        3 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
+        4 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
     esac
 }
 
@@ -1211,7 +1451,8 @@ menu0(){
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}10.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}11.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}11.${PLAIN} 切换 WARP 账户类型"
+    echo -e " ${GREEN}12.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1229,7 +1470,7 @@ menu0(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-11]:" menu0Input
+    read -rp " 请输入选项 [0-12]:" menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1241,7 +1482,8 @@ menu0(){
         8 ) wireproxy_switch ;;
         9 ) uninstall_wireproxy ;;
         10 ) warpup ;;
-        11 ) warpnf ;;
+        11 ) warpsw ;;
+        12 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1275,7 +1517,8 @@ menu1(){
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
+    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1299,7 +1542,7 @@ menu1(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-15]:" menu1Input
+    read -rp " 请输入选项 [0-16]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1315,7 +1558,8 @@ menu1(){
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
         14 ) warpup ;;
-        15 ) warpnf ;;
+        15 ) warpsw ;;
+        16 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1350,7 +1594,8 @@ menu2(){
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
+    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1374,7 +1619,7 @@ menu2(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-15]:" menu2Input
+    read -rp " 请输入选项 [0-16]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1390,7 +1635,8 @@ menu2(){
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
         14 ) warpup ;;
-        15 ) warpnf ;;
+        15 ) warpsw ;;
+        16 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
