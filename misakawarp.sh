@@ -1126,7 +1126,6 @@ warpup(){
     read -rp "请输入您的WARP设备ID (36位字符): " WarpDeviceID
     read -rp "请输入你期望刷到的流量 (单位: GB): " WarpFlowLimit
     echo -e "你期望刷到的流量为：$WarpFlowLimit GB"
-    WarpFlowLimit=${1:-10}
     for ((i = 0; i < ${WarpFlowLimit}; i++)); do
         if [[ $i == 0 ]]; then
             sleep_try=30
