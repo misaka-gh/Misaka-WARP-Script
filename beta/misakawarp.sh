@@ -1333,7 +1333,8 @@ menu0(){
     echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}10.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}11.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}11.${PLAIN} 切换 WARP+ 账户类型"
+    echo -e " ${GREEN}12.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1363,7 +1364,8 @@ menu0(){
         8 ) wireproxy_switch ;;
         9 ) uninstall_wireproxy ;;
         10 ) warpup ;;
-        11 ) warpnf ;;
+        11 ) warpsw ;;
+        12 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1397,7 +1399,8 @@ menu1(){
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP+ 账户类型"
+    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1421,7 +1424,7 @@ menu1(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-15]:" menu1Input
+    read -rp " 请输入选项 [0-16]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1437,7 +1440,8 @@ menu1(){
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
         14 ) warpup ;;
-        15 ) warpnf ;;
+        15 ) warpsw ;;
+        16 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
@@ -1472,7 +1476,8 @@ menu2(){
     echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
     echo " -------------"
     echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP+ 账户类型"
+    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
@@ -1496,7 +1501,7 @@ menu2(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-15]:" menu2Input
+    read -rp " 请输入选项 [0-16]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1512,7 +1517,8 @@ menu2(){
         12 ) wireproxy_switch ;;
         13 ) uninstall_wireproxy ;;
         14 ) warpup ;;
-        15 ) warpnf ;;
+        15 ) warpsw ;;
+        16 ) warpnf ;;
         * ) exit 1 ;;
     esac
 }
