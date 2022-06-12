@@ -1130,7 +1130,7 @@ warpup(){
             sleep_try=30
             sleep_min=20
             sleep_max=600
-            echo "Mission $WarpFlowLimit GB"
+            echo "你期望刷到的流量为：$((${$WarpFlowLimit} + 10)) GB"
         fi
 
         install_id=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 22)
@@ -1156,6 +1156,7 @@ warpup(){
             continue
         fi
     done
+    echo ""
     echo -e "此次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
