@@ -1173,7 +1173,6 @@ warpsw1(){
         rm -f wgcf-account.toml
 
         until [[ -a wgcf-account.toml ]]; do
-            yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
             yes | wgcf register
             sleep 5
         done
@@ -1195,7 +1194,6 @@ warpsw1(){
         cd /etc/wireguard
         if [[ ! -f wgcf-account.toml ]]; then
             until [[ -a wgcf-account.toml ]]; do
-                yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
                 yes | wgcf register
                 sleep 5
             done
@@ -1227,6 +1225,45 @@ warpsw1(){
             green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
         else
             red "未输入WARP账户许可证密钥，无法升级！"
+        fi
+    fi
+    if [[ $accountInput == 3 ]]; then
+        read -rp "请输入WARP Teams配置文件中的PrivateKey：" wpteamprivatekey
+        read -rp "请输入WARP Teams配置文件中的IPv6地址：" wpteamv6address
+        yellow "请确认WARP Teams信息是否正确："
+        green "PrivateKey: $wpteamprivatekey"
+        green "IPv6 地址: $wpteamv6address"
+        read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+        if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
+            wg-quick down wgcf >/dev/null 2>&1
+
+            sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/wgcf.conf;
+            sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
+
+            wg-quick up wgcf >/dev/null 2>&1
+            yellow "正在检查Wgcf-WARP账号连通性，请稍等..."
+            WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+            WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+            if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
+                green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
+            else
+                wg-quick down wgcf >/dev/null 2>&1
+
+
+                wgcf generate
+                chmod +x wgcf-profile.conf
+
+                warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+                warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+                rm -f wgcf-profile.conf
+
+                wg-quick up wgcf >/dev/null 2>&1
+                red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+            fi
+        else
+            red "已退出WARP Teams账号升级过程！"
         fi
     fi
 }
