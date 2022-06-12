@@ -1118,6 +1118,10 @@ uninstall_wireproxy(){
 }
 
 warpup(){
+    yellow "获取CloudFlare WARP账号信息方法："
+    green "电脑：下载并安装CloudFlare WARP→设置→偏好设置→复制设备ID到脚本中"
+    green "手机：下载并安装1.1.1.1 APP→菜单→高级→诊断→复制设备ID到脚本中"
+    echo ""
     yellow "请按照下面指示，输入您的CloudFlare WARP账号信息："
     read -rp "请输入您的WARP设备ID (36位字符):" WarpDeviceID
     read -rp "请输入你期望刷到的流量 (单位: 每10GB): " WarpFlowLimit
