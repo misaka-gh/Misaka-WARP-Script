@@ -1374,8 +1374,8 @@ warpsw3(){
 
                 warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
                 warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
-                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
                 rm -f wgcf-profile.conf
 
                 systemctl start wireproxy-warp
