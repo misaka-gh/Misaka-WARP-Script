@@ -644,7 +644,7 @@ install_wgcf(){
     
     if [[ $SYSTEM == "CentOS" ]]; then        
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop iputils
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then 
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
@@ -658,7 +658,7 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release htop inetutils-ping
         echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
+        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv screen dnsutils wireguard-tools iptables
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends linux-headers-$(uname -r)
@@ -673,7 +673,7 @@ install_wgcf(){
             add-apt-repository ppa:wireguard/wireguard
             ${PACKAGE_UPDATE[int]}
         fi
-        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
+        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils screen wireguard-tools iptables
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends wireguard-dkms
@@ -835,14 +835,14 @@ install_warpcli(){
 
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools htop iputils
+        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools htop iputils screen
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
 
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping screen
         [[ -z $(type -P gpg 2>/dev/null) ]] && ${PACKAGE_INSTALL[int]} gnupg
         [[ -z $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && ${PACKAGE_INSTALL[int]} apt-transport-https
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
@@ -853,7 +853,7 @@ install_warpcli(){
     
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping screen
         curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add -
         echo "deb http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
         ${PACKAGE_UPDATE[int]}
@@ -946,9 +946,9 @@ install_wireproxy(){
 
     if [[ -z $(type -P ping) ]]; then
         if [[ $SYSTEM == "CentOS" ]]; then
-            ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils
+            ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils screen
         else
-            ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping
+            ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping screen
         fi
     fi
 
