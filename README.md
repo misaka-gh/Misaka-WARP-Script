@@ -18,7 +18,27 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Mi
 
 快捷方式 `bash misakawarp.sh`
 
-## WARP好处
+## WARP的使用原理
+
+![image](https://user-images.githubusercontent.com/96560028/173240556-0e032e33-5b5b-466b-af91-d9c4498d53ed.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240563-0e49a9a7-0a16-4290-8198-67ead118b1ea.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240577-cb6b7898-60f6-4203-b8d0-206243e9df11.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240581-e8efc3ed-aefd-499b-8f8f-981dab2f6e11.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240587-01f6c584-8771-40ea-b667-2b57795ec3e5.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240592-a712ea86-0dc5-4088-96f5-c770eedd9fe9.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240594-11a16408-7416-4d29-aee4-0fd921832011.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240601-b4110bf8-9f1f-4ea8-802e-cd177d0de3cb.png)
+
+![image](https://user-images.githubusercontent.com/96560028/173240613-57d3d589-5f48-4d68-8f05-7027fa975b13.png)
+
+## WARP的一些好处
 
 解锁奈飞流媒体 （部分地区的WARP IP已凉）
 
