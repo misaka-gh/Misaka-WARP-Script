@@ -1388,7 +1388,7 @@ warpsw3(){
 }
 
 warpsw(){
-    yellow "请选择需要刷NetFilx IP的WARP客户端:"
+    yellow "请选择需要切换WARP账户的WARP客户端:"
     echo -e " ${GREEN}1.${PLAIN} Wgcf-WARP"
     echo -e " ${GREEN}2.${PLAIN} WARP-Cli 代理模式 ${RED}(目前仅支持升级WARP+账户)${PLAIN}"
     echo -e " ${GREEN}3.${PLAIN} WireProxy-WARP 代理模式"
@@ -1471,7 +1471,7 @@ menu0(){
         fi
     fi
     echo -e ""
-    read -rp " 请输入选项 [0-11]:" menu0Input
+    read -rp " 请输入选项 [0-12]:" menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
