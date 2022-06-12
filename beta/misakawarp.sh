@@ -1160,6 +1160,20 @@ warpup(){
     echo -e "此次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
+warpsw(){
+    yellow "请选择需要刷NetFilx IP的WARP客户端:"
+    green "1. Wgcf-WARP"
+    green "2. WARP-Cli 代理模式"
+    green "3. WireProxy-WARP 代理模式"
+    read -rp "请选择客户端 [1-3]: " clientInput
+    case "$clientInput" in
+        1 ) warpsw1 ;;
+        2 ) warpsw2 ;;
+        3 ) warpsw3 ;;
+        * ) exit 1 ;;
+    esac
+}
+
 warpnf(){
     yellow "请选择需要刷NetFilx IP的WARP客户端:"
     green "1. Wgcf-WARP IPv4模式"
