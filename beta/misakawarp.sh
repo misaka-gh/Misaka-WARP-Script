@@ -712,7 +712,7 @@ install_wgcf(){
 
     if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-        read -rp "按键许可证密钥(26个字符):" WPPlusKey
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
@@ -862,7 +862,7 @@ install_warpcli(){
 
     warp-cli --accept-tos register >/dev/null 2>&1
     yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-    read -rp "按键许可证密钥(26个字符):" WPPlusKey
+    read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
     if [[ -n $WPPlusKey ]]; then
         warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
         if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
@@ -975,7 +975,7 @@ install_wireproxy(){
 
     if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
-        read -rp "按键许可证密钥(26个字符):" WPPlusKey
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
@@ -1158,6 +1158,77 @@ warpup(){
     done
     echo ""
     echo -e "此次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
+}
+
+warpsw1(){
+    yellow "请选择切换的账户类型"
+    green "1. WARP 免费账户"
+    green "2. WARP+"
+    green "3. WARP Teams"
+    read -rp "请选择账户类型 [1-3]: " accountInput
+    if [[ $accountInput == 1 ]]; then
+        wg-quick down wgcf >/dev/null 2>&1
+
+        cd /etc/wireguard
+        rm -f wgcf-account.toml
+
+        until [[ -a wgcf-account.toml ]]; do
+            yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
+            yes | wgcf register
+            sleep 5
+        done
+        chmod +x wgcf-account.toml
+        
+        wgcf generate
+        chmod +x wgcf-profile.conf
+
+        warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+        warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+        sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+        sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+        rm -f wgcf-profile.conf
+
+        wg-quick up wgcf >/dev/null 2>&1
+        green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
+    fi
+    if [[ $accountInput == 2 ]]; then
+        cd /etc/wireguard
+        if [[ ! -f wgcf-account.toml ]]; then
+            until [[ -a wgcf-account.toml ]]; do
+                yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
+                yes | wgcf register
+                sleep 5
+            done
+        fi
+        chmod +x wgcf-account.toml
+
+        read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
+        if [[ -n $WPPlusKey ]]; then
+            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            if [[ -n $WPPlusName ]]; then
+                wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
+            else
+                wgcf update
+            fi
+
+            wgcf generate
+            chmod +x wgcf-profile.conf
+
+            wg-quick down wgcf >/dev/null 2>&1
+
+            warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+            warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+            sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+            sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+            rm -f wgcf-profile.conf
+
+            wg-quick up wgcf >/dev/null 2>&1
+            green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
+        else
+            red "未输入WARP账户许可证密钥，无法升级！"
+        fi
+    fi
 }
 
 warpsw(){
