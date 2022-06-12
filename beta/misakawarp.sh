@@ -1239,7 +1239,7 @@ warpsw1(){
 
             sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/wgcf.conf;
             sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
-
+            
             wg-quick up wgcf >/dev/null 2>&1
             yellow "正在检查WARP Teams账户连通性，请稍等..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -1248,7 +1248,6 @@ warpsw1(){
                 green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
             else
                 wg-quick down wgcf >/dev/null 2>&1
-
 
                 wgcf generate
                 chmod +x wgcf-profile.conf
@@ -1283,10 +1282,17 @@ warpsw(){
 }
 
 warpsw2(){
-    yellow "请选择切换的账户类型"
-    green "1. WARP 免费账户"
-    green "2. WARP+"
-    read -rp "请选择账户类型 [1-2]: " accountInput
+    warp-cli --accept-tos register >/dev/null 2>&1
+    read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
+    if [[ -n $WPPlusKey ]]; then
+        warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
+        if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
+            green "WARP-Cli 账户类型切换为 WARP+ 成功！"
+        else
+            red "WARP+账户启用失败，即将使用WARP免费版账户"
+        fi
+    fi
+    warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
 }
 
 warpsw3(){
