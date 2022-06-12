@@ -18,10 +18,14 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Mi
 
 快捷方式 `bash misakawarp.sh`
 
-## 即将更新内容
+## WARP好处
 
-1. 全新菜单
-2. 更直观显示warp状态
+解锁奈飞流媒体 （部分地区的WARP IP已凉）
+避免 Google Recaptcha 验证码或是使用 Google 学术搜索
+可调用 IPv4 接口，使青龙和V2P等项目能正常运行
+由于可以双向转输数据，能做对方VPS的跳板和探针，替代 HE tunnelbroker
+能让 IPv6 only VPS 上做的节点支持 Telegram
+IPv6 建的节点能在只支持 IPv4 的 PassWall、ShadowSocksR Plus+ 上使用
 
 ## 调整IPv4或IPv6优先
 
