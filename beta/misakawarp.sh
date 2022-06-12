@@ -1123,14 +1123,15 @@ warpup(){
     green "手机：下载并安装1.1.1.1 APP→菜单→高级→诊断→复制设备ID到脚本中"
     echo ""
     yellow "请按照下面指示，输入您的CloudFlare WARP账号信息："
-    read -rp "请输入您的WARP设备ID (36位字符):" WarpDeviceID
-    read -rp "请输入你期望刷到的流量 (单位: 每10GB): " WarpFlowLimit
+    read -rp "请输入您的WARP设备ID (36位字符): " WarpDeviceID
+    read -rp "请输入你期望刷到的流量 (单位: GB): " WarpFlowLimit
+    echo -e "你期望刷到的流量为：$WarpFlowLimit GB"
+    WarpFlowLimit=${1:-10}
     for ((i = 0; i < ${WarpFlowLimit}; i++)); do
         if [[ $i == 0 ]]; then
             sleep_try=30
             sleep_min=20
             sleep_max=600
-            echo "你期望刷到的流量为：$((${$WarpFlowLimit} + 10)) GB"
         fi
 
         install_id=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 22)
