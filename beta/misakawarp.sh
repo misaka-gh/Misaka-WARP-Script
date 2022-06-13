@@ -1293,7 +1293,7 @@ warpsw2(){
     if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
         green "WARP-Cli 账户类型切换为 WARP+ 成功！"
     else
-        red "WARP+账户启用失败，即将使用WARP免费版账户"
+        red "WARP+账户启用失败，已自动降级至WARP免费版账户"
     fi
 }
 
