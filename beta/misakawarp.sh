@@ -1322,7 +1322,13 @@ warpsw3(){
         rm -f wgcf-profile.conf
 
         systemctl start wireproxy-warp
-        green "WireProxy-WARP代理模式 账户类型切换为 WARP 免费账户 成功！"
+        yellow "正在检查WARP 免费账户连通性，请稍等..."
+        WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+        if [[ $WireProxyStatus == "on" ]]; then
+            green "WireProxy-WARP代理模式 账户类型切换为 WARP 免费账户 成功！"
+        else
+            green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+        fi
     fi
     if [[ $accountInput == 2 ]]; then
         cd /etc/wireguard
