@@ -1281,17 +1281,20 @@ warpsw1(){
 }
 
 warpsw2(){
+    warp-cli --accept-tos disconnect >/dev/null 2>&1
     warp-cli --accept-tos register >/dev/null 2>&1
     read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
     if [[ -n $WPPlusKey ]]; then
         warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
-        if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
-            green "WARP-Cli 账户类型切换为 WARP+ 成功！"
-        else
-            red "WARP+账户启用失败，即将使用WARP免费版账户"
-        fi
     fi
     warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
+    warp-cli --accept-tos set-proxy-port "$s5p" >/dev/null 2>&1
+    warp-cli --accept-tos connect >/dev/null 2>&1
+    if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
+        green "WARP-Cli 账户类型切换为 WARP+ 成功！"
+    else
+        red "WARP+账户启用失败，即将使用WARP免费版账户"
+    fi
 }
 
 warpsw3(){
