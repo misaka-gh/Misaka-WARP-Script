@@ -1124,7 +1124,7 @@ warpup(){
     yellow "请按照下面指示，输入您的CloudFlare WARP账号信息："
     read -rp "请输入您的WARP设备ID (36位字符): " WarpDeviceID
     read -rp "请输入你期望刷到的流量 (单位: GB): " WarpFlowLimit
-    echo -e "你期望刷到的流量为：$WarpFlowLimit GB"
+    echo -e "已设置你期望刷到的流量为：$WarpFlowLimit GB"
     for ((i = 0; i < ${WarpFlowLimit}; i++)); do
         if [[ $i == 0 ]]; then
             sleep_try=30
@@ -1156,7 +1156,7 @@ warpup(){
         fi
     done
     echo ""
-    echo -e "此次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
+    echo -e "本次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
 warpsw1(){
