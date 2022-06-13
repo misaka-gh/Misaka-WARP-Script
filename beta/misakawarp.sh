@@ -1113,7 +1113,7 @@ uninstall_wireproxy(){
     if [[ ! -f /etc/wireguard/wgcf.conf ]]; then
         rm -f /usr/local/bin/wgcf /etc/wireguard/wgcf-account.toml
     fi
-    green "WARP-Cli代理模式已彻底卸载成功!"
+    green "WireProxy-WARP代理模式已彻底卸载成功!"
 }
 
 warpup(){
@@ -1221,9 +1221,9 @@ warpsw1(){
 
             wg-quick down wgcf >/dev/null 2>&1
 
-            warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
             warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-            sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+            warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
+            sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
             sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
             rm -f wgcf-profile.conf
 
@@ -1265,9 +1265,9 @@ warpsw1(){
                 wgcf generate
                 chmod +x wgcf-profile.conf
 
-                warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
                 warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/wgcf.conf;
+                warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
+                sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
                 sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
                 rm -f wgcf-profile.conf
 
@@ -1315,10 +1315,8 @@ warpsw3(){
         wgcf generate
         chmod +x wgcf-profile.conf
 
-        warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
         warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
         warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
-        sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
         sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
         sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/proxy.conf;
         rm -f wgcf-profile.conf
@@ -1351,10 +1349,10 @@ warpsw3(){
 
             systemctl stop wireproxy-warp
 
-            warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
             warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-            sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+            warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
             sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+            sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/proxy.conf;
             rm -f wgcf-profile.conf
 
             systemctl start wireproxy-warp
@@ -1393,10 +1391,10 @@ warpsw3(){
                 wgcf generate
                 chmod +x wgcf-profile.conf
 
-                warpPublickey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
                 warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                sed -i "s#PublicKey.*#PublicKey = $warpPublickey#g" /etc/wireguard/proxy.conf;
+                warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
                 sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+                sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/proxy.conf;
                 rm -f wgcf-profile.conf
 
                 systemctl start wireproxy-warp
