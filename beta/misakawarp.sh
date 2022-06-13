@@ -1189,7 +1189,14 @@ warpsw1(){
         rm -f wgcf-profile.conf
 
         wg-quick up wgcf >/dev/null 2>&1
-        green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
+        yellow "正在检查WARP 免费账户连通性，请稍等..."
+        WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+        WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+        if [[ $WgcfWARP4Status == "on" || $WgcfWARP6Status == "on" ]]; then
+            green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
+        else
+            green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+        fi
     fi
     if [[ $accountInput == 2 ]]; then
         cd /etc/wireguard
