@@ -875,6 +875,14 @@ install_warpcli(){
 
     read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WARPCliPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+            fi
+        done
+    fi
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
 
     yellow "正在启动Warp-Cli代理模式"
@@ -893,6 +901,14 @@ change_warpcli_port() {
     fi
     read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WARPCliPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+            fi
+        done
+    fi
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
     yellow "正在启动Warp-Cli代理模式"
     warp-cli --accept-tos connect >/dev/null 2>&1
@@ -1003,8 +1019,17 @@ install_wireproxy(){
 
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
     
-    read -rp "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
+    read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WireProxyPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+            fi
+        done
+    fi
+
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
     WgcfV4Endpoint="162.159.193.10:2408"
@@ -1074,8 +1099,16 @@ TEXT
 
 change_wireproxy_port(){
     systemctl stop wireproxy-warp
-    read -rp "请输入WARP Cli使用的代理端口 (默认40000): " WireProxyPort
+    read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WireProxyPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+            fi
+        done
+    fi
     CurrentPort=$(grep BindAddress /etc/wireguard/proxy.conf)
     sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
     yellow "正在启动WireProxy-WARP代理模式"
