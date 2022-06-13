@@ -875,6 +875,14 @@ install_warpcli(){
 
     read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WARPCliPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+            fi
+        done
+    fi
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
 
     yellow "正在启动Warp-Cli代理模式"
@@ -893,6 +901,14 @@ change_warpcli_port() {
     fi
     read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WARPCliPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+            fi
+        done
+    fi
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
     yellow "正在启动Warp-Cli代理模式"
     warp-cli --accept-tos connect >/dev/null 2>&1
@@ -1003,8 +1019,17 @@ install_wireproxy(){
 
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
     
-    read -rp "请输入将要设置的Socks5代理端口（默认40000）：" WireProxyPort
+    read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WireProxyPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+            fi
+        done
+    fi
+
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
     WgcfV4Endpoint="162.159.193.10:2408"
@@ -1074,8 +1099,16 @@ TEXT
 
 change_wireproxy_port(){
     systemctl stop wireproxy-warp
-    read -rp "请输入WARP Cli使用的代理端口 (默认40000): " WireProxyPort
+    read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
+    if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+        until [[ -z $(netstat -ntlp | grep "$WireProxyPort") ]]; do
+            if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
+                yellow "你设置的端口目前已被占用，请重新输入端口"
+                read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+            fi
+        done
+    fi
     CurrentPort=$(grep BindAddress /etc/wireguard/proxy.conf)
     sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
     yellow "正在启动WireProxy-WARP代理模式"
@@ -1124,7 +1157,7 @@ warpup(){
     yellow "请按照下面指示，输入您的CloudFlare WARP账号信息："
     read -rp "请输入您的WARP设备ID (36位字符): " WarpDeviceID
     read -rp "请输入你期望刷到的流量 (单位: GB): " WarpFlowLimit
-    echo -e "你期望刷到的流量为：$WarpFlowLimit GB"
+    echo -e "已设置你期望刷到的流量为：$WarpFlowLimit GB"
     for ((i = 0; i < ${WarpFlowLimit}; i++)); do
         if [[ $i == 0 ]]; then
             sleep_try=30
@@ -1156,7 +1189,7 @@ warpup(){
         fi
     done
     echo ""
-    echo -e "此次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
+    echo -e "本次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
 warpsw1(){
@@ -1281,17 +1314,20 @@ warpsw1(){
 }
 
 warpsw2(){
+    warp-cli --accept-tos disconnect >/dev/null 2>&1
     warp-cli --accept-tos register >/dev/null 2>&1
     read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
     if [[ -n $WPPlusKey ]]; then
         warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
-        if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
-            green "WARP-Cli 账户类型切换为 WARP+ 成功！"
-        else
-            red "WARP+账户启用失败，即将使用WARP免费版账户"
-        fi
     fi
     warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
+    warp-cli --accept-tos set-proxy-port "$s5p" >/dev/null 2>&1
+    warp-cli --accept-tos connect >/dev/null 2>&1
+    if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
+        green "WARP-Cli 账户类型切换为 WARP+ 成功！"
+    else
+        red "WARP+账户启用失败，已自动降级至WARP免费版账户"
+    fi
 }
 
 warpsw3(){
