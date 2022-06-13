@@ -59,7 +59,7 @@ archAffix(){
 }
 
 check_status(){
-    yellow "正在检查VPS系统状态..."
+    yellow "正在检查VPS系统配置环境，请稍等..."
     if [[ -z $(type -P curl) ]]; then
         yellow "检测curl未安装，正在安装中..."
         if [[ ! $SYSTEM == "CentOS" ]]; then
