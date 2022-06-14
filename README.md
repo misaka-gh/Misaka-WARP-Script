@@ -50,7 +50,9 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 ### 1. 为什么连不上Wgcf-WARP或WireProxy-WARP代理模式
 
-查看 https://www.cloudflarestatus.com/ ，如你的VPS区域后面出现Re-routed即为无法连接。请等待官方修复
+1. 查看 https://www.cloudflarestatus.com/ ，如你的VPS区域后面出现Re-routed即为无法连接。请等待官方修复
+
+2. 香港地区目前已被CloudFlare限制使用第三方客户端
 
 ![image](https://user-images.githubusercontent.com/96560028/160244784-25c40a97-d398-4d4f-9deb-d82c5e9b69ef.png)
 
