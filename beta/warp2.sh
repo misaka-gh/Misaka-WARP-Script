@@ -217,11 +217,11 @@ docker_warn(){
 }
 
 wgcfFailAction(){
-	red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
+    red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
     wg-quick down wgcf >/dev/null 2>&1
     wg-quick up wgcf >/dev/null 2>&1
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-	WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     sleep 8
     retry_time=$((${retry_time} + 1))
     if [[ $retry_time == 6 ]]; then
@@ -232,7 +232,7 @@ wgcfFailAction(){
 }
 
 wgcfFailAdvice(){
-	echo ""
+    echo ""
     red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
     green "建议如下："
     yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
@@ -242,15 +242,15 @@ wgcfFailAdvice(){
 }
 
 wgcfconfig4(){
-	sed -i '/\:\:\/0/d' wgcf.conf
+    sed -i '/\:\:\/0/d' wgcf.conf
 }
 
 wgcfconfig6(){
-	sed -i '/0\.\0\/0/d' wgcf.conf
+    sed -i '/0\.\0\/0/d' wgcf.conf
 }
 
 wgcfcheck4(){
-	yellow "正在启动 Wgcf-WARP"
+    yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -266,7 +266,7 @@ wgcfcheck4(){
 }
 
 wgcfcheck6(){
-	yellow "正在启动 Wgcf-WARP"
+    yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -282,7 +282,7 @@ wgcfcheck6(){
 }
 
 wgcfcheckd(){
-	yellow "正在启动 Wgcf-WARP"
+    yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
 
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -309,11 +309,11 @@ wgcfdns6(){
 }
 
 wgcfendpoint4(){
-	sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf.conf
+    sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf.conf
 }
 
 wgcfendpoint6(){
-	sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' wgcf.conf
+    sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' wgcf.conf
 }
 
 wgcfpost4(){
