@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -f ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_386 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_amd64 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_armv5 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_armv6 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_armv7 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_arm64 ${GITHUB_WORKSPACE}/files/wgcf_latest_linux_s390x ${GITHUB_WORKSPACE}/files/wgcf-fetchlog.txt
+rm -f ${GITHUB_WORKSPACE}/files/wgcf-latest-linux-386 ${GITHUB_WORKSPACE}/files/wgcf-latest-linux-amd64 ${GITHUB_WORKSPACE}/files/wgcf-latest-linux-armv5 ${GITHUB_WORKSPACE}/files/wgcf-latest-linux-armv6 ${GITHUB_WORKSPACE}/files/wgcf-latest-linux-armv7 ${GITHUB_WORKSPACE}/files/wgcf-latest-linux-arm64 ${GITHUB_WORKSPACE}/files/wgcf-latest-linux-s390x ${GITHUB_WORKSPACE}/files/wgcf-fetchlog.txt
 
 actions_date=$(date)
 repo_last_ver=$(curl -Ls "https://api.github.com/repos/ViRb3/wgcf/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
