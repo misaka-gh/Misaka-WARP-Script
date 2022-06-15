@@ -396,7 +396,7 @@ install_wgcf(){
         chmod +x /usr/bin/wireguard-go
     fi
 
-    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
@@ -706,7 +706,7 @@ install_wireproxy(){
     wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
     chmod +x /usr/local/bin/wireproxy
 
-    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf_latest_linux_$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
 
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
