@@ -226,19 +226,15 @@ wgcfFailAction(){
     retry_time=$((${retry_time} + 1))
     if [[ $retry_time == 6 ]]; then
         uninstall_wgcf
-        wgcfFailAdvice
+        echo ""
+        red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+        green "建议如下："
+        yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+        yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+        yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+        yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
         exit 1
     fi
-}
-
-wgcfFailAdvice(){
-    echo ""
-    red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-    green "建议如下："
-    yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-    yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-    yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-    yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
 }
 
 wgcfconfig4(){
