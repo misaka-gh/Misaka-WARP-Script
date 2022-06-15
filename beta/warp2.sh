@@ -452,60 +452,60 @@ install_wgcf(){
     if [[ $VPSIP == 0 ]]; then
         if [[ $wgcfmode == 0 ]]; then
             wgcfdns6
-			wgcfconfig4
-			wgcfendpoint6
-			wgcfcheck4
+            wgcfconfig4
+            wgcfendpoint6
+            wgcfcheck4
         fi
         if [[ $wgcfmode == 1 ]]; then
             wgcfdns6
-			wgcfpost6
-			wgcfconfig6
-			wgcfendpoint6
-			wgcfcheck6
+            wgcfpost6
+            wgcfconfig6
+            wgcfendpoint6
+            wgcfcheck6
         fi
         if [[ $wgcfmode == 2 ]]; then
             wgcfdns6
-			wgcfpost6
-			wgcfendpoint6
-			wgcfcheckd
+            wgcfpost6
+            wgcfendpoint6
+            wgcfcheckd
         fi
     elif [[ $VPSIP == 1 ]]; then
         if [[ $wgcfmode == 0 ]]; then
             wgcfdns4
-			wgcfpost4
-			wgcfconfig4
-			wgcfendpoint4
-			wgcfcheck4
+            wgcfpost4
+            wgcfconfig4
+            wgcfendpoint4
+            wgcfcheck4
         fi
         if [[ $wgcfmode == 1 ]]; then
             wgcfdns4
-			wgcfconfig6
-			wgcfendpoint4
-			wgcfcheck6
+            wgcfconfig6
+            wgcfendpoint4
+            wgcfcheck6
         fi
         if [[ $wgcfmode == 2 ]]; then
             wgcfdns4
-			wgcfpost4
-			wgcfendpoint4
-			wgcfcheckd
+            wgcfpost4
+            wgcfendpoint4
+            wgcfcheckd
         fi
     elif [[ $VPSIP == 2 ]]; then
         if [[ $wgcfmode == 0 ]]; then
             wgcfdns4
-			wgcfpost4
-			wgcfconfig4
-			wgcfcheck4
+            wgcfpost4
+            wgcfconfig4
+            wgcfcheck4
         fi
         if [[ $wgcfmode == 1 ]]; then
             wgcfdns4
-			wgcfpost6
-			wgcfconfig6
-			wgcfcheck6
+            wgcfpost6
+            wgcfconfig6
+            wgcfcheck6
         fi
         if [[ $wgcfmode == 2 ]]; then
             wgcfdns4
-			wgcfpostd
-			wgcfcheckd
+            wgcfpostd
+            wgcfcheckd
         fi
     fi
 }
