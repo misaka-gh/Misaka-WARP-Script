@@ -1228,9 +1228,8 @@ menu(){
     fi
 }
 
-menu0(){
-    clear
-    echo "#############################################################"
+info_bar(){
+	echo "#############################################################"
     echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
     echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
     echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
@@ -1240,6 +1239,9 @@ menu0(){
     echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
     echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
     echo "#############################################################"
+}
+
+option6(){
     echo -e ""
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv6)${PLAIN}"
@@ -1258,50 +1260,10 @@ menu0(){
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
-    echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
-    if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
-    fi
-    if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $w5p ]]; then
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        if [[ -n $w5i ]]; then
-            echo -e "WireProxy IP: $w5i  地区: $w5c"
-        fi
-    fi
-    echo -e ""
-    read -rp " 请输入选项 [0-12]:" menu0Input
-    case "$menu0Input" in
-        1 ) wgcfmode=0 && install_wgcf ;;
-        2 ) wgcfmode=1 && install_wgcf ;;
-        3 ) wgcfmode=2 && install_wgcf ;;
-        4 ) wgcf_switch ;;
-        5 ) uninstall_wgcf ;;
-        6 ) install_wireproxy ;;
-        7 ) change_wireproxy_port ;;
-        8 ) wireproxy_switch ;;
-        9 ) uninstall_wireproxy ;;
-        10 ) warpup ;;
-        11 ) warpsw ;;
-        12 ) warpnf ;;
-        * ) exit 1 ;;
-    esac
 }
 
-menu1(){
-    clear
-    echo "#############################################################"
-    echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
-    echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
-    echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
-    echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
-    echo -e "# ${GREEN}GitHub${PLAIN}: https://github.com/Misaka-blog                    #"
-    echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
-    echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
-    echo "#############################################################"
+option4d(){
+    echo -e ""
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
     echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
@@ -1323,19 +1285,15 @@ menu1(){
     echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
-    echo -e ""
-    echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
+	echo -e ""
+}
+
+statustext(){
     if [[ -n $v4 ]]; then
         echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
     fi
     if [[ -n $v6 ]]; then
         echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        if [[ -n $s5i ]]; then
-            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
-        fi
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
@@ -1343,7 +1301,39 @@ menu1(){
             echo -e "WireProxy IP: $w5i  地区: $w5c"
         fi
     fi
-    echo -e ""
+	echo -e ""
+}
+
+menu0(){
+    clear
+    info_bar
+    option6
+    echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
+    statustext
+    read -rp " 请输入选项 [0-12]:" menu0Input
+    case "$menu0Input" in
+        1 ) wgcfmode=0 && install_wgcf ;;
+        2 ) wgcfmode=1 && install_wgcf ;;
+        3 ) wgcfmode=2 && install_wgcf ;;
+        4 ) wgcf_switch ;;
+        5 ) uninstall_wgcf ;;
+        6 ) install_wireproxy ;;
+        7 ) change_wireproxy_port ;;
+        8 ) wireproxy_switch ;;
+        9 ) uninstall_wireproxy ;;
+        10 ) warpup ;;
+        11 ) warpsw ;;
+        12 ) warpnf ;;
+        * ) exit 1 ;;
+    esac
+}
+
+menu1(){
+    clear
+    info_bar
+    option4d
+    echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
+    statustext
     read -rp " 请输入选项 [0-16]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
@@ -1368,59 +1358,10 @@ menu1(){
 
 menu2(){
     clear
-    echo "#############################################################"
-    echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
-    echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
-    echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
-    echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
-    echo -e "# ${GREEN}GitHub${PLAIN}: https://github.com/Misaka-blog                    #"
-    echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
-    echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
-    echo "#############################################################"
-    echo -e ""
-    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
-    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
-    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
-    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
-    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
-    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
-    echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
-    echo -e ""
-    echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
-    if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
-    fi
-    if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        if [[ -n $s5i ]]; then
-            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
-        fi
-    fi
-    if [[ -n $w5p ]]; then
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        if [[ -n $w5i ]]; then
-            echo -e "WireProxy IP: $w5i  地区: $w5c"
-        fi
-    fi
-    echo -e ""
+    info_bar
+	option4d
+	echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
+	statustext
     read -rp " 请输入选项 [0-16]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
