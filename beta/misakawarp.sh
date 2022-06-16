@@ -70,6 +70,7 @@ check_status(){
 
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    Browser_UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 
     if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
         # 关闭Wgcf-WARP，以防识别有误
@@ -114,6 +115,8 @@ check_status(){
     v6=$(curl -s6m8 https://ip.gs -k)
     c4=$(curl -s4m8 https://ip.gs/country -k)
     c6=$(curl -s6m8 https://ip.gs/country -k)
+    n4=$(curl -4 --user-agent "${Browser_UA}" -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
+    n6=$(curl -6 --user-agent "${Browser_UA}" -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
     s5p=$(warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}')
     w5p=$(grep BindAddress /etc/wireguard/proxy.conf 2>/dev/null | sed "s/BindAddress = 127.0.0.1://g")
     if [[ -n $s5p ]]; then
@@ -1287,10 +1290,12 @@ option4d(){
 
 statustext(){
     if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
+        echo -e "IPv4 地址：$v4  地区：$c4"
+        echo -e "WARP状态：$w4  Netfilx解锁状态：$n4"
     fi
     if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
+        echo -e "IPv6 地址：$v6  地区：$c6"
+        echo -e "WARP状态：$w6  Netfilx解锁状态：$n6"
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
