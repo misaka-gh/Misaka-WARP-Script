@@ -810,12 +810,12 @@ TEXT
 
     yellow "正在启动WireProxy-WARP代理模式"
     systemctl start wireproxy-warp
-    socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-    until [[ $socks5Status =~ on|plus ]]; do
+    WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    until [[ $WireProxyStatus =~ on|plus ]]; do
         red "启动WireProxy-WARP代理模式失败，正在尝试重启"
         systemctl stop wireproxy-warp
         systemctl start wireproxy-warp
-        socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+        WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         sleep 8
     done
     sleep 5
