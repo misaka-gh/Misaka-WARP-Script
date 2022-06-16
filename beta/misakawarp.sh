@@ -164,10 +164,10 @@ check_status(){
         n6="${GREEN}已解锁 Netflix${PLAIN}"
     fi
     if [[ $s5n == "200" ]]; then
-        n6="${GREEN}已解锁 Netflix${PLAIN}"
+        s5n="${GREEN}已解锁 Netflix${PLAIN}"
     fi
     if [[ $w5n == "200" ]]; then
-        n6="${GREEN}已解锁 Netflix${PLAIN}"
+        w5n="${GREEN}已解锁 Netflix${PLAIN}"
     fi
     if [[ $n4 == "403" ]]; then
         n4="${RED}无法解锁 Netflix${PLAIN}"
@@ -176,10 +176,10 @@ check_status(){
         n6="${RED}无法解锁 Netflix${PLAIN}"
     fi
     if [[ $s5n == "403" ]]; then
-        n4="${RED}无法解锁 Netflix${PLAIN}"
+        s5n="${RED}无法解锁 Netflix${PLAIN}"
     fi
     if [[ $w5n == "403" ]]; then
-        n6="${RED}无法解锁 Netflix${PLAIN}"
+        w5n="${RED}无法解锁 Netflix${PLAIN}"
     fi
     if [[ $n4 == "404" ]]; then
         n4="${YELLOW}Netflix 自制剧${PLAIN}"
@@ -188,10 +188,10 @@ check_status(){
         n6="${YELLOW}Netflix 自制剧${PLAIN}"
     fi
     if [[ $s5n == "404" ]]; then
-        n4="${YELLOW}Netflix 自制剧${PLAIN}"
+        s5n="${YELLOW}Netflix 自制剧${PLAIN}"
     fi
     if [[ $w5n == "404" ]]; then
-        n6="${YELLOW}Netflix 自制剧${PLAIN}"
+        w5n="${YELLOW}Netflix 自制剧${PLAIN}"
     fi
 }
 
@@ -1301,14 +1301,14 @@ statustext(){
         echo "-------------------------------------------------------------"
         echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
         if [[ -n $s5i ]]; then
-            echo -e "IP: $s5i  地区: $s5c"
+            echo -e "IP: $s5i  地区: $s5c  Netfilx解锁状态：$s5n"
         fi
     fi
     if [[ -n $w5p ]]; then
         echo "-------------------------------------------------------------"
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
         if [[ -n $w5i ]]; then
-            echo -e "IP: $w5i  地区: $w5c"
+            echo -e "IP: $w5i  地区: $w5c  Netfilx解锁状态：$w5n"
         fi
     fi
     echo "-------------------------------------------------------------"
