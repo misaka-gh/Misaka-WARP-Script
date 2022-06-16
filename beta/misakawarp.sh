@@ -1286,53 +1286,6 @@ info_bar(){
     echo "#############################################################"
 }
 
-option6(){
-    echo -e ""
-    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
-    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
-    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}7.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
-    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}11.${PLAIN} 切换 WARP 账户类型"
-    echo -e " ${GREEN}12.${PLAIN} 获取解锁 Netflix 的 WARP IP"
-    echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
-    echo -e ""
-}
-
-option4d(){
-    echo -e ""
-    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
-    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
-    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
-    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
-    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
-    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
-    echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
-	echo -e ""
-}
-
 statustext(){
     if [[ -n $v4 ]]; then
         echo "-------------------------------------------------------------"
@@ -1391,7 +1344,24 @@ choice4d(){
 menu0(){
     clear
     info_bar
-    option6
+    echo -e ""
+    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
+    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv6)${PLAIN}"
+    echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
+    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
+    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}6.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}10.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}11.${PLAIN} 切换 WARP 账户类型"
+    echo -e " ${GREEN}12.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
+    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
+    echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
     statustext
     read -rp " 请输入选项 [0-12]:" menu0Input
@@ -1415,7 +1385,29 @@ menu0(){
 menu1(){
     clear
     info_bar
-    option4d
+    echo -e ""
+    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
+    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
+    echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
+    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
+    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
+    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
+    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
+	echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
     statustext
     choice4d
@@ -1424,7 +1416,29 @@ menu1(){
 menu2(){
     clear
     info_bar
-	option4d
+	echo -e ""
+    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
+    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
+    echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
+    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
+    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
+    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
+    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
+    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
+    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
+    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
+    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
+    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
+    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
+    echo " -------------"
+    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
+    echo -e ""
 	echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
 	statustext
     choice4d
