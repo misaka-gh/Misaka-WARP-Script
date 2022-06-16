@@ -766,8 +766,6 @@ install_wireproxy(){
 
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
-    WgcfV4Endpoint="162.159.193.10:2408"
-    WgcfV6Endpoint="[2606:4700:d0::a29f:c001]:2408"
 
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
@@ -775,11 +773,11 @@ install_wireproxy(){
     fi
 
     if [[ $VPSIP == 0 ]]; then
-        WireproxyEndpoint=$WgcfV6Endpoint
+        WireproxyEndpoint="[2606:4700:d0::a29f:c001]:2408"
     elif [[ $VPSIP == 1 ]]; then
-        WireproxyEndpoint=$WgcfV4Endpoint
+        WireproxyEndpoint="162.159.193.10:2408"
     elif [[ $VPSIP == 2 ]]; then
-        WireproxyEndpoint=$WgcfV4Endpoint
+        WireproxyEndpoint="162.159.193.10:2408"
     fi
     
     cat <<EOF > /etc/wireguard/proxy.conf
