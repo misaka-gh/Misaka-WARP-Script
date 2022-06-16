@@ -752,8 +752,6 @@ install_wireproxy(){
     else
         check_best_mtu
     fi
-
-    sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
     
     read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
