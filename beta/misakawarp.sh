@@ -216,43 +216,43 @@ docker_warn(){
     fi
 }
 
-wgcf44(){
-    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i '/\:\:\/0/d' wgcf-profile.conf
-    sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
+wgcfFailAction(){
+    red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
+    wg-quick down wgcf >/dev/null 2>&1
+    wg-quick up wgcf >/dev/null 2>&1
+    WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    sleep 8
+    retry_time=$((${retry_time} + 1))
+    if [[ $retry_time == 6 ]]; then
+        uninstall_wgcf
+        echo ""
+        red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+        green "建议如下："
+        yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+        yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+        yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+        yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+        exit 1
     fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
+}
+
+wgcfconfig4(){
+    sed -i '/\:\:\/0/d' wgcf.conf
+}
+
+wgcfconfig6(){
+    sed -i '/0\.\0\/0/d' wgcf.conf
+}
+
+wgcfcheck4(){
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
 
-    WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     retry_time=1
-    until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
+    until [[ $WgcfWARP4Status =~ "on"|"plus" ]]; do
+        wgcfFailAction
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -261,41 +261,14 @@ wgcf44(){
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
 }
 
-wgcf46(){
-    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
-    sed -i '/0\.\0\/0/d' wgcf-profile.conf
-    sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
+wgcfcheck6(){
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
 
-    WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+    WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     retry_time=1
-    until [[ $WgcfWARPStatus =~ "on"|"plus" ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
+    until [[ $WgcfWARP6Status =~ "on"|"plus" ]]; do
+        wgcfFailAction
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -304,19 +277,7 @@ wgcf46(){
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
 }
 
-wgcf4d(){
-    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
+wgcfcheckd(){
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
 
@@ -324,24 +285,7 @@ wgcf4d(){
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     retry_time=1
     until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
+        wgcfFailAction
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
 
@@ -352,277 +296,37 @@ wgcf4d(){
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
 }
 
-wgcf64(){
-    sed -i 's/1.1.1.1/2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844,1.1.1.1,8.8.8.8,8.8.4.4/g' wgcf-profile.conf
-    sed -i '/\:\:\/0/d' wgcf-profile.conf
-    sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
-    yellow "正在启动 Wgcf-WARP"
-    wg-quick up wgcf >/dev/null 2>&1
-    
-    WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    retry_time=1
-    until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
-    done
-    systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
-    WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
-    green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
+wgcfdns4(){
+    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf.conf
 }
 
-wgcf66(){
-    sed -i 's/1.1.1.1/2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844,1.1.1.1,8.8.8.8,8.8.4.4/g' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i '/0\.\0\/0/d' wgcf-profile.conf
-    sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
-    yellow "正在启动 Wgcf-WARP"
-    wg-quick up wgcf >/dev/null 2>&1
-
-    WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    retry_time=1
-    until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
-    done
-    systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
-    WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
-    green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
+wgcfdns6(){
+    sed -i 's/1.1.1.1/2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844,1.1.1.1,8.8.8.8,8.8.4.4/g' wgcf.conf
 }
 
-wgcf6d(){
-    sed -i 's/1.1.1.1/2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844,1.1.1.1,8.8.8.8,8.8.4.4/g' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-
-    yellow "正在启动 Wgcf-WARP"
-    wg-quick up wgcf >/dev/null 2>&1
-
-    WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    retry_time=1
-    until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
-    done
-    systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
-    WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
-    WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
-    green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
-    yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
+wgcfendpoint4(){
+    sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' wgcf.conf
 }
 
-wgcfd4(){
-    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i '/\:\:\/0/d' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
-    yellow "正在启动 Wgcf-WARP"
-    wg-quick up wgcf >/dev/null 2>&1
-
-    WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    retry_time=1
-    until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARPStatus=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
-    done
-    systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
-    WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
-    green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
+wgcfendpoint6(){
+    sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' wgcf.conf
 }
 
-wgcfd6(){
-    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i '/0\.\0\/0/d' wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
-    yellow "正在启动 Wgcf-WARP"
-    wg-quick up wgcf >/dev/null 2>&1
-
-    WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    retry_time=1
-    until [[ $WgcfWARPStatus =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARPStatus=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
-    done
-    systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
-    WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
-    green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
+wgcfpost4(){
+    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
+    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
 }
 
-wgcfd(){
-    sed -i 's/1.1.1.1/1.1.1.1,8.8.8.8,8.8.4.4,2606:4700:4700::1001,2606:4700:4700::1111,2001:4860:4860::8888,2001:4860:4860::8844/g' wgcf-profile.conf
-    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "9 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    sed -i "10 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf-profile.conf
-    
-    if [[ ! -d "/etc/wireguard" ]]; then
-        mkdir /etc/wireguard
-        chmod -R 777 /etc/wireguard
-    fi
-    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
-    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-    
-    yellow "正在启动 Wgcf-WARP"
-    wg-quick up wgcf >/dev/null 2>&1
+wgcfpost6(){
+    sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
+    sed -i "8 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
+}
 
-    WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    retry_time=1
-    until [[ $WgcfWARP4Status =~ on|plus ]] && [[ $WgcfWARP6Status =~ on|plus ]]; do
-        red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
-        wg-quick down wgcf >/dev/null 2>&1
-        wg-quick up wgcf >/dev/null 2>&1
-        WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        sleep 8
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wgcf
-            echo ""
-            red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
-            green "建议如下："
-            yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-            yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-            yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-            yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
-        fi
-    done
-    systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
-    WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
-    WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
-    green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
-    yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
+wgcfpostd(){
+    sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
+    sed -i "8 s/^/PostDown = ip -4 rule delete from $(ip route get 114.114.114.114 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
+    sed -i "9 s/^/PostUp = ip -6 rule add from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
+    sed -i "10 s/^/PostDown = ip -6 rule delete from $(ip route get 2400:3200::1 | grep -oP 'src \K\S+') lookup main\n/" wgcf.conf
 }
 
 install_wgcf(){
@@ -730,42 +434,74 @@ install_wgcf(){
 
     check_best_mtu
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
+	
+	if [[ ! -d "/etc/wireguard" ]]; then
+        mkdir /etc/wireguard
+        chmod -R 777 /etc/wireguard
+    fi
+	
+    mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
+    mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
+	
+	cd /etc/wireguard
 
     if [[ $VPSIP == 0 ]]; then
         if [[ $wgcfmode == 0 ]]; then
-            wgcf64
+            wgcfdns6
+            wgcfconfig4
+            wgcfendpoint6
+            wgcfcheck4
         fi
-
         if [[ $wgcfmode == 1 ]]; then
-            wgcf66
+            wgcfdns6
+            wgcfpost6
+            wgcfconfig6
+            wgcfendpoint6
+            wgcfcheck6
         fi
-        
         if [[ $wgcfmode == 2 ]]; then
-            wgcf6d
+            wgcfdns6
+            wgcfpost6
+            wgcfendpoint6
+            wgcfcheckd
         fi
     elif [[ $VPSIP == 1 ]]; then
         if [[ $wgcfmode == 0 ]]; then
-            wgcf44
+            wgcfdns4
+            wgcfpost4
+            wgcfconfig4
+            wgcfendpoint4
+            wgcfcheck4
         fi
-
         if [[ $wgcfmode == 1 ]]; then
-            wgcf46
+            wgcfdns4
+            wgcfconfig6
+            wgcfendpoint4
+            wgcfcheck6
         fi
-
         if [[ $wgcfmode == 2 ]]; then
-            wgcf4d
+            wgcfdns4
+            wgcfpost4
+            wgcfendpoint4
+            wgcfcheckd
         fi
     elif [[ $VPSIP == 2 ]]; then
         if [[ $wgcfmode == 0 ]]; then
-            wgcfd4
+            wgcfdns4
+            wgcfpost4
+            wgcfconfig4
+            wgcfcheck4
         fi
-
         if [[ $wgcfmode == 1 ]]; then
-            wgcfd6
+            wgcfdns4
+            wgcfpost6
+            wgcfconfig6
+            wgcfcheck6
         fi
-
         if [[ $wgcfmode == 2 ]]; then
-            wgcfd
+            wgcfdns4
+            wgcfpostd
+            wgcfcheckd
         fi
     fi
 }
@@ -827,9 +563,6 @@ install_warpcli(){
     
     if [[ -n ${v66} && -z ${v44} ]]; then
         red "WARP-Cli 代理模式不支持纯IPv6的VPS！！"
-        exit 1
-    elif [[ $WgcfWARP4Status =~ on|plus ]]; then
-        red "检测到IPv4出口已被Wgcf-WARP接管，无法启用WARP-Cli代理模式！"
         exit 1
     fi
 
@@ -1016,8 +749,6 @@ install_wireproxy(){
     else
         check_best_mtu
     fi
-
-    sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
     
     read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
@@ -1032,8 +763,6 @@ install_wireproxy(){
 
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
-    WgcfV4Endpoint="162.159.193.10:2408"
-    WgcfV6Endpoint="[2606:4700:d0::a29f:c001]:2408"
 
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
@@ -1041,11 +770,11 @@ install_wireproxy(){
     fi
 
     if [[ $VPSIP == 0 ]]; then
-        WireproxyEndpoint=$WgcfV6Endpoint
+        WireproxyEndpoint="[2606:4700:d0::a29f:c001]:2408"
     elif [[ $VPSIP == 1 ]]; then
-        WireproxyEndpoint=$WgcfV4Endpoint
+        WireproxyEndpoint="162.159.193.10:2408"
     elif [[ $VPSIP == 2 ]]; then
-        WireproxyEndpoint=$WgcfV4Endpoint
+        WireproxyEndpoint="162.159.193.10:2408"
     fi
     
     cat <<EOF > /etc/wireguard/proxy.conf
@@ -1488,9 +1217,8 @@ menu(){
     fi
 }
 
-menu0(){
-    clear
-    echo "#############################################################"
+info_bar(){
+	echo "#############################################################"
     echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
     echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
     echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
@@ -1500,6 +1228,9 @@ menu0(){
     echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
     echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
     echo "#############################################################"
+}
+
+option6(){
     echo -e ""
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv6)${PLAIN}"
@@ -1518,50 +1249,10 @@ menu0(){
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
-    echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
-    if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
-    fi
-    if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $w5p ]]; then
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        if [[ -n $w5i ]]; then
-            echo -e "WireProxy IP: $w5i  地区: $w5c"
-        fi
-    fi
-    echo -e ""
-    read -rp " 请输入选项 [0-12]:" menu0Input
-    case "$menu0Input" in
-        1 ) wgcfmode=0 && install_wgcf ;;
-        2 ) wgcfmode=1 && install_wgcf ;;
-        3 ) wgcfmode=2 && install_wgcf ;;
-        4 ) wgcf_switch ;;
-        5 ) uninstall_wgcf ;;
-        6 ) install_wireproxy ;;
-        7 ) change_wireproxy_port ;;
-        8 ) wireproxy_switch ;;
-        9 ) uninstall_wireproxy ;;
-        10 ) warpup ;;
-        11 ) warpsw ;;
-        12 ) warpnf ;;
-        * ) exit 1 ;;
-    esac
 }
 
-menu1(){
-    clear
-    echo "#############################################################"
-    echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
-    echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
-    echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
-    echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
-    echo -e "# ${GREEN}GitHub${PLAIN}: https://github.com/Misaka-blog                    #"
-    echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
-    echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
-    echo "#############################################################"
+option4d(){
+    echo -e ""
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
     echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
@@ -1583,19 +1274,15 @@ menu1(){
     echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
-    echo -e ""
-    echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
+	echo -e ""
+}
+
+statustext(){
     if [[ -n $v4 ]]; then
         echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
     fi
     if [[ -n $v6 ]]; then
         echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        if [[ -n $s5i ]]; then
-            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
-        fi
     fi
     if [[ -n $w5p ]]; then
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
@@ -1603,7 +1290,39 @@ menu1(){
             echo -e "WireProxy IP: $w5i  地区: $w5c"
         fi
     fi
-    echo -e ""
+	echo -e ""
+}
+
+menu0(){
+    clear
+    info_bar
+    option6
+    echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
+    statustext
+    read -rp " 请输入选项 [0-12]:" menu0Input
+    case "$menu0Input" in
+        1 ) wgcfmode=0 && install_wgcf ;;
+        2 ) wgcfmode=1 && install_wgcf ;;
+        3 ) wgcfmode=2 && install_wgcf ;;
+        4 ) wgcf_switch ;;
+        5 ) uninstall_wgcf ;;
+        6 ) install_wireproxy ;;
+        7 ) change_wireproxy_port ;;
+        8 ) wireproxy_switch ;;
+        9 ) uninstall_wireproxy ;;
+        10 ) warpup ;;
+        11 ) warpsw ;;
+        12 ) warpnf ;;
+        * ) exit 1 ;;
+    esac
+}
+
+menu1(){
+    clear
+    info_bar
+    option4d
+    echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
+    statustext
     read -rp " 请输入选项 [0-16]:" menu1Input
     case "$menu1Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
@@ -1628,59 +1347,10 @@ menu1(){
 
 menu2(){
     clear
-    echo "#############################################################"
-    echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
-    echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-    echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
-    echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
-    echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
-    echo -e "# ${GREEN}GitHub${PLAIN}: https://github.com/Misaka-blog                    #"
-    echo -e "# ${GREEN}Bitbucket${PLAIN}: https://bitbucket.org/misakano7545             #"
-    echo -e "# ${GREEN}GitLab${PLAIN}: https://gitlab.com/misaka-blog                    #"
-    echo "#############################################################"
-    echo -e ""
-    echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
-    echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
-    echo -e " ${GREEN}4.${PLAIN} 开启或关闭 Wgcf-WARP"
-    echo -e " ${GREEN}5.${PLAIN} ${RED}卸载 Wgcf-WARP${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}6.${PLAIN} 安装 WARP-Cli 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN} ${RED}(仅支持CPU架构为AMD64的VPS)${PLAIN}"
-    echo -e " ${GREEN}7.${PLAIN} 修改 WARP-Cli 代理模式连接端口"
-    echo -e " ${GREEN}8.${PLAIN} 开启或关闭 WARP-Cli 代理模式"
-    echo -e " ${GREEN}9.${PLAIN} ${RED}卸载 WARP-Cli 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}10.${PLAIN} 安装 Wireproxy-WARP 代理模式 ${YELLOW}(Socks5 WARP)${PLAIN}"
-    echo -e " ${GREEN}11.${PLAIN} 修改 Wireproxy-WARP 代理模式连接端口"
-    echo -e " ${GREEN}12.${PLAIN} 开启或关闭 Wireproxy-WARP 代理模式"
-    echo -e " ${GREEN}13.${PLAIN} ${RED}卸载 Wireproxy-WARP 代理模式${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}14.${PLAIN} 获取 WARP+ 账户流量"
-    echo -e " ${GREEN}15.${PLAIN} 切换 WARP 账户类型"
-    echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
-    echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
-    echo -e ""
-    echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
-    if [[ -n $v4 ]]; then
-        echo -e "IPv4 地址：$v4  地区：$c4  WARP状态：$w4"
-    fi
-    if [[ -n $v6 ]]; then
-        echo -e "IPv6 地址：$v6  地区：$c6  WARP状态：$w6"
-    fi
-    if [[ -n $s5p ]]; then
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
-        if [[ -n $s5i ]]; then
-            echo -e "WARP-Cli IP: $s5i  地区: $s5c"
-        fi
-    fi
-    if [[ -n $w5p ]]; then
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
-        if [[ -n $w5i ]]; then
-            echo -e "WireProxy IP: $w5i  地区: $w5c"
-        fi
-    fi
-    echo -e ""
+    info_bar
+	option4d
+	echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
+	statustext
     read -rp " 请输入选项 [0-16]:" menu2Input
     case "$menu2Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
