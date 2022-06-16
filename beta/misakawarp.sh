@@ -794,7 +794,7 @@ EOF
 
     cat <<'TEXT' > /etc/systemd/system/wireproxy-warp.service
 [Unit]
-Description=CloudFlare WARP Socks5 mode based for WireProxy, script by owo.misaka.rest
+Description=CloudFlare WARP Socks5 proxy mode based for WireProxy, script by owo.misaka.rest
 After=network.target
 [Install]
 WantedBy=multi-user.target
@@ -808,14 +808,22 @@ TEXT
     rm -f wgcf-profile.conf
     mv wgcf-account.toml /etc/wireguard/wgcf-account.toml
 
-    yellow "正在启动WireProxy-WARP代理模式"
+    yellow "正在启动 WireProxy-WARP 代理模式"
     systemctl start wireproxy-warp
     WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    retry_time=1
     until [[ $WireProxyStatus =~ on|plus ]]; do
-        red "启动WireProxy-WARP代理模式失败，正在尝试重启"
+        red "启动 WireProxy-WARP 代理模式失败，正在尝试重启，重试次数：$retry_time"
         systemctl stop wireproxy-warp
         systemctl start wireproxy-warp
         WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+        retry_time=$((${retry_time} + 1))
+        if [[ $retry_time == 6 ]]; then
+            uninstall_wireproxy
+            echo ""
+            red "启动 WireProxy-WARP 代理模式失败，请检查网络连接"
+            exit 1
+        fi
         sleep 8
     done
     sleep 5
@@ -840,11 +848,11 @@ change_wireproxy_port(){
     fi
     CurrentPort=$(grep BindAddress /etc/wireguard/proxy.conf)
     sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
-    yellow "正在启动WireProxy-WARP代理模式"
+    yellow "正在启动 WireProxy-WARP 代理模式"
     systemctl start wireproxy-warp
     socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
     until [[ $socks5Status =~ on|plus ]]; do
-        red "启动WireProxy-WARP代理模式失败，正在尝试重启"
+        red "启动 WireProxy-WARP 代理模式失败，正在尝试重启"
         systemctl stop wireproxy-warp
         systemctl start wireproxy-warp
         socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
