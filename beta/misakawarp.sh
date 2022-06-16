@@ -123,11 +123,13 @@ check_status(){
         s5s=$(curl -sx socks5h://localhost:$s5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         s5i=$(curl -sx socks5h://localhost:$s5p https://ip.gs -k --connect-timeout 8)
         s5c=$(curl -sx socks5h://localhost:$s5p https://ip.gs/country -k --connect-timeout 8)
+        s5n=$(curl -sx socks5h://localhost:$s5p -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
     fi
     if [[ -n $w5p ]]; then
         w5s=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         w5i=$(curl -sx socks5h://localhost:$w5p https://ip.gs -k --connect-timeout 8)
         w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
+        w5n=$(curl -sx socks5h://localhost:$w5p -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
     fi
 
     if [[ -z $s5s ]] || [[ $s5s == "off" ]]; then
@@ -161,16 +163,34 @@ check_status(){
     if [[ $n6 == "200" ]]; then
         n6="${GREEN}已解锁 Netflix${PLAIN}"
     fi
+    if [[ $s5n == "200" ]]; then
+        n6="${GREEN}已解锁 Netflix${PLAIN}"
+    fi
+    if [[ $w5n == "200" ]]; then
+        n6="${GREEN}已解锁 Netflix${PLAIN}"
+    fi
     if [[ $n4 == "403" ]]; then
         n4="${RED}无法解锁 Netflix${PLAIN}"
     fi
     if [[ $n6 == "403" ]]; then
         n6="${RED}无法解锁 Netflix${PLAIN}"
     fi
+    if [[ $s5n == "403" ]]; then
+        n4="${RED}无法解锁 Netflix${PLAIN}"
+    fi
+    if [[ $w5n == "403" ]]; then
+        n6="${RED}无法解锁 Netflix${PLAIN}"
+    fi
     if [[ $n4 == "404" ]]; then
         n4="${YELLOW}Netflix 自制剧${PLAIN}"
     fi
     if [[ $n6 == "404" ]]; then
+        n6="${YELLOW}Netflix 自制剧${PLAIN}"
+    fi
+    if [[ $s5n == "404" ]]; then
+        n4="${YELLOW}Netflix 自制剧${PLAIN}"
+    fi
+    if [[ $w5n == "404" ]]; then
         n6="${YELLOW}Netflix 自制剧${PLAIN}"
     fi
 }
@@ -1315,20 +1335,57 @@ option4d(){
 
 statustext(){
     if [[ -n $v4 ]]; then
+        echo "-------------------------------------------------------------"
         echo -e "IPv4 地址：$v4  地区：$c4"
         echo -e "WARP状态：$w4  Netfilx解锁状态：$n4"
+        echo "-------------------------------------------------------------"
     fi
     if [[ -n $v6 ]]; then
+        echo "-------------------------------------------------------------"
         echo -e "IPv6 地址：$v6  地区：$c6"
         echo -e "WARP状态：$w6  Netfilx解锁状态：$n6"
+        echo "-------------------------------------------------------------"
+    fi
+    if [[ -n $s5p ]]; then
+        echo "-------------------------------------------------------------"
+        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
+        if [[ -n $s5i ]]; then
+            echo -e "IP: $s5i  地区: $s5c"
+        fi
+        echo "-------------------------------------------------------------"
     fi
     if [[ -n $w5p ]]; then
+        echo "-------------------------------------------------------------"
         echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
         if [[ -n $w5i ]]; then
-            echo -e "WireProxy IP: $w5i  地区: $w5c"
+            echo -e "IP: $w5i  地区: $w5c"
         fi
+        echo "-------------------------------------------------------------"
     fi
 	echo -e ""
+}
+
+choice4d(){
+    read -rp " 请输入选项 [0-16]:" menuInput
+    case "$menuInput" in
+        1 ) wgcfmode=0 && install_wgcf ;;
+        2 ) wgcfmode=1 && install_wgcf ;;
+        3 ) wgcfmode=2 && install_wgcf ;;
+        4 ) wgcf_switch ;;
+        5 ) uninstall_wgcf ;;
+        6 ) install_warpcli ;;
+        7 ) change_warpcli_port ;;
+        8 ) warpcli_switch ;;
+        9 ) uninstall_warpcli ;;
+        10 ) install_wireproxy ;;
+        11 ) change_wireproxy_port ;;
+        12 ) wireproxy_switch ;;
+        13 ) uninstall_wireproxy ;;
+        14 ) warpup ;;
+        15 ) warpsw ;;
+        16 ) warpnf ;;
+        * ) exit 1 ;;
+    esac
 }
 
 menu0(){
@@ -1361,26 +1418,7 @@ menu1(){
     option4d
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
     statustext
-    read -rp " 请输入选项 [0-16]:" menu1Input
-    case "$menu1Input" in
-        1 ) wgcfmode=0 && install_wgcf ;;
-        2 ) wgcfmode=1 && install_wgcf ;;
-        3 ) wgcfmode=2 && install_wgcf ;;
-        4 ) wgcf_switch ;;
-        5 ) uninstall_wgcf ;;
-        6 ) install_warpcli ;;
-        7 ) change_warpcli_port ;;
-        8 ) warpcli_switch ;;
-        9 ) uninstall_warpcli ;;
-        10 ) install_wireproxy ;;
-        11 ) change_wireproxy_port ;;
-        12 ) wireproxy_switch ;;
-        13 ) uninstall_wireproxy ;;
-        14 ) warpup ;;
-        15 ) warpsw ;;
-        16 ) warpnf ;;
-        * ) exit 1 ;;
-    esac
+    choice4d
 }
 
 menu2(){
@@ -1389,26 +1427,7 @@ menu2(){
 	option4d
 	echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
 	statustext
-    read -rp " 请输入选项 [0-16]:" menu2Input
-    case "$menu2Input" in
-        1 ) wgcfmode=0 && install_wgcf ;;
-        2 ) wgcfmode=1 && install_wgcf ;;
-        3 ) wgcfmode=2 && install_wgcf ;;
-        4 ) wgcf_switch ;;
-        5 ) uninstall_wgcf ;;
-        6 ) install_warpcli ;;
-        7 ) change_warpcli_port ;;
-        8 ) warpcli_switch ;;
-        9 ) uninstall_warpcli ;;
-        10 ) install_wireproxy ;;
-        11 ) change_wireproxy_port ;;
-        12 ) wireproxy_switch ;;
-        13 ) uninstall_wireproxy ;;
-        14 ) warpup ;;
-        15 ) warpsw ;;
-        16 ) warpnf ;;
-        * ) exit 1 ;;
-    esac
+    choice4d
 }
 
 if [[ $# > 0 ]]; then
