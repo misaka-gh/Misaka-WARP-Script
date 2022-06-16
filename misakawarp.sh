@@ -1137,9 +1137,7 @@ warpsw3(){
         chmod +x wgcf-profile.conf
 
         warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-        warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
         sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
-        sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/proxy.conf;
         rm -f wgcf-profile.conf
 
         systemctl start wireproxy-warp
@@ -1177,9 +1175,7 @@ warpsw3(){
             systemctl stop wireproxy-warp
 
             warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-            warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
             sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
-            sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/proxy.conf;
             rm -f wgcf-profile.conf
 
             systemctl start wireproxy-warp
@@ -1196,16 +1192,13 @@ warpsw3(){
     fi
     if [[ $accountInput == 3 ]]; then
         read -rp "请输入WARP Teams配置文件中的PrivateKey：" wpteamprivatekey
-        read -rp "请输入WARP Teams配置文件中的IPv6地址：" wpteamv6address
         yellow "请确认WARP Teams信息是否正确："
         green "PrivateKey: $wpteamprivatekey"
-        green "IPv6 地址: $wpteamv6address"
         read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
         if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
             systemctl stop wireproxy-warp
 
             sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/proxy.conf;
-            sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/proxy.conf;
 
             systemctl start wireproxy-warp
             yellow "正在检查WARP Teams账户连通性，请稍等..."
@@ -1219,9 +1212,7 @@ warpsw3(){
                 chmod +x wgcf-profile.conf
 
                 warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
                 sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
-                sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/proxy.conf;
                 rm -f wgcf-profile.conf
 
                 systemctl start wireproxy-warp
