@@ -148,6 +148,31 @@ check_status(){
     if [[ $w5s == "plus" ]]; then
         w5="${GREEN}WARP+ / Teams${PLAIN}"
     fi
+
+    if [[ -z $n4 ]] || [[ $n4 == "000" ]]; then
+        n4="${RED}无法检测Netflix状态${PLAIN}"
+    fi
+    if [[ -z $n6 ]] || [[ $n6 == "000" ]]; then
+        n6="${RED}无法检测Netflix状态${PLAIN}"
+    fi
+    if [[ $n4 == "200" ]]; then
+        n4="${GREEN}已解锁 Netflix${PLAIN}"
+    fi
+    if [[ $n6 == "200" ]]; then
+        n6="${GREEN}已解锁 Netflix${PLAIN}"
+    fi
+    if [[ $n4 == "403" ]]; then
+        n4="${RED}无法解锁 Netflix${PLAIN}"
+    fi
+    if [[ $n6 == "403" ]]; then
+        n6="${RED}无法解锁 Netflix${PLAIN}"
+    fi
+    if [[ $n4 == "404" ]]; then
+        n4="${YELLOW}Netflix 自制剧${PLAIN}"
+    fi
+    if [[ $n6 == "404" ]]; then
+        n6="${YELLOW}Netflix 自制剧${PLAIN}"
+    fi
 }
 
 check_tun(){
