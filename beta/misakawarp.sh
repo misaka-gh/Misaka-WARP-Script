@@ -1080,6 +1080,7 @@ warpsw1(){
             else
                 wg-quick down wgcf >/dev/null 2>&1
 
+                cd /etc/wireguard
                 wgcf generate
                 chmod +x wgcf-profile.conf
 
@@ -1208,6 +1209,7 @@ warpsw3(){
             else
                 systemctl stop wireproxy-warp
 
+                cd /etc/wireguard
                 wgcf generate
                 chmod +x wgcf-profile.conf
 
