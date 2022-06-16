@@ -917,10 +917,12 @@ wireproxy_switch(){
     if [[ $w5s =~ "on"|"plus" ]]; then
         systemctl stop wireproxy-warp
         systemctl disable wireproxy-warp
+        green "WireProxy-WARP代理模式关闭成功！"
     fi
     if [[ $w5s =~ "off" ]] || [[ -z $w5s ]]; then
         systemctl start wireproxy-warp
         systemctl enable wireproxy-warp
+        green "WireProxy-WARP代理模式已启动成功！"
     fi
 }
 
