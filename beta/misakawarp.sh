@@ -1269,7 +1269,7 @@ menu(){
 }
 
 info_bar(){
-	echo "#############################################################"
+    echo "#############################################################"
     echo -e "#                    ${RED} WARP  一键安装脚本${PLAIN}                    #"
     echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
     echo -e "# ${GREEN}博客${PLAIN}: https://owo.misaka.rest                             #"
