@@ -1399,7 +1399,7 @@ menu1(){
     echo -e " ${GREEN}16.${PLAIN} 获取解锁 Netflix 的 WARP IP"
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
-	echo -e ""
+    echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv4的VPS${PLAIN}"
     statustext
     choice4d
@@ -1408,7 +1408,7 @@ menu1(){
 menu2(){
     clear
     info_bar
-	echo -e ""
+    echo -e ""
     echo -e " ${GREEN}1.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(WARP IPv4 + 原生 IPv6)${PLAIN}"
     echo -e " ${GREEN}2.${PLAIN} 安装 Wgcf-WARP 单栈模式 ${YELLOW}(原生 IPv4 + WARP IPv6)${PLAIN}"
     echo -e " ${GREEN}3.${PLAIN} 安装 Wgcf-WARP 双栈模式 ${YELLOW}(WARP IPV4 + WARP IPv6)${PLAIN}"
@@ -1431,8 +1431,8 @@ menu2(){
     echo " -------------"
     echo -e " ${GREEN}0.${PLAIN} 退出脚本"
     echo -e ""
-	echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
-	statustext
+    echo -e "VPS IP特征：${RED}原生IP双栈的VPS${PLAIN}"
+    statustext
     choice4d
 }
 
