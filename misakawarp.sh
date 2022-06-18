@@ -491,10 +491,7 @@ install_warpcli(){
     
     check_tun
     
-    if [[ $(archAffix) != "amd64" ]]; then
-        red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
-        exit 1
-    fi
+    [[ $(archAffix) != "amd64" ]] && red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS" && exit 1
     
     v66=`curl -s6m8 https://ip.gs -k`
     v44=`curl -s4m8 https://ip.gs -k`
