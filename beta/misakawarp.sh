@@ -25,10 +25,10 @@ PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y inst
 PACKAGE_REMOVE=("apt -y remove" "apt -y remove" "yum -y remove" "yum -y remove")
 PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove")
 
-CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')") 
+CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')")
 
 for i in "${CMD[@]}"; do
-    SYS="$i" 
+    SYS="$i"
     if [[ -n $SYS ]]; then
         break
     fi
@@ -67,11 +67,11 @@ check_status(){
         fi
         ${PACKAGE_INSTALL[int]} curl
     fi
-
+    
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     Browser_UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
-
+    
     if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
         # 关闭Wgcf-WARP，以防识别有误
         wg-quick down wgcf >/dev/null 2>&1
@@ -82,7 +82,7 @@ check_status(){
         v66=`curl -s6m8 https://ip.gs -k`
         v44=`curl -s4m8 https://ip.gs -k`
     fi
-
+    
     if [[ $IPv4Status == "off" ]]; then
         w4="${RED}未启用WARP${PLAIN}"
     fi
@@ -101,16 +101,16 @@ check_status(){
     if [[ $IPv6Status == "plus" ]]; then
         w6="${GREEN}WARP+ / Teams${PLAIN}"
     fi
-
+    
     # VPSIP变量说明：0为纯IPv6 VPS、1为纯IPv4 VPS、2为原生双栈VPS
     if [[ -n $v66 ]] && [[ -z $v44 ]]; then
         VPSIP=0
-    elif [[ -z $v66 ]] && [[ -n $v44 ]]; then
+        elif [[ -z $v66 ]] && [[ -n $v44 ]]; then
         VPSIP=1
-    elif [[ -n $v66 ]] && [[ -n $v44 ]]; then
+        elif [[ -n $v66 ]] && [[ -n $v44 ]]; then
         VPSIP=2
     fi
-
+    
     v4=$(curl -s4m8 https://ip.gs -k)
     v6=$(curl -s6m8 https://ip.gs -k)
     c4=$(curl -s4m8 https://ip.gs/country -k)
@@ -131,7 +131,7 @@ check_status(){
         w5c=$(curl -sx socks5h://localhost:$w5p https://ip.gs/country -k --connect-timeout 8)
         w5n=$(curl -sx socks5h://localhost:$w5p -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
     fi
-
+    
     if [[ -z $s5s ]] || [[ $s5s == "off" ]]; then
         s5="${RED}未启动${PLAIN}"
     fi
@@ -150,7 +150,7 @@ check_status(){
     if [[ $w5s == "plus" ]]; then
         w5="${GREEN}WARP+ / Teams${PLAIN}"
     fi
-
+    
     if [[ -z $n4 ]] || [[ $n4 == "000" ]]; then
         n4="${RED}无法检测Netflix状态${PLAIN}"
     fi
@@ -203,15 +203,15 @@ check_tun(){
     if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
         if [[ $vpsvirt == lxc ]]; then
             if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
+                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
                 exit 1
             else
                 yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
             fi
-        elif [[ $vpsvirt == "openvz" ]]; then
+            elif [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://gitlab.com/misaka-blog/tun-script/-/raw/master/tun.sh && bash tun.sh
         else
-            red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启" 
+            red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
             exit 1
         fi
     fi
@@ -296,14 +296,14 @@ wgcfconfig6(){
 wgcfcheck4(){
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
-
+    
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     retry_time=1
     until [[ $WgcfWARP4Status =~ "on"|"plus" ]]; do
         wgcfFailAction
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
+    
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
@@ -312,14 +312,14 @@ wgcfcheck4(){
 wgcfcheck6(){
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
-
+    
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     retry_time=1
     until [[ $WgcfWARP6Status =~ "on"|"plus" ]]; do
         wgcfFailAction
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
+    
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
     yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
@@ -328,7 +328,7 @@ wgcfcheck6(){
 wgcfcheckd(){
     yellow "正在启动 Wgcf-WARP"
     wg-quick up wgcf >/dev/null 2>&1
-
+    
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     retry_time=1
@@ -336,7 +336,7 @@ wgcfcheckd(){
         wgcfFailAction
     done
     systemctl enable wg-quick@wgcf >/dev/null 2>&1
-
+    
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
@@ -384,20 +384,20 @@ install_wgcf(){
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8 ]] && yellow "当前系统版本：CentOS $vsid \nWgcf-WARP模式仅支持CentOS 7-8系统" && exit 1
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：Debian $vsid \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
     [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：Ubuntu $vsid \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
-
+    
     if [[ $c4 == "Hong Kong" || $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
         yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
         exit 1
     fi
-
+    
     check_tun
     docker_warn
     
-    if [[ $SYSTEM == "CentOS" ]]; then        
+    if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop screen iputils
-        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then 
+        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
                 curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-$vsid/jdoss-wireguard-epel-$vsid.repo
@@ -432,7 +432,7 @@ install_wgcf(){
             fi
         fi
     fi
-
+    
     if [[ $vpsvirt =~ lxc|openvz ]]; then
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go -O /usr/bin/wireguard-go
@@ -443,10 +443,10 @@ install_wgcf(){
         wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-s390x -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
-
+    
     wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
-
+    
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
         cp -f /etc/wireguard/wgcf-account.toml /root/wgcf-account.toml
         wgcfFile=1
@@ -454,21 +454,21 @@ install_wgcf(){
     if [[ -f /root/wgcf-account.toml ]]; then
         wgcfFile=1
     fi
-
+    
     until [[ -a wgcf-account.toml ]]; do
         yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
         yes | wgcf register
         sleep 5
     done
     chmod +x wgcf-account.toml
-
+    
     if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -479,20 +479,20 @@ install_wgcf(){
     
     wgcf generate
     chmod +x wgcf-profile.conf
-
+    
     check_best_mtu
     sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
-	
-	if [[ ! -d "/etc/wireguard" ]]; then
+    
+    if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
         chmod -R 777 /etc/wireguard
     fi
-	
+    
     mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf
     mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml
-	
-	cd /etc/wireguard
-
+    
+    cd /etc/wireguard
+    
     if [[ $VPSIP == 0 ]]; then
         if [[ $wgcfmode == 0 ]]; then
             wgcfdns6
@@ -513,7 +513,7 @@ install_wgcf(){
             wgcfendpoint6
             wgcfcheckd
         fi
-    elif [[ $VPSIP == 1 ]]; then
+        elif [[ $VPSIP == 1 ]]; then
         if [[ $wgcfmode == 0 ]]; then
             wgcfdns4
             wgcfpost4
@@ -533,7 +533,7 @@ install_wgcf(){
             wgcfendpoint4
             wgcfcheckd
         fi
-    elif [[ $VPSIP == 2 ]]; then
+        elif [[ $VPSIP == 2 ]]; then
         if [[ $wgcfmode == 0 ]]; then
             wgcfdns4
             wgcfpost4
@@ -557,14 +557,14 @@ install_wgcf(){
 wgcf_switch(){
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-
+    
     if [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; then
         wg-quick down wgcf >/dev/null 2>&1
         systemctl disable wg-quick@wgcf >/dev/null 2>&1
         green "Wgcf-WARP关闭成功！"
         exit 1
     fi
-
+    
     if [[ $WgcfWARP4Status == off ]] || [[ $WgcfWARP6Status == off ]]; then
         wg-quick up wgcf >/dev/null 2>&1
         systemctl enable wg-quick@wgcf >/dev/null 2>&1
@@ -596,9 +596,9 @@ install_warpcli(){
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本：CentOS $vsid \nWARP-Cli代理模式仅支持CentOS 8系统" && exit 1
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：Debian $vsid \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
     [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：Ubuntu $vsid \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
-
+    
     check_tun
-
+    
     if [[ $(archAffix) != "amd64" ]]; then
         red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS"
         exit 1
@@ -613,14 +613,14 @@ install_warpcli(){
         red "WARP-Cli 代理模式不支持纯IPv6的VPS！！"
         exit 1
     fi
-
+    
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
         ${PACKAGE_INSTALL[int]} sudo curl wget net-tools htop iputils screen
         rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
-
+    
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping screen
@@ -640,7 +640,7 @@ install_warpcli(){
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} cloudflare-warp
     fi
-
+    
     warp-cli --accept-tos register >/dev/null 2>&1
     yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
     read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
@@ -653,7 +653,7 @@ install_warpcli(){
         fi
     fi
     warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
-
+    
     read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
     if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
@@ -665,7 +665,7 @@ install_warpcli(){
         done
     fi
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
-
+    
     yellow "正在启动Warp-Cli代理模式"
     warp-cli --accept-tos connect >/dev/null 2>&1
     warp-cli --accept-tos enable-always-on >/dev/null 2>&1
@@ -740,20 +740,20 @@ install_wireproxy(){
         yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 WireProxy-WARP 代理模式。请使用其他地区的VPS"
         exit 1
     fi
-
+    
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} sudo curl wget htop iputils screen
     else
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping screen
     fi
-
+    
     wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
     chmod +x /usr/local/bin/wireproxy
-
+    
     wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
-
+    
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
         cp -f /etc/wireguard/wgcf-account.toml /root/wgcf-account.toml
         wgcfFile=1
@@ -761,21 +761,21 @@ install_wireproxy(){
     if [[ -f /root/wgcf-account.toml ]]; then
         wgcfFile=1
     fi
-
+    
     until [[ -a wgcf-account.toml ]]; do
         yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
         yes | wgcf register
         sleep 5
     done
     chmod +x wgcf-account.toml
-
+    
     if [[ ! $wgcfFile == 1 ]]; then
         yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -786,10 +786,10 @@ install_wireproxy(){
     
     wgcf generate
     chmod +x wgcf-profile.conf
-
+    
     IPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     IPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-
+    
     if [[ $IPv4Status =~ "on"|"plus" ]] || [[ $IPv6Status =~ "on"|"plus" ]]; then
         wg-quick down wgcf >/dev/null 2>&1
         check_best_mtu
@@ -808,20 +808,20 @@ install_wireproxy(){
             fi
         done
     fi
-
+    
     WgcfPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     WgcfPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
-
+    
     if [[ ! -d "/etc/wireguard" ]]; then
         mkdir /etc/wireguard
         chmod -R 777 /etc/wireguard
     fi
-
+    
     if [[ $VPSIP == 0 ]]; then
         WireproxyEndpoint="[2606:4700:d0::a29f:c001]:2408"
-    elif [[ $VPSIP == 1 ]]; then
+        elif [[ $VPSIP == 1 ]]; then
         WireproxyEndpoint="162.159.193.10:2408"
-    elif [[ $VPSIP == 2 ]]; then
+        elif [[ $VPSIP == 2 ]]; then
         WireproxyEndpoint="162.159.193.10:2408"
     fi
     
@@ -839,7 +839,7 @@ Endpoint = $WireproxyEndpoint
 [Socks5]
 BindAddress = 127.0.0.1:$WireProxyPort
 EOF
-
+    
     cat <<'TEXT' > /etc/systemd/system/wireproxy-warp.service
 [Unit]
 Description=CloudFlare WARP Socks5 proxy mode based for WireProxy, script by owo.misaka.rest
@@ -852,10 +852,10 @@ WorkingDirectory=/root
 ExecStart=/usr/local/bin/wireproxy -c /etc/wireguard/proxy.conf
 Restart=always
 TEXT
-
+    
     rm -f wgcf-profile.conf
     mv wgcf-account.toml /etc/wireguard/wgcf-account.toml
-
+    
     yellow "正在启动 WireProxy-WARP 代理模式"
     systemctl start wireproxy-warp
     WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
@@ -951,14 +951,14 @@ warpup(){
             sleep_min=20
             sleep_max=600
         fi
-
+        
         install_id=$(tr -dc 'A-Za-z0-9' </dev/urandom >/dev/null 2>&1 | head -c 22)
         curl -X POST -m 10 -sA "okhttp/3.12.1" -H 'content-type: application/json' -H 'Host: api.cloudflareclient.com' --data "{\"key\": \"$(tr -dc 'A-Za-z0-9' </dev/urandom >/dev/null 2>&1 | head -c 43)=\",\"install_id\": \"$install_id\",\"fcm_token\": \"APA91b$install_id$(tr -dc 'A-Za-z0-9' </dev/urandom >/dev/null 2>&1 | head -c 134)\",\"referrer\": \"$WarpDeviceID\",\"warp_enabled\": false,\"tos\": \"$(date -u +%FT%T.$(tr -dc '0-9' </dev/urandom >/dev/null 2>&1 | head -c 3)Z)\",\"type\": \"Android\",\"locale\": \"en_US\"}"  --url "https://api.cloudflareclient.com/v0a$(shuf -i 100-999 -n 1)/reg" | grep -qE "referral_count\":1" && status=0 || status=1
         
         # cloudflare限制了请求频率,目前测试大概在20秒,失败时因延长sleep时间
         [[ $sleep_try > $sleep_max ]] && sleep_try=300
         [[ $sleep_try == $sleep_min ]] && sleep_try=$((sleep_try+1))
-
+        
         if [[ $status == 0 ]]; then
             sleep_try=$((sleep_try-1))
             sleep $sleep_try
@@ -966,7 +966,7 @@ warpup(){
             echo -n $i-o-
             continue
         fi
-
+        
         if [[ $status == 1 ]]; then
             sleep_try=$((sleep_try+2))
             sleep $sleep_try
@@ -987,10 +987,10 @@ warpsw1(){
     read -rp "请选择账户类型 [1-3]: " accountInput
     if [[ $accountInput == 1 ]]; then
         wg-quick down wgcf >/dev/null 2>&1
-
+        
         cd /etc/wireguard
         rm -f wgcf-account.toml
-
+        
         until [[ -a wgcf-account.toml ]]; do
             yes | wgcf register
             sleep 5
@@ -999,13 +999,13 @@ warpsw1(){
         
         wgcf generate
         chmod +x wgcf-profile.conf
-
+        
         warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
         warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
         sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
         sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
         rm -f wgcf-profile.conf
-
+        
         wg-quick up wgcf >/dev/null 2>&1
         yellow "正在检查WARP 免费账户连通性，请稍等..."
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -1025,28 +1025,28 @@ warpsw1(){
             done
         fi
         chmod +x wgcf-account.toml
-
+        
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
                 wgcf update
             fi
-
+            
             wgcf generate
             chmod +x wgcf-profile.conf
-
+            
             wg-quick down wgcf >/dev/null 2>&1
-
+            
             warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
             warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
             sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
             sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
             rm -f wgcf-profile.conf
-
+            
             wg-quick up wgcf >/dev/null 2>&1
             yellow "正在检查WARP+账户连通性，请稍等..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -1069,10 +1069,10 @@ warpsw1(){
         read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
         if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
             wg-quick down wgcf >/dev/null 2>&1
-
+            
             sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/wgcf.conf;
             sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
-
+            
             wg-quick up wgcf >/dev/null 2>&1
             yellow "正在检查WARP Teams账户连通性，请稍等..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -1081,17 +1081,17 @@ warpsw1(){
                 green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
             else
                 wg-quick down wgcf >/dev/null 2>&1
-
+                
                 cd /etc/wireguard
                 wgcf generate
                 chmod +x wgcf-profile.conf
-
+                
                 warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
                 warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
                 sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
                 sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
                 rm -f wgcf-profile.conf
-
+                
                 wg-quick up wgcf >/dev/null 2>&1
                 red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
             fi
@@ -1126,10 +1126,10 @@ warpsw3(){
     read -rp "请选择账户类型 [1-3]: " accountInput
     if [[ $accountInput == 1 ]]; then
         systemctl stop wireproxy-warp
-
+        
         cd /etc/wireguard
         rm -f wgcf-account.toml
-
+        
         until [[ -a wgcf-account.toml ]]; do
             yes | wgcf register
             sleep 5
@@ -1138,11 +1138,11 @@ warpsw3(){
         
         wgcf generate
         chmod +x wgcf-profile.conf
-
+        
         warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
         sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
         rm -f wgcf-profile.conf
-
+        
         systemctl start wireproxy-warp
         yellow "正在检查WARP 免费账户连通性，请稍等..."
         WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
@@ -1161,26 +1161,26 @@ warpsw3(){
             done
         fi
         chmod +x wgcf-account.toml
-
+        
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户" 
+            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
                 wgcf update
             fi
-
+            
             wgcf generate
             chmod +x wgcf-profile.conf
-
+            
             systemctl stop wireproxy-warp
-
+            
             warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
             sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
             rm -f wgcf-profile.conf
-
+            
             systemctl start wireproxy-warp
             yellow "正在检查WARP+账户连通性，请稍等..."
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
@@ -1200,9 +1200,9 @@ warpsw3(){
         read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
         if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
             systemctl stop wireproxy-warp
-
+            
             sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/proxy.conf;
-
+            
             systemctl start wireproxy-warp
             yellow "正在检查WARP Teams账户连通性，请稍等..."
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
@@ -1210,15 +1210,15 @@ warpsw3(){
                 green "WireProxy-WARP代理模式 账户类型切换为 WARP Teams 成功！"
             else
                 systemctl stop wireproxy-warp
-
+                
                 cd /etc/wireguard
                 wgcf generate
                 chmod +x wgcf-profile.conf
-
+                
                 warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
                 sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
                 rm -f wgcf-profile.conf
-
+                
                 systemctl start wireproxy-warp
                 red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
             fi
@@ -1261,9 +1261,9 @@ menu(){
     check_status
     if [[ $VPSIP == 0 ]]; then
         menu0
-    elif [[ $VPSIP == 1 ]]; then
+        elif [[ $VPSIP == 1 ]]; then
         menu1
-    elif [[ $VPSIP == 2 ]]; then
+        elif [[ $VPSIP == 2 ]]; then
         menu2
     fi
 }
@@ -1307,7 +1307,7 @@ statustext(){
         fi
     fi
     echo "-------------------------------------------------------------"
-	echo -e ""
+    echo -e ""
 }
 
 choice4d(){
