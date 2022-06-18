@@ -28,19 +28,11 @@ PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "
 CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')")
 
 for i in "${CMD[@]}"; do
-    SYS="$i"
-    if [[ -n $SYS ]]; then
-        break
-    fi
+    SYS="$i" && [[ -n $SYS ]] && break
 done
 
 for ((int = 0; int < ${#REGEX[@]}; int++)); do
-    if [[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]]; then
-        SYSTEM="${RELEASE[int]}"
-        if [[ -n $SYSTEM ]]; then
-            break
-        fi
-    fi
+    [[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]] && SYSTEM="${RELEASE[int]}" && [[ -n $SYSTEM ]] && break
 done
 
 [[ $EUID -ne 0 ]] && red "注意：请在root用户下运行脚本" && exit 1
@@ -83,33 +75,17 @@ check_status(){
         v44=`curl -s4m8 https://ip.gs -k`
     fi
     
-    if [[ $IPv4Status == "off" ]]; then
-        w4="${RED}未启用WARP${PLAIN}"
-    fi
-    if [[ $IPv6Status == "off" ]]; then
-        w6="${RED}未启用WARP${PLAIN}"
-    fi
-    if [[ $IPv4Status == "on" ]]; then
-        w4="${YELLOW}WARP 免费账户${PLAIN}"
-    fi
-    if [[ $IPv6Status == "on" ]]; then
-        w6="${YELLOW}WARP 免费账户${PLAIN}"
-    fi
-    if [[ $IPv4Status == "plus" ]]; then
-        w4="${GREEN}WARP+ / Teams${PLAIN}"
-    fi
-    if [[ $IPv6Status == "plus" ]]; then
-        w6="${GREEN}WARP+ / Teams${PLAIN}"
-    fi
+    [[ $IPv4Status == "off" ]] && w4="${RED}未启用WARP${PLAIN}"
+    [[ $IPv6Status == "off" ]] && w6="${RED}未启用WARP${PLAIN}"
+    [[ $IPv4Status == "on" ]] && w4="${YELLOW}WARP 免费账户${PLAIN}"
+    [[ $IPv6Status == "on" ]] && w6="${YELLOW}WARP 免费账户${PLAIN}"
+    [[ $IPv4Status == "plus" ]] && w4="${GREEN}WARP+ / Teams${PLAIN}"
+    [[ $IPv6Status == "plus" ]] && w6="${GREEN}WARP+ / Teams${PLAIN}"
     
     # VPSIP变量说明：0为纯IPv6 VPS、1为纯IPv4 VPS、2为原生双栈VPS
-    if [[ -n $v66 ]] && [[ -z $v44 ]]; then
-        VPSIP=0
-        elif [[ -z $v66 ]] && [[ -n $v44 ]]; then
-        VPSIP=1
-        elif [[ -n $v66 ]] && [[ -n $v44 ]]; then
-        VPSIP=2
-    fi
+    [[ -n $v66 ]] && [[ -z $v44 ]] && VPSIP=0
+    [[ -z $v66 ]] && [[ -n $v44 ]] && VPSIP=1
+    [[ -n $v66 ]] && [[ -n $v44 ]] && VPSIP=2
     
     v4=$(curl -s4m8 https://ip.gs -k)
     v6=$(curl -s6m8 https://ip.gs -k)
@@ -132,67 +108,27 @@ check_status(){
         w5n=$(curl -sx socks5h://localhost:$w5p -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.netflix.com/title/81215567" 2>&1)
     fi
     
-    if [[ -z $s5s ]] || [[ $s5s == "off" ]]; then
-        s5="${RED}未启动${PLAIN}"
-    fi
-    if [[ -z $w5s ]] || [[ $w5s == "off" ]]; then
-        w5="${RED}未启动${PLAIN}"
-    fi
-    if [[ $s5s == "on" ]]; then
-        s5="${YELLOW}WARP 免费账户${PLAIN}"
-    fi
-    if [[ $w5s == "on" ]]; then
-        w5="${YELLOW}WARP 免费账户${PLAIN}"
-    fi
-    if [[ $s5s == "plus" ]]; then
-        s5="${GREEN}WARP+ / Teams${PLAIN}"
-    fi
-    if [[ $w5s == "plus" ]]; then
-        w5="${GREEN}WARP+ / Teams${PLAIN}"
-    fi
+    [[ -z $s5s ]] || [[ $s5s == "off" ]] && s5="${RED}未启动${PLAIN}"
+    [[ -z $w5s ]] || [[ $w5s == "off" ]] && w5="${RED}未启动${PLAIN}"
+    [[ $s5s == "on" ]] && s5="${YELLOW}WARP 免费账户${PLAIN}"
+    [[ $w5s == "on" ]] && w5="${YELLOW}WARP 免费账户${PLAIN}"
+    [[ $s5s == "plus" ]] && s5="${GREEN}WARP+ / Teams${PLAIN}"
+    [[ $w5s == "plus" ]] && w5="${GREEN}WARP+ / Teams${PLAIN}"
     
-    if [[ -z $n4 ]] || [[ $n4 == "000" ]]; then
-        n4="${RED}无法检测Netflix状态${PLAIN}"
-    fi
-    if [[ -z $n6 ]] || [[ $n6 == "000" ]]; then
-        n6="${RED}无法检测Netflix状态${PLAIN}"
-    fi
-    if [[ $n4 == "200" ]]; then
-        n4="${GREEN}已解锁 Netflix${PLAIN}"
-    fi
-    if [[ $n6 == "200" ]]; then
-        n6="${GREEN}已解锁 Netflix${PLAIN}"
-    fi
-    if [[ $s5n == "200" ]]; then
-        s5n="${GREEN}已解锁 Netflix${PLAIN}"
-    fi
-    if [[ $w5n == "200" ]]; then
-        w5n="${GREEN}已解锁 Netflix${PLAIN}"
-    fi
-    if [[ $n4 == "403" ]]; then
-        n4="${RED}无法解锁 Netflix${PLAIN}"
-    fi
-    if [[ $n6 == "403" ]]; then
-        n6="${RED}无法解锁 Netflix${PLAIN}"
-    fi
-    if [[ $s5n == "403" ]]; then
-        s5n="${RED}无法解锁 Netflix${PLAIN}"
-    fi
-    if [[ $w5n == "403" ]]; then
-        w5n="${RED}无法解锁 Netflix${PLAIN}"
-    fi
-    if [[ $n4 == "404" ]]; then
-        n4="${YELLOW}Netflix 自制剧${PLAIN}"
-    fi
-    if [[ $n6 == "404" ]]; then
-        n6="${YELLOW}Netflix 自制剧${PLAIN}"
-    fi
-    if [[ $s5n == "404" ]]; then
-        s5n="${YELLOW}Netflix 自制剧${PLAIN}"
-    fi
-    if [[ $w5n == "404" ]]; then
-        w5n="${YELLOW}Netflix 自制剧${PLAIN}"
-    fi
+    [[ -z $n4 ]] || [[ $n4 == "000" ]] && n4="${RED}无法检测Netflix状态${PLAIN}"
+    [[ -z $n6 ]] || [[ $n6 == "000" ]] && n6="${RED}无法检测Netflix状态${PLAIN}"
+    [[ $n4 == "200" ]] && n4="${GREEN}已解锁 Netflix${PLAIN}"
+    [[ $n6 == "200" ]] && n6="${GREEN}已解锁 Netflix${PLAIN}"
+    [[ $s5n == "200" ]] && s5n="${GREEN}已解锁 Netflix${PLAIN}"
+    [[ $w5n == "200" ]] && w5n="${GREEN}已解锁 Netflix${PLAIN}"
+    [[ $n4 == "403" ]] && n4="${RED}无法解锁 Netflix${PLAIN}"
+    [[ $n6 == "403" ]] && n6="${RED}无法解锁 Netflix${PLAIN}"
+    [[ $s5n == "403" ]]&& s5n="${RED}无法解锁 Netflix${PLAIN}"
+    [[ $w5n == "403" ]]&& w5n="${RED}无法解锁 Netflix${PLAIN}"
+    [[ $n4 == "404" ]] && n4="${YELLOW}Netflix 自制剧${PLAIN}"
+    [[ $n6 == "404" ]] && n6="${YELLOW}Netflix 自制剧${PLAIN}"
+    [[ $s5n == "404" ]] && s5n="${YELLOW}Netflix 自制剧${PLAIN}"
+    [[ $w5n == "404" ]] && w5n="${YELLOW}Netflix 自制剧${PLAIN}"
 }
 
 check_tun(){
@@ -208,7 +144,7 @@ check_tun(){
             else
                 yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
             fi
-            elif [[ $vpsvirt == "openvz" ]]; then
+        elif [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://gitlab.com/misaka-blog/tun-script/-/raw/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
@@ -494,63 +430,19 @@ install_wgcf(){
     cd /etc/wireguard
     
     if [[ $VPSIP == 0 ]]; then
-        if [[ $wgcfmode == 0 ]]; then
-            wgcfdns6
-            wgcfconfig4
-            wgcfendpoint6
-            wgcfcheck4
-        fi
-        if [[ $wgcfmode == 1 ]]; then
-            wgcfdns6
-            wgcfpost6
-            wgcfconfig6
-            wgcfendpoint6
-            wgcfcheck6
-        fi
-        if [[ $wgcfmode == 2 ]]; then
-            wgcfdns6
-            wgcfpost6
-            wgcfendpoint6
-            wgcfcheckd
-        fi
-        elif [[ $VPSIP == 1 ]]; then
-        if [[ $wgcfmode == 0 ]]; then
-            wgcfdns4
-            wgcfpost4
-            wgcfconfig4
-            wgcfendpoint4
-            wgcfcheck4
-        fi
-        if [[ $wgcfmode == 1 ]]; then
-            wgcfdns4
-            wgcfconfig6
-            wgcfendpoint4
-            wgcfcheck6
-        fi
-        if [[ $wgcfmode == 2 ]]; then
-            wgcfdns4
-            wgcfpost4
-            wgcfendpoint4
-            wgcfcheckd
-        fi
-        elif [[ $VPSIP == 2 ]]; then
-        if [[ $wgcfmode == 0 ]]; then
-            wgcfdns4
-            wgcfpost4
-            wgcfconfig4
-            wgcfcheck4
-        fi
-        if [[ $wgcfmode == 1 ]]; then
-            wgcfdns4
-            wgcfpost6
-            wgcfconfig6
-            wgcfcheck6
-        fi
-        if [[ $wgcfmode == 2 ]]; then
-            wgcfdns4
-            wgcfpostd
-            wgcfcheckd
-        fi
+        [[ $wgcfmode == 0 ]] && wgcfdns6 && wgcfconfig4 && wgcfendpoint6 && wgcfcheck4
+        [[ $wgcfmode == 1 ]] && wgcfdns6 && wgcfpost6 && wgcfconfig6 && wgcfendpoint6 && wgcfcheck6
+        [[ $wgcfmode == 2 ]] && wgcfdns6 && wgcfpost6 && wgcfendpoint6 && wgcfcheckd
+    fi
+    if [[ $VPSIP == 1 ]]; then
+        [[ $wgcfmode == 0 ]] && wgcfdns4 && wgcfpost4 && wgcfconfig4 && wgcfendpoint4 && wgcfcheck4
+        [[ $wgcfmode == 1 ]] && wgcfdns4 && wgcfconfig6 && wgcfendpoint4 && wgcfcheck4
+        [[ $wgcfmode == 2 ]] && wgcfdns4 && wgcfpost4 && wgcfendpoint4 && wgcfcheckd
+    fi
+    if [[ $VPSIP == 2 ]]; then
+        [[ $wgcfmode == 0 ]] && wgcfdns4 && wgcfpost4 && wgcfconfig4 && wgcfcheck4
+        [[ $wgcfmode == 1 ]] && wgcfdns4 && wgcfpost6 && wgcfconfig6 && wgcfcheck6
+        [[ $wgcfmode == 2 ]] && wgcfdns4 && wgcfpostd && wgcfcheckd
     fi
 }
 
@@ -837,13 +729,8 @@ install_wireproxy(){
         chmod -R 777 /etc/wireguard
     fi
     
-    if [[ $VPSIP == 0 ]]; then
-        WireproxyEndpoint="[2606:4700:d0::a29f:c001]:2408"
-        elif [[ $VPSIP == 1 ]]; then
-        WireproxyEndpoint="162.159.193.10:2408"
-        elif [[ $VPSIP == 2 ]]; then
-        WireproxyEndpoint="162.159.193.10:2408"
-    fi
+    [[ $VPSIP == 0 ]] && WireproxyEndpoint="[2606:4700:d0::a29f:c001]:2408"
+    [[ $VPSIP == 1 || $VPSIP == 2]] && WireproxyEndpoint="162.159.193.10:2408"
     
     cat <<EOF > /etc/wireguard/proxy.conf
 [Interface]
@@ -1275,13 +1162,9 @@ warpnf(){
 
 menu(){
     check_status
-    if [[ $VPSIP == 0 ]]; then
-        menu0
-        elif [[ $VPSIP == 1 ]]; then
-        menu1
-        elif [[ $VPSIP == 2 ]]; then
-        menu2
-    fi
+    [[ $VPSIP == 0 ]] && menu0
+    [[ $VPSIP == 1 ]] && menu1
+    [[ $VPSIP == 2 ]] && menu2
 }
 
 info_bar(){
