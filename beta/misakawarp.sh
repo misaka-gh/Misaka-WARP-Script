@@ -730,7 +730,7 @@ install_wireproxy(){
     fi
     
     [[ $VPSIP == 0 ]] && WireproxyEndpoint="[2606:4700:d0::a29f:c001]:2408"
-    [[ $VPSIP == 1 || $VPSIP == 2]] && WireproxyEndpoint="162.159.193.10:2408"
+    [[ $VPSIP == 1 || $VPSIP == 2 ]] && WireproxyEndpoint="162.159.193.10:2408"
     
     cat <<EOF > /etc/wireguard/proxy.conf
 [Interface]
