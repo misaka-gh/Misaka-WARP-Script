@@ -491,7 +491,7 @@ install_warpcli(){
     
     check_tun
     
-    [[ $(archAffix) != "amd64" ]] && red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS" && exit 1
+    [[ ! $(archAffix) == "amd64" ]] && red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS" && exit 1
     
     v66=`curl -s6m8 https://ip.gs -k`
     v44=`curl -s4m8 https://ip.gs -k`
@@ -869,6 +869,44 @@ warpup(){
     echo -e "本次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
+warpsw1_freeplus(){
+    warpPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+    warpIPv4Address=$(grep "Address = 172" wgcf-profile.conf | sed "s/Address = //g")
+    warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
+    sed -i "s#PublicKey.*#PublicKey = $warpPublicKey#g" /etc/wireguard/wgcf.conf;
+    sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+    sed -i "s#Address.*32#Address = $warpIPv4Address/32#g" /etc/wireguard/wgcf.conf;
+    sed -i "s#Address.*128#Address = $warpIPv6Address/128#g" /etc/wireguard/wgcf.conf;
+    rm -f wgcf-profile.conf
+}
+
+warpsw3_freeplus(){
+    warpIPv4Address=$(grep "Address = 172" wgcf-profile.conf | sed "s/Address = //g")
+    warpPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
+    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+    sed -i "s#PublicKey.*#PublicKey = $warpPublicKey#g" /etc/wireguard/wgcf.conf;
+    sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+    sed -i "s#Address.*32#Address = $warpIPv4Address/32#g" /etc/wireguard/proxy.conf;
+    rm -f wgcf-profile.conf
+}
+
+warpsw_teams(){
+    read -rp "请复制粘贴WARP Teams账户配置文件链接: " teamconfigurl
+    [[ -z $teamconfigurl ]] && red "未输入配置文件链接，无法升级！" && exit 1
+    teamsconfig=$(curl -sSL "$teamconfigurl" | sed "s/\"/\&quot;/g")
+    wpteampublickey=$(expr "$teamsconfig" : '.*public_key&quot;:&quot;\([^&]*\).*')
+    wpteamprivatekey=$(expr "$teamsconfig" : '.*private_key&quot;>\([^<]*\).*')
+    wpteamv6address=$(expr "$teamsconfig" : '.*v6&quot;:&quot;\([^[&]*\).*')
+    wpteamv4address=$(expr "$teamsconfig" : '.*v4&quot;:&quot;\(172[^&]*\).*')
+    green "你的WARP Teams配置文件信息如下："
+    yellow "PublicKey: $wpteampublickey"
+    yellow "PrivateKey: $wpteamprivatekey"
+    yellow "IPv4地址: $wpteamv4address"
+    yellow "IPv6地址: $wpteamv6address"
+    read -rp "确认配置信息信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+}
+
 warpsw1(){
     yellow "请选择切换的账户类型"
     green "1. WARP 免费账户"
@@ -890,11 +928,7 @@ warpsw1(){
         wgcf generate
         chmod +x wgcf-profile.conf
         
-        warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-        warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
-        sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
-        sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
-        rm -f wgcf-profile.conf
+        warpsw1_freeplus
         
         wg-quick up wgcf >/dev/null 2>&1
         yellow "正在检查WARP 免费账户连通性，请稍等..."
@@ -931,11 +965,7 @@ warpsw1(){
             
             wg-quick down wgcf >/dev/null 2>&1
             
-            warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-            warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
-            sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
-            sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
-            rm -f wgcf-profile.conf
+            warpsw1_freeplus
             
             wg-quick up wgcf >/dev/null 2>&1
             yellow "正在检查WARP+账户连通性，请稍等..."
@@ -951,16 +981,13 @@ warpsw1(){
         fi
     fi
     if [[ $accountInput == 3 ]]; then
-        read -rp "请输入WARP Teams配置文件中的PrivateKey：" wpteamprivatekey
-        read -rp "请输入WARP Teams配置文件中的IPv6地址：" wpteamv6address
-        yellow "请确认WARP Teams信息是否正确："
-        green "PrivateKey: $wpteamprivatekey"
-        green "IPv6 地址: $wpteamv6address"
-        read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+        warpsw_teams
         if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
             wg-quick down wgcf >/dev/null 2>&1
             
+            sed -i "s#PublicKey.*#PublicKey = $wpteampublickey#g" /etc/wireguard/wgcf.conf;
             sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/wgcf.conf;
+            sed -i "s#Address.*32#Address = $wpteamv4address/32#g" /etc/wireguard/wgcf.conf;
             sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
             
             wg-quick up wgcf >/dev/null 2>&1
@@ -979,11 +1006,7 @@ warpsw1(){
                     wgcf generate
                     chmod +x wgcf-profile.conf
                     
-                    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                    warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
-                    sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
-                    sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
-                    rm -f wgcf-profile.conf
+                    warpsw1_freeplus
                     
                     wg-quick up wgcf >/dev/null 2>&1
                     red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
@@ -1034,9 +1057,7 @@ warpsw3(){
         wgcf generate
         chmod +x wgcf-profile.conf
         
-        warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-        sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
-        rm -f wgcf-profile.conf
+        warpsw3_freeplus
         
         systemctl start wireproxy-warp
         yellow "正在检查WARP 免费账户连通性，请稍等..."
@@ -1072,9 +1093,7 @@ warpsw3(){
             
             systemctl stop wireproxy-warp
             
-            warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-            sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
-            rm -f wgcf-profile.conf
+            warpsw3_freeplus
             
             systemctl start wireproxy-warp
             yellow "正在检查WARP+账户连通性，请稍等..."
@@ -1089,14 +1108,13 @@ warpsw3(){
         fi
     fi
     if [[ $accountInput == 3 ]]; then
-        read -rp "请输入WARP Teams配置文件中的PrivateKey：" wpteamprivatekey
-        yellow "请确认WARP Teams信息是否正确："
-        green "PrivateKey: $wpteamprivatekey"
-        read -rp "确认以上信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+        warpsw_teams
         if [[ $wpteamconfirm =~ "y"|"Y" ]]; then
             systemctl stop wireproxy-warp
             
+            sed -i "s#PublicKey.*#PublicKey = $wpteampublickey#g" /etc/wireguard/proxy.conf;
             sed -i "s#PrivateKey.*#PrivateKey = $wpteamprivatekey#g" /etc/wireguard/proxy.conf;
+            sed -i "s#Address.*32#Address = $wpteamv4address/32#g" /etc/wireguard/proxy.conf;
             
             systemctl start wireproxy-warp
             yellow "正在检查WARP Teams账户连通性，请稍等..."
@@ -1113,9 +1131,7 @@ warpsw3(){
                     wgcf generate
                     chmod +x wgcf-profile.conf
                     
-                    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                    sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
-                    rm -f wgcf-profile.conf
+                    warpsw3_freeplus
                     
                     systemctl start wireproxy-warp
                     red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
