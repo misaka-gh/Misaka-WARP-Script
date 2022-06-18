@@ -780,7 +780,7 @@ change_wireproxy_port(){
     fi
     CurrentPort=$(grep BindAddress /etc/wireguard/proxy.conf)
     sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
-    yellow "正在启动 WireProxy-WARP 代理模式"
+    yellow "WireProxy-WARP proxy mode is starting"
     systemctl start wireproxy-warp
     WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
     retry_time=1
@@ -788,8 +788,8 @@ change_wireproxy_port(){
         wireproxyFailAction
     done
     systemctl enable wireproxy-warp
-    green "WireProxy-WARP代理模式已启动成功！"
-    yellow "本地Socks5代理为: 127.0.0.1:$WireProxyPort"
+    green "WireProxy-WARP proxy mode has started successfully!"
+    yellow "Local Socks5 proxy is: 127.0.0.1:$WireProxyPort"
 }
 
 wireproxy_switch(){
@@ -798,12 +798,12 @@ wireproxy_switch(){
     if [[ $w5s =~ "on"|"plus" ]]; then
         systemctl stop wireproxy-warp
         systemctl disable wireproxy-warp
-        green "WireProxy-WARP代理模式关闭成功！"
+        green "WireProxy-WARP proxy mode stopped successfully!"
     fi
     if [[ $w5s =~ "off" ]] || [[ -z $w5s ]]; then
         systemctl start wireproxy-warp
         systemctl enable wireproxy-warp
-        green "WireProxy-WARP代理模式已启动成功！"
+        green "WireProxy-WARP proxy mode has started successfully!"
     fi
 }
 
@@ -814,18 +814,18 @@ uninstall_wireproxy(){
     if [[ ! -f /etc/wireguard/wgcf.conf ]]; then
         rm -f /usr/local/bin/wgcf /etc/wireguard/wgcf-account.toml
     fi
-    green "WireProxy-WARP代理模式已彻底卸载成功!"
+    green "WireProxy-WARP proxy mode has been completely uninstalled successfully!"
 }
 
 warpup(){
-    yellow "获取CloudFlare WARP账号信息方法："
-    green "电脑：下载并安装CloudFlare WARP→设置→偏好设置→复制设备ID到脚本中"
-    green "手机：下载并安装1.1.1.1 APP→菜单→高级→诊断→复制设备ID到脚本中"
+    yellow "Get CloudFlare WARP account information method:"
+    green "PC: Download and install CloudFlare WARP → Settings → Preferences → Copy Device ID to the script"
+    green "Mobile: download and install 1.1.1.1 APP → Menu → Advanced → Diagnostics → Copy Device ID to script"
     echo ""
-    yellow "请按照下面指示，输入您的CloudFlare WARP账号信息："
-    read -rp "请输入您的WARP设备ID (36位字符): " WarpDeviceID
-    read -rp "请输入你期望刷到的流量 (单位: GB): " WarpFlowLimit
-    echo -e "已设置你期望刷到的流量为：$WarpFlowLimit GB"
+    yellow "Please follow the instructions below and enter your CloudFlare WARP account information:"
+    read -rp "Please enter your WARP device ID (36 characters): " WarpDeviceID
+    read -rp "Please enter the amount of traffic (in GB) you expect to be swiped: " WarpFlowLimit
+    echo -e "The amount of traffic you expect to be flushed is set to: $WarpFlowLimit GB"
     for ((i = 0; i < ${WarpFlowLimit}; i++)); do
         if [[ $i == 0 ]]; then
             sleep_try=30
@@ -857,7 +857,7 @@ warpup(){
         fi
     done
     echo ""
-    echo -e "本次运行共成功获取warp+流量 ${GREEN} ${#rit[*]} ${PLAIN} GB"
+    echo -e "This run successfully obtained a total of warp+ traffic ${GREEN} ${#rit[*]} ${PLAIN} GB"
 }
 
 warpsw1_freeplus(){
@@ -883,27 +883,27 @@ warpsw3_freeplus(){
 }
 
 warpsw_teams(){
-    read -rp "请复制粘贴WARP Teams账户配置文件链接: " teamconfigurl
-    [[ -z $teamconfigurl ]] && red "未输入配置文件链接，无法升级！" && exit 1
+    read -rp "Please copy and paste the WARP Teams account configuration file link: " teamconfigurl
+    [[ -z $teamconfigurl ]] && red "Did not enter profile link, cannot upgrade!" && exit 1
     teamsconfig=$(curl -sSL "$teamconfigurl" | sed "s/\"/\&quot;/g")
     wpteampublickey=$(expr "$teamsconfig" : '.*public_key&quot;:&quot;\([^&]*\).*')
     wpteamprivatekey=$(expr "$teamsconfig" : '.*private_key&quot;>\([^<]*\).*')
     wpteamv6address=$(expr "$teamsconfig" : '.*v6&quot;:&quot;\([^[&]*\).*')
     wpteamv4address=$(expr "$teamsconfig" : '.*v4&quot;:&quot;\(172[^&]*\).*')
-    green "你的WARP Teams配置文件信息如下："
+    green "Your WARP Teams profile information is as follows:"
     yellow "PublicKey: $wpteampublickey"
     yellow "PrivateKey: $wpteamprivatekey"
-    yellow "IPv4地址: $wpteamv4address"
-    yellow "IPv6地址: $wpteamv6address"
-    read -rp "确认配置信息信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+    yellow "IPv4 address: $wpteamv4address"
+    yellow "IPv6 address: $wpteamv6address"
+    read -rp "Please enter y to confirm that the configuration information is correct, other keys to exit the upgrade process:" wpteamconfirm
 }
 
 warpsw1(){
-    yellow "请选择切换的账户类型"
+    yellow "Please select the type of account to switch"
     green "1. WARP Free Account"
     green "2. WARP+"
     green "3. WARP Teams"
-    read -rp "请选择账户类型 [1-3]: " accountInput
+    read -rp "Please select the account type [1-3]: " accountInput
     if [[ $accountInput == 1 ]]; then
         wg-quick down wgcf >/dev/null 2>&1
         
@@ -922,13 +922,13 @@ warpsw1(){
         warpsw1_freeplus
         
         wg-quick up wgcf >/dev/null 2>&1
-        yellow "正在检查WARP 免费账户连通性，请稍等..."
+        yellow "Checking WARP free account connectivity, please wait..."
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         if [[ $WgcfWARP4Status == "on" || $WgcfWARP6Status == "on" ]]; then
-            green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
+            green "Wgcf-WARP account type switch to WARP free account Success!"
         else
-            green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+            green "It seems like that CloudFlare has a bug and has automatically given you a WARP+ account for nothing!"
         fi
     fi
     if [[ $accountInput == 2 ]]; then
@@ -943,8 +943,8 @@ warpsw1(){
         
         read -rp "Enter the WARP account license key (26 characters):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
-            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
+            read -rp "Please enter a custom device name, or use the default random device name if not entered: " WPPlusName
+            green "In the registered WARP+ account, if the following party shows: 400 Bad Request, then use the free version of WARP account"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -959,16 +959,16 @@ warpsw1(){
             warpsw1_freeplus
             
             wg-quick up wgcf >/dev/null 2>&1
-            yellow "正在检查WARP+账户连通性，请稍等..."
+            yellow "Checking WARP+ account connectivity, please wait..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
-                green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
+                green "Wgcf-WARP account type switch to WARP+ successful!"
             else
-                red "WARP+ 配置有误，已自动降级至WARP 免费账户！"
+                red "WARP+ is misconfigured and has been automatically downgraded to a WARP free account!"
             fi
         else
-            red "未输入WARP账户许可证密钥，无法升级！"
+            red "The WARP account license key was not entered and could not be upgraded!"
         fi
     fi
     if [[ $accountInput == 3 ]]; then
@@ -982,12 +982,12 @@ warpsw1(){
             sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
             
             wg-quick up wgcf >/dev/null 2>&1
-            yellow "正在检查WARP Teams账户连通性，请稍等..."
+            yellow "Checking WARP Teams account connectivity, please wait..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             retry_time=1
             until [[ $WgcfWARP4Status =~ on|plus || $WgcfWARP6Status =~ on|plus ]]; do
-                red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
+                red "Unable to connect to WARP Teams account, trying to restart, number of retries: $retry_time"
                 retry_time=$((${retry_time} + 1))
                 
                 if [[ $retry_time == 4 ]]; then
@@ -1000,12 +1000,12 @@ warpsw1(){
                     warpsw1_freeplus
                     
                     wg-quick up wgcf >/dev/null 2>&1
-                    red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+                    red "WARP Teams is misconfigured and has been automatically downgraded to WARP Free Account / WARP+!"
                 fi
             done
-            green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
+            green "Wgcf-WARP account type switch to WARP Teams successful!"
         else
-            red "已退出WARP Teams账号升级过程！"
+            red "Exited WARP Teams account upgrade process!"
         fi
     fi
 }
@@ -1021,18 +1021,18 @@ warpsw2(){
     warp-cli --accept-tos set-proxy-port "$s5p" >/dev/null 2>&1
     warp-cli --accept-tos connect >/dev/null 2>&1
     if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
-        green "WARP-Cli 账户类型切换为 WARP+ 成功！"
+        green "WARP-Cli account type switch to WARP+ successful!"
     else
-        red "WARP+账户启用失败，已自动降级至WARP免费版账户"
+        red "WARP+ account enable failed and has been automatically downgraded to a WARP free version account"
     fi
 }
 
 warpsw3(){
-    yellow "请选择切换的账户类型"
+    yellow "Please select the type of account to switch"
     green "1. WARP Free Account"
     green "2. WARP+"
     green "3. WARP Teams"
-    read -rp "请选择账户类型 [1-3]: " accountInput
+    read -rp "Please select the account type [1-3]: " accountInput
     if [[ $accountInput == 1 ]]; then
         systemctl stop wireproxy-warp
         
@@ -1051,12 +1051,12 @@ warpsw3(){
         warpsw3_freeplus
         
         systemctl start wireproxy-warp
-        yellow "正在检查WARP 免费账户连通性，请稍等..."
+        yellow "Checking WARP free account connectivity, please wait..."
         WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         if [[ $WireProxyStatus == "on" ]]; then
-            green "WireProxy-WARP代理模式 账户类型切换为 WARP 免费账户 成功！"
+            green "WireProxy-WARP proxy mode Account type switch to WARP free account Success!"
         else
-            green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+            green "It seems like that CloudFlare has a bug and has automatically given you a WARP+ account for nothing!"
         fi
     fi
     if [[ $accountInput == 2 ]]; then
@@ -1071,8 +1071,8 @@ warpsw3(){
         
         read -rp "Enter the WARP account license key (26 characters):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
-            read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
+            read -rp "Please enter a custom device name, or use the default random device name if not entered: " WPPlusName
+            green "In the registered WARP+ account, if the following party shows: 400 Bad Request, then use the free version of WARP account"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -1087,15 +1087,15 @@ warpsw3(){
             warpsw3_freeplus
             
             systemctl start wireproxy-warp
-            yellow "正在检查WARP+账户连通性，请稍等..."
+            yellow "Checking WARP+ account connectivity, please wait..."
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
             if [[ $WireProxyStatus == "plus" ]]; then
-                green "WireProxy-WARP代理模式 账户类型切换为 WARP+ 成功！"
+                green "WireProxy-WARP proxy mode Account type switch to WARP+ successful!"
             else
-                red "WARP+ 配置有误，已自动降级至WARP 免费账户！"
+                red "WARP+ configuration error, has automatically downgraded to WARP free account!"
             fi
         else
-            red "未输入WARP账户许可证密钥，无法升级！"
+            red "The WARP account license key was not entered and could not be upgraded!"
         fi
     fi
     if [[ $accountInput == 3 ]]; then
@@ -1108,11 +1108,11 @@ warpsw3(){
             sed -i "s#Address.*32#Address = $wpteamv4address/32#g" /etc/wireguard/proxy.conf;
             
             systemctl start wireproxy-warp
-            yellow "正在检查WARP Teams账户连通性，请稍等..."
+            yellow "Checking WARP Teams account connectivity, please wait..."
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
             retry_time=1
             until [[ $WireProxyStatus == "plus" ]]; do
-                red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
+                red "Unable to connect to WARP Teams account, trying to restart, number of retries: $retry_time"
                 retry_time=$((${retry_time} + 1))
                 
                 if [[ $retry_time == 4 ]]; then
@@ -1125,12 +1125,12 @@ warpsw3(){
                     warpsw3_freeplus
                     
                     systemctl start wireproxy-warp
-                    red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+                    red "WARP Teams is misconfigured and has been automatically downgraded to WARP Free Account / WARP+!"
                 fi
             done
-            green "WireProxy-WARP代理模式 账户类型切换为 WARP Teams 成功！"
+            green "WireProxy-WARP proxy mode account type switched to WARP Teams successfully!"
         else
-            red "已退出WARP Teams账号升级过程！"
+            red "Exited WARP Teams account upgrade process!"
         fi
     fi
 }
