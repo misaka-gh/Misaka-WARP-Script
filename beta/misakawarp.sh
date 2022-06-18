@@ -734,6 +734,26 @@ uninstall_warpcli(){
     green "WARP-Cli代理模式已彻底卸载成功！"
 }
 
+wireproxyFailAction(){
+    retry_time=$((${retry_time} + 1))
+    red "启动 WireProxy-WARP 代理模式失败，正在尝试重启，重试次数：$retry_time"
+    systemctl stop wireproxy-warp
+    systemctl start wireproxy-warp
+    WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    if [[ $retry_time == 6 ]]; then
+        uninstall_wireproxy
+        echo ""
+        red "由于WireProxy-WARP 代理模式启动重试次数过多，已自动卸载WireProxy-WARP 代理模式"
+        green "建议如下："
+        yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
+        yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
+        yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用WireProxy-WARP 代理模式"
+        yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+        exit 1
+    fi
+    sleep 8
+}
+
 install_wireproxy(){
     if [[ $c4 == "Hong Kong" || $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
@@ -861,18 +881,7 @@ TEXT
     WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
     retry_time=1
     until [[ $WireProxyStatus =~ on|plus ]]; do
-        red "启动 WireProxy-WARP 代理模式失败，正在尝试重启，重试次数：$retry_time"
-        systemctl stop wireproxy-warp
-        systemctl start wireproxy-warp
-        WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-        retry_time=$((${retry_time} + 1))
-        if [[ $retry_time == 6 ]]; then
-            uninstall_wireproxy
-            echo ""
-            red "启动 WireProxy-WARP 代理模式失败，请检查网络连接"
-            exit 1
-        fi
-        sleep 8
+        wireproxyFailAction
     done
     sleep 5
     systemctl enable wireproxy-warp >/dev/null 2>&1
@@ -898,13 +907,10 @@ change_wireproxy_port(){
     sed -i "s/$CurrentPort/BindAddress = 127.0.0.1:$WireProxyPort/g" /etc/wireguard/proxy.conf
     yellow "正在启动 WireProxy-WARP 代理模式"
     systemctl start wireproxy-warp
-    socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-    until [[ $socks5Status =~ on|plus ]]; do
-        red "启动 WireProxy-WARP 代理模式失败，正在尝试重启"
-        systemctl stop wireproxy-warp
-        systemctl start wireproxy-warp
-        socks5Status=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-        sleep 8
+    WireProxyStatus=$(curl -sx socks5h://localhost:$WireProxyPort https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
+    retry_time=1
+    until [[ $WireProxyStatus =~ on|plus ]]; do
+        wireproxyFailAction
     done
     systemctl enable wireproxy-warp
     green "WireProxy-WARP代理模式已启动成功！"
@@ -1078,9 +1084,11 @@ warpsw1(){
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             retry_time=1
-            until [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; do
+            until [[ $WgcfWARP4Status =~ on|plus || $WgcfWARP6Status =~ on|plus ]]; do
                 red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
-                if [[ $retry_time == 5 ]]; then
+                retry_time=$((${retry_time} + 1))
+                
+                if [[ $retry_time == 4 ]]; then
                     wg-quick down wgcf >/dev/null 2>&1
                     
                     cd /etc/wireguard
@@ -1209,22 +1217,27 @@ warpsw3(){
             systemctl start wireproxy-warp
             yellow "正在检查WARP Teams账户连通性，请稍等..."
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
-            if [[ $WireProxyStatus == "plus" ]]; then
-                green "WireProxy-WARP代理模式 账户类型切换为 WARP Teams 成功！"
-            else
-                systemctl stop wireproxy-warp
+            retry_time=1
+            until [[ $WireProxyStatus == "plus" ]]; do
+                red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
+                retry_time=$((${retry_time} + 1))
                 
-                cd /etc/wireguard
-                wgcf generate
-                chmod +x wgcf-profile.conf
-                
-                warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
-                rm -f wgcf-profile.conf
-                
-                systemctl start wireproxy-warp
-                red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
-            fi
+                if [[ $retry_time == 4 ]]; then
+                    systemctl stop wireproxy-warp
+                    
+                    cd /etc/wireguard
+                    wgcf generate
+                    chmod +x wgcf-profile.conf
+                    
+                    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+                    sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/proxy.conf;
+                    rm -f wgcf-profile.conf
+                    
+                    systemctl start wireproxy-warp
+                    red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+                fi
+            done
+            green "WireProxy-WARP代理模式 账户类型切换为 WARP Teams 成功！"
         else
             red "已退出WARP Teams账号升级过程！"
         fi
