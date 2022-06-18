@@ -40,11 +40,11 @@ WARP Teams: https://owo.misaka.rest/cf-teams/
 
 2. Hong Kong region has been restricted by CloudFlare to use third-party clients
 
-! [image](https://user-images.githubusercontent.com/96560028/160244784-25c40a97-d398-4d4f-9deb-d82c5e9b69ef.png)
+![image](https://user-images.githubusercontent.com/96560028/160244784-25c40a97-d398-4d4f-9deb-d82c5e9b69ef.png)
 
 ### 2. 429 Too Many Requests error when applying for Wgcf-WARP or WireProxy-WARP account
 
-! [image](https://user-images.githubusercontent.com/96560028/163660825-bb989575-f165-4bd3-aa59-a8f747c4589e.png)
+![image](https://user-images.githubusercontent.com/96560028/163660825-bb989575-f165-4bd3-aa59-a8f747c4589e.png)
 
 This problem may occur due to the busy service of WARP during some hours. Therefore, the script comes with the function of automatically retrying to apply for a WARP account until the account is applied before the next step of installing and starting WARP.
 
