@@ -954,7 +954,7 @@ warpsw1(){
         read -rp "请复制粘贴WARP Teams账户配置文件链接: " teamconfigurl
         [[ -z $teamconfigurl ]] && red "未输入配置文件链接，无法升级！" && exit 1
         teamsconfig=$(curl -sSL "$teamconfigurl" | sed "s/\"/\&quot;/g")
-        wpteampublickey=$(expr "$teamconfigurl" : '.*public_key&quot;:&quot;\([^&]*\).*')
+        wpteampublickey=$(expr "$teamconfig" : '.*public_key&quot;:&quot;\([^&]*\).*')
         wpteamprivatekey=$(expr "$teamsconfig" : '.*private_key&quot;>\([^<]*\).*')
         wpteamv6address=$(expr "$teamsconfig" : '.*v6&quot;:&quot;\([^[&]*\).*')
         wpteamv4address=$(expr "$teamsconfig" : '.*v4&quot;:&quot;\(172[^&]*\).*')
