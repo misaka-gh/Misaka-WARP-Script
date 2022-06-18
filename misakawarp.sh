@@ -436,7 +436,7 @@ install_wgcf(){
     fi
     if [[ $VPSIP == 1 ]]; then
         [[ $wgcfmode == 0 ]] && wgcfdns4 && wgcfpost4 && wgcfconfig4 && wgcfendpoint4 && wgcfcheck4
-        [[ $wgcfmode == 1 ]] && wgcfdns4 && wgcfconfig6 && wgcfendpoint4 && wgcfcheck4
+        [[ $wgcfmode == 1 ]] && wgcfdns4 && wgcfconfig6 && wgcfendpoint4 && wgcfcheck6
         [[ $wgcfmode == 2 ]] && wgcfdns4 && wgcfpost4 && wgcfendpoint4 && wgcfcheckd
     fi
     if [[ $VPSIP == 2 ]]; then
