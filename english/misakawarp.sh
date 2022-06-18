@@ -144,7 +144,7 @@ check_tun(){
             else
                 yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
             fi
-        elif [[ $vpsvirt == "openvz" ]]; then
+            elif [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://gitlab.com/misaka-blog/tun-script/-/raw/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
@@ -1196,26 +1196,26 @@ info_bar(){
 statustext(){
     if [[ -n $v4 ]]; then
         echo "-------------------------------------------------------------"
-        echo -e "IPv4 地址：$v4  地区：$c4"
-        echo -e "WARP状态：$w4  Netfilx解锁状态：$n4"
+        echo -e "IPv4: $v4  Location: $c4"
+        echo -e "WARP Status: $w4  Netfilx Status: $n4"
     fi
     if [[ -n $v6 ]]; then
         echo "-------------------------------------------------------------"
-        echo -e "IPv6 地址：$v6  地区：$c6"
-        echo -e "WARP状态：$w6  Netfilx解锁状态：$n6"
+        echo -e "IPv6：$v6  Location：$c6"
+        echo -e "WARP Status: $w6  Netfilx Status: $n6"
     fi
     if [[ -n $s5p ]]; then
         echo "-------------------------------------------------------------"
-        echo -e "WARP-Cli代理端口: 127.0.0.1:$s5p  WARP-Cli状态: $s5"
+        echo -e "WARP-Cli Proxy Port: $s5p  WARP-Cli Status: $s5"
         if [[ -n $s5i ]]; then
-            echo -e "IP: $s5i  地区: $s5c  Netfilx解锁状态：$s5n"
+            echo -e "IP: $s5i  Location: $s5c  Netfilx Status: $s5n"
         fi
     fi
     if [[ -n $w5p ]]; then
         echo "-------------------------------------------------------------"
-        echo -e "WireProxy代理端口: 127.0.0.1:$w5p  WireProxy状态: $w5"
+        echo -e "WireProxy Proxy Port: $w5p  WireProxy Status: $w5"
         if [[ -n $w5i ]]; then
-            echo -e "IP: $w5i  地区: $w5c  Netfilx解锁状态：$w5n"
+            echo -e "IP: $w5i  Location: $w5c  Netfilx Status: $w5n"
         fi
     fi
     echo "-------------------------------------------------------------"
