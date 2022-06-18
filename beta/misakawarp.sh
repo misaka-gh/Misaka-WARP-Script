@@ -1077,24 +1077,27 @@ warpsw1(){
             yellow "正在检查WARP Teams账户连通性，请稍等..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-            if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
-                green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
-            else
-                wg-quick down wgcf >/dev/null 2>&1
-                
-                cd /etc/wireguard
-                wgcf generate
-                chmod +x wgcf-profile.conf
-                
-                warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
-                warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
-                sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
-                sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
-                rm -f wgcf-profile.conf
-                
-                wg-quick up wgcf >/dev/null 2>&1
-                red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
-            fi
+            retry_time=1
+            until [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; do
+                red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
+                if [[ $retry_time == 5 ]]; then
+                    wg-quick down wgcf >/dev/null 2>&1
+                    
+                    cd /etc/wireguard
+                    wgcf generate
+                    chmod +x wgcf-profile.conf
+                    
+                    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+                    warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
+                    sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
+                    sed -i "s#PrivateKey.*#PrivateKey = $warpPrivatekey#g" /etc/wireguard/wgcf.conf;
+                    rm -f wgcf-profile.conf
+                    
+                    wg-quick up wgcf >/dev/null 2>&1
+                    red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+                fi
+            done
+            green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
         else
             red "已退出WARP Teams账号升级过程！"
         fi
