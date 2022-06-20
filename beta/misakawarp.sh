@@ -343,10 +343,10 @@ install_wgcf(){
     fi
     if [[ $SYSTEM == "Debian" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release htop inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo wget curl lsb-release htop screen inetutils-ping
         echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv screen dnsutils wireguard-tools iptables
+        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends linux-headers-$(uname -r)
@@ -356,12 +356,12 @@ install_wgcf(){
     fi
     if [[ $SYSTEM == "Ubuntu" ]]; then
         ${PACKAGE_UPDATE[int]}
-        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop inetutils-ping
+        ${PACKAGE_INSTALL[int]} sudo curl wget lsb-release htop screen inetutils-ping
         if [[ $vsid =~ 16 ]]; then
             add-apt-repository ppa:wireguard/wireguard
             ${PACKAGE_UPDATE[int]}
         fi
-        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils screen wireguard-tools iptables
+        ${PACKAGE_INSTALL[int]} --no-install-recommends net-tools iproute2 openresolv dnsutils wireguard-tools iptables
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
                 ${PACKAGE_INSTALL[int]} --no-install-recommends wireguard-dkms
