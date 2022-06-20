@@ -869,7 +869,7 @@ warpup(){
 
 warpsw1_freeplus(){
     warpPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
-    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+    warpPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     warpIPv4Address=$(grep "Address = 172" wgcf-profile.conf | sed "s/Address = //g")
     warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
     sed -i "s#PublicKey.*#PublicKey = $warpPublicKey#g" /etc/wireguard/wgcf.conf;
@@ -882,7 +882,7 @@ warpsw1_freeplus(){
 warpsw3_freeplus(){
     warpIPv4Address=$(grep "Address = 172" wgcf-profile.conf | sed "s/Address = //g")
     warpPublicKey=$(grep PublicKey wgcf-profile.conf | sed "s/PublicKey = //g")
-    warpPrivatekey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
+    warpPrivateKey=$(grep PrivateKey wgcf-profile.conf | sed "s/PrivateKey = //g")
     sed -i "s#PublicKey.*#PublicKey = $warpPublicKey#g" /etc/wireguard/wgcf.conf;
     sed -i "s#PrivateKey.*#PrivateKey = $warpPrivateKey#g" /etc/wireguard/proxy.conf;
     sed -i "s#Address.*32#Address = $warpIPv4Address/32#g" /etc/wireguard/proxy.conf;
