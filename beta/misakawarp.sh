@@ -136,7 +136,7 @@ check_tun(){
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
-    if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
+    if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'ist in schlechter Verfassung' ]]; then
         if [[ $vpsvirt == lxc ]]; then
             if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
                 red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
