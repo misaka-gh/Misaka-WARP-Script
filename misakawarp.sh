@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# 修复部分系统语言默认不是英语导致脚本识别错误问题
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export LANG=en_US.UTF-8
+
 RED="\033[31m"
 GREEN="\033[32m"
 YELLOW="\033[33m"
@@ -48,6 +52,40 @@ archAffix(){
         s390x ) echo 's390x' ;;
         * ) red "不支持的CPU架构！" && exit 1 ;;
     esac
+}
+
+check_best_mtu(){
+    yellow "正在设置MTU最佳值，请稍等..."
+    v66=`curl -s6m8 https://ip.gs -k`
+    v44=`curl -s4m8 https://ip.gs -k`
+    MTUy=1500
+    MTUc=10
+    if [[ -n ${v66} && -z ${v44} ]]; then
+        ping='ping6'
+        IP1='2606:4700:4700::1001'
+        IP2='2001:4860:4860::8888'
+    else
+        ping='ping'
+        IP1='1.1.1.1'
+        IP2='8.8.8.8'
+    fi
+    while true; do
+        if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
+            MTUc=1
+            MTUy=$((${MTUy} + ${MTUc}))
+        else
+            MTUy=$((${MTUy} - ${MTUc}))
+            if [[ ${MTUc} = 1 ]]; then
+                break
+            fi
+        fi
+        if [[ ${MTUy} -le 1360 ]]; then
+            MTUy='1360'
+            break
+        fi
+    done
+    MTU=$((${MTUy} - 80))
+    green "MTU 最佳值=$MTU 已设置完毕"
 }
 
 check_status(){
@@ -136,7 +174,7 @@ check_tun(){
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
     TUN=$(cat /dev/net/tun 2>&1 | tr '[:upper:]' '[:lower:]')
-    if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then
+    if [[ ! $TUN =~ "in bad state"|"处于错误状态"|"ist in schlechter Verfassung" ]]; then
         if [[ $vpsvirt == lxc ]]; then
             if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
                 red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
@@ -151,40 +189,6 @@ check_tun(){
             exit 1
         fi
     fi
-}
-
-check_best_mtu(){
-    yellow "正在设置MTU最佳值，请稍等..."
-    v66=`curl -s6m8 https://ip.gs -k`
-    v44=`curl -s4m8 https://ip.gs -k`
-    MTUy=1500
-    MTUc=10
-    if [[ -n ${v66} && -z ${v44} ]]; then
-        ping='ping6'
-        IP1='2606:4700:4700::1001'
-        IP2='2001:4860:4860::8888'
-    else
-        ping='ping'
-        IP1='1.1.1.1'
-        IP2='8.8.8.8'
-    fi
-    while true; do
-        if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-            MTUc=1
-            MTUy=$((${MTUy} + ${MTUc}))
-        else
-            MTUy=$((${MTUy} - ${MTUc}))
-            if [[ ${MTUc} = 1 ]]; then
-                break
-            fi
-        fi
-        if [[ ${MTUy} -le 1360 ]]; then
-            MTUy='1360'
-            break
-        fi
-    done
-    MTU=$((${MTUy} - 80))
-    green "MTU 最佳值=$MTU 已设置完毕"
 }
 
 docker_warn(){
