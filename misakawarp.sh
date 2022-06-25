@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # 修复部分系统语言默认不是英语导致脚本识别错误问题
-export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
 
 RED="\033[31m"
@@ -336,12 +335,17 @@ install_wgcf(){
     
     if [[ $SYSTEM == "CentOS" ]]; then
         ${PACKAGE_INSTALL[int]} epel-release
-        ${PACKAGE_INSTALL[int]} sudo curl wget net-tools wireguard-tools iptables htop screen iputils
+        ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
-                vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-                curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-$vsid/jdoss-wireguard-epel-$vsid.repo
-                ${PACKAGE_INSTALL[int]} wireguard-dkms
+                if [[ $(archAffix) == "amd64" ]]; then
+                    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-amd64 -O /usr/bin/wireguard-go
+                    chmod +x /usr/bin/wireguard-go
+                fi
+                if [[ $(archAffix) == "arm64" ]]; then
+                    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-arm64 -O /usr/bin/wireguard-go
+                    chmod +x /usr/bin/wireguard-go
+                fi
             fi
         fi
     fi
@@ -374,8 +378,12 @@ install_wgcf(){
     fi
     
     if [[ $vpsvirt =~ lxc|openvz ]]; then
-        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go -O /usr/bin/wireguard-go
+        if [[ $(archAffix) == "amd64" ]]; then
+            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-amd64 -O /usr/bin/wireguard-go
+            chmod +x /usr/bin/wireguard-go
+        fi
+        if [[ $(archAffix) == "arm64" ]]; then
+            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-arm64 -O /usr/bin/wireguard-go
             chmod +x /usr/bin/wireguard-go
         fi
     fi
