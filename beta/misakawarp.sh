@@ -339,9 +339,8 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
-                vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-                curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-$vsid/jdoss-wireguard-epel-$vsid.repo
-                ${PACKAGE_INSTALL[int]} wireguard-dkms
+                wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go -O /usr/bin/wireguard-go
+                chmod +x /usr/bin/wireguard-go
             fi
         fi
     fi
