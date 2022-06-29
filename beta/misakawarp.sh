@@ -88,7 +88,7 @@ check_best_mtu(){
 }
 
 check_status(){
-    yellow "正在检查VPS系统配置环境，请稍等..."
+    yellow "正在检查VPS系统及IP配置环境，请稍等..."
     if [[ -z $(type -P curl) ]]; then
         yellow "检测curl未安装，正在安装中..."
         if [[ ! $SYSTEM == "CentOS" ]]; then
