@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# 修复部分系统语言默认不是英语导致脚本识别错误问题
 export LANG=en_US.UTF-8
 
 RED="\033[31m"
@@ -21,12 +20,12 @@ yellow(){
 }
 
 # 判断系统及定义系统安装依赖方式
-REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
-RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS")
-PACKAGE_UPDATE=("apt-get update" "apt-get update" "yum -y update" "yum -y update")
-PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install")
-PACKAGE_REMOVE=("apt -y remove" "apt -y remove" "yum -y remove" "yum -y remove")
-PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove")
+REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "fedora")
+RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Fedora")
+PACKAGE_UPDATE=("apt-get update" "apt-get update" "yum -y update" "yum -y update" "yum -y update")
+PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "yum -y install")
+PACKAGE_REMOVE=("apt -y remove" "apt -y remove" "yum -y remove" "yum -y remove" "yum -y remove")
+PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "yum -y autoremove")
 
 CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')")
 
@@ -338,14 +337,17 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
-                if [[ $(archAffix) == "amd64" ]]; then
-                    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-amd64 -O /usr/bin/wireguard-go
-                    chmod +x /usr/bin/wireguard-go
-                fi
-                if [[ $(archAffix) == "arm64" ]]; then
-                    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-arm64 -O /usr/bin/wireguard-go
-                    chmod +x /usr/bin/wireguard-go
-                fi
+                wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
+                chmod +x /usr/bin/wireguard-go
+            fi
+        fi
+    fi
+    if [[ $SYSTEM == "Fedora" ]]; then
+        ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
+        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
+                wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
+                chmod +x /usr/bin/wireguard-go
             fi
         fi
     fi
@@ -377,18 +379,8 @@ install_wgcf(){
         fi
     fi
     
-    if [[ $vpsvirt =~ lxc|openvz ]]; then
-        if [[ $(archAffix) == "amd64" ]]; then
-            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-amd64 -O /usr/bin/wireguard-go
-            chmod +x /usr/bin/wireguard-go
-        fi
-        if [[ $(archAffix) == "arm64" ]]; then
-            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-arm64 -O /usr/bin/wireguard-go
-            chmod +x /usr/bin/wireguard-go
-        fi
-    fi
-    if [[ $vpsvirt == zvm ]]; then
-        wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-s390x -O /usr/bin/wireguard-go
+    if [[ $vpsvirt =~ lxc|openvz|zvm ]]; then
+        wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
     
