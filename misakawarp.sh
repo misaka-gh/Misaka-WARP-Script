@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# 修复部分系统语言默认不是英语导致脚本识别错误问题
 export LANG=en_US.UTF-8
 
 RED="\033[31m"
@@ -21,12 +20,12 @@ yellow(){
 }
 
 # 判断系统及定义系统安装依赖方式
-REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
-RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS")
-PACKAGE_UPDATE=("apt-get update" "apt-get update" "yum -y update" "yum -y update")
-PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install")
-PACKAGE_REMOVE=("apt -y remove" "apt -y remove" "yum -y remove" "yum -y remove")
-PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove")
+REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "fedora")
+RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Fedora")
+PACKAGE_UPDATE=("apt-get update" "apt-get update" "yum -y update" "yum -y update" "yum -y update")
+PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "yum -y install")
+PACKAGE_REMOVE=("apt -y remove" "apt -y remove" "yum -y remove" "yum -y remove" "yum -y remove")
+PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "yum -y autoremove")
 
 CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')")
 
@@ -88,7 +87,7 @@ check_best_mtu(){
 }
 
 check_status(){
-    yellow "正在检查VPS系统配置环境，请稍等..."
+    yellow "正在检查VPS系统及IP配置环境，请稍等..."
     if [[ -z $(type -P curl) ]]; then
         yellow "检测curl未安装，正在安装中..."
         if [[ ! $SYSTEM == "CentOS" ]]; then
@@ -320,9 +319,10 @@ install_wgcf(){
     main=`uname  -r | awk -F . '{print $1}'`
     minor=`uname -r | awk -F . '{print $2}'`
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
-    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 7|8|9 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持CentOS / Almalinux / Rocky / Oracle Linux 7-9系统" && exit 1
-    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持Debian 10-11系统" && exit 1
-    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持Ubuntu 16.04/18.04/20.04/22.04系统" && exit 1
+    [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} -lt 7 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持CentOS / Almalinux / Rocky / Oracle Linux 7及以上版本的系统" && exit 1
+    [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} -lt 10 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持Debian 10及以上版本的系统" && exit 1
+    [[ $SYSTEM == "Fedora" ]] && [[ ! ${vsid} -lt 29 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持Fedora 29及以上版本的系统" && exit 1
+    [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} -lt 16 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持Ubuntu 16.04及以上版本的系统" && exit 1
     
     if [[ $c4 == "Hong Kong" || $c6 == "Hong Kong" ]]; then
         red "检测到地区为 Hong Kong 的VPS！"
@@ -338,14 +338,17 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
-                if [[ $(archAffix) == "amd64" ]]; then
-                    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-amd64 -O /usr/bin/wireguard-go
-                    chmod +x /usr/bin/wireguard-go
-                fi
-                if [[ $(archAffix) == "arm64" ]]; then
-                    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-arm64 -O /usr/bin/wireguard-go
-                    chmod +x /usr/bin/wireguard-go
-                fi
+                wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
+                chmod +x /usr/bin/wireguard-go
+            fi
+        fi
+    fi
+    if [[ $SYSTEM == "Fedora" ]]; then
+        ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
+        if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
+            if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
+                wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
+                chmod +x /usr/bin/wireguard-go
             fi
         fi
     fi
@@ -377,18 +380,8 @@ install_wgcf(){
         fi
     fi
     
-    if [[ $vpsvirt =~ lxc|openvz ]]; then
-        if [[ $(archAffix) == "amd64" ]]; then
-            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-amd64 -O /usr/bin/wireguard-go
-            chmod +x /usr/bin/wireguard-go
-        fi
-        if [[ $(archAffix) == "arm64" ]]; then
-            wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-arm64 -O /usr/bin/wireguard-go
-            chmod +x /usr/bin/wireguard-go
-        fi
-    fi
-    if [[ $vpsvirt == zvm ]]; then
-        wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-s390x -O /usr/bin/wireguard-go
+    if [[ $vpsvirt =~ lxc|openvz|zvm ]]; then
+        wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
     
@@ -499,6 +492,7 @@ install_warpcli(){
     vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
     [[ $SYSTEM == "CentOS" ]] && [[ ! ${vsid} =~ 8|9 ]] && yellow "当前系统版本：${CMD} \nWARP-Cli代理模式仅支持CentOS / Almalinux / Rocky / Oracle Linux 8/9系统" && exit 1
     [[ $SYSTEM == "Debian" ]] && [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本：${CMD} \nWARP-Cli代理模式仅支持Debian 9-11系统" && exit 1
+    [[ $SYSTEM == "Fedora" ]] && yellow "当前系统版本：${CMD} \nWARP-Cli暂时不支持Fedora系统" && exit 1
     [[ $SYSTEM == "Ubuntu" ]] && [[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本：${CMD} \nWARP-Cli代理模式仅支持Ubuntu 16.04/18.04/20.04系统" && exit 1
     
     check_tun
