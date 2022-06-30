@@ -938,9 +938,9 @@ warpsw1(){
         yellow "正在检查WARP 免费账户连通性，请稍等..." && sleep 5
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-        if [[ $WgcfWARP4Status == "on" || $WgcfWARP6Status == "on" ]]; then
+        if [[ $WgcfWARP4Status == "on" ]] || [[ $WgcfWARP6Status == "on" ]]; then
             green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
-        elif [[ $WgcfWARP4Status == "on" || $WgcfWARP6Status == "on" ]]; then
+        elif [[ $WgcfWARP4Status == "on" ]] || [[ $WgcfWARP6Status == "on" ]]; then
             green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
         else
             red "切换 Wgcf-WARP 账户类型失败，请卸载后重新切换账户！"
@@ -977,9 +977,9 @@ warpsw1(){
             yellow "正在检查WARP+账户连通性，请稍等..." && sleep 5
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-            if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
+            if [[ $WgcfWARP4Status == "plus" ]] || [[ $WgcfWARP6Status == "plus" ]]; then
                 green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
-            elif [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
+            elif [[ $WgcfWARP4Status == "plus" ]] || [[ $WgcfWARP6Status == "plus" ]]; then
                 red "WARP+ 配置有误，已自动降级至WARP 免费账户！"
             else
                 red "切换 Wgcf-WARP 账户类型失败，请卸载后重新切换账户！"
@@ -1003,7 +1003,7 @@ warpsw1(){
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             retry_time=1
-            until [[ $WgcfWARP4Status =~ on|plus || $WgcfWARP6Status =~ on|plus ]]; do
+            until [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; do
                 red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
                 retry_time=$((${retry_time} + 1))
                 
@@ -1017,6 +1017,7 @@ warpsw1(){
                     warpsw1_freeplus
                     
                     wg-quick up wgcf >/dev/null 2>&1
+
                     red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
                 fi
             done
