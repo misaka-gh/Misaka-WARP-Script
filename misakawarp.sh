@@ -940,8 +940,10 @@ warpsw1(){
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         if [[ $WgcfWARP4Status == "on" || $WgcfWARP6Status == "on" ]]; then
             green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
-        else
+        elif [[ $WgcfWARP4Status == "on" || $WgcfWARP6Status == "on" ]]; then
             green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+        else
+            red "切换 Wgcf-WARP 账户类型失败，请卸载后重新切换账户！"
         fi
     fi
     if [[ $accountInput == 2 ]]; then
@@ -977,8 +979,10 @@ warpsw1(){
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
                 green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
-            else
+            elif [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
                 red "WARP+ 配置有误，已自动降级至WARP 免费账户！"
+            else
+                red "切换 Wgcf-WARP 账户类型失败，请卸载后重新切换账户！"
             fi
         else
             red "未输入WARP账户许可证密钥，无法升级！"
@@ -1068,8 +1072,10 @@ warpsw3(){
         WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         if [[ $WireProxyStatus == "on" ]]; then
             green "WireProxy-WARP代理模式 账户类型切换为 WARP 免费账户 成功！"
-        else
+        elif [[ $WireProxyStatus == "plus" ]]; then
             green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+        else
+            red "切换 WireProxy-WARP 代理模式账户类型失败，请卸载后重新切换账户！"
         fi
     fi
     if [[ $accountInput == 2 ]]; then
@@ -1104,8 +1110,10 @@ warpsw3(){
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
             if [[ $WireProxyStatus == "plus" ]]; then
                 green "WireProxy-WARP代理模式 账户类型切换为 WARP+ 成功！"
-            else
+            elif [[ $WireProxyStatus == "plus" ]]; then
                 red "WARP+ 配置有误，已自动降级至WARP 免费账户！"
+            else
+                red "切换 WireProxy-WARP 代理模式账户类型失败，请卸载后重新切换账户！"
             fi
         else
             red "未输入WARP账户许可证密钥，无法升级！"
