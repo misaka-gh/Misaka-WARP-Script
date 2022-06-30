@@ -935,7 +935,7 @@ warpsw1(){
         warpsw1_freeplus
         
         wg-quick up wgcf >/dev/null 2>&1
-        yellow "正在检查WARP 免费账户连通性，请稍等..."
+        yellow "正在检查WARP 免费账户连通性，请稍等..." && sleep 5
         WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
         if [[ $WgcfWARP4Status == "on" || $WgcfWARP6Status == "on" ]]; then
@@ -974,7 +974,7 @@ warpsw1(){
             warpsw1_freeplus
             
             wg-quick up wgcf >/dev/null 2>&1
-            yellow "正在检查WARP+账户连通性，请稍等..."
+            yellow "正在检查WARP+账户连通性，请稍等..." && sleep 5
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             if [[ $WgcfWARP4Status == "plus" || $WgcfWARP6Status == "plus" ]]; then
@@ -1068,7 +1068,7 @@ warpsw3(){
         warpsw3_freeplus
         
         systemctl start wireproxy-warp
-        yellow "正在检查WARP 免费账户连通性，请稍等..."
+        yellow "正在检查WARP 免费账户连通性，请稍等..." && sleep 5
         WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
         if [[ $WireProxyStatus == "on" ]]; then
             green "WireProxy-WARP代理模式 账户类型切换为 WARP 免费账户 成功！"
@@ -1106,7 +1106,7 @@ warpsw3(){
             warpsw3_freeplus
             
             systemctl start wireproxy-warp
-            yellow "正在检查WARP+账户连通性，请稍等..."
+            yellow "正在检查WARP+账户连通性，请稍等..." && sleep 5
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
             if [[ $WireProxyStatus == "plus" ]]; then
                 green "WireProxy-WARP代理模式 账户类型切换为 WARP+ 成功！"
