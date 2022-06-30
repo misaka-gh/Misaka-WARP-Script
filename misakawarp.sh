@@ -880,8 +880,8 @@ warpsw1_freeplus(){
     warpIPv6Address=$(grep "Address = fd01" wgcf-profile.conf | sed "s/Address = //g")
     sed -i "s#PublicKey.*#PublicKey = $warpPublicKey#g" /etc/wireguard/wgcf.conf;
     sed -i "s#PrivateKey.*#PrivateKey = $warpPrivateKey#g" /etc/wireguard/wgcf.conf;
-    sed -i "s#Address.*32#Address = $warpIPv4Address/32#g" /etc/wireguard/wgcf.conf;
-    sed -i "s#Address.*128#Address = $warpIPv6Address/128#g" /etc/wireguard/wgcf.conf;
+    sed -i "s#Address.*32#Address = $warpIPv4Address#g" /etc/wireguard/wgcf.conf;
+    sed -i "s#Address.*128#Address = $warpIPv6Address#g" /etc/wireguard/wgcf.conf;
     rm -f wgcf-profile.conf
 }
 
