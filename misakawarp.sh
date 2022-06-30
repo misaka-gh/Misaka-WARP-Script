@@ -1236,7 +1236,7 @@ statustext(){
 }
 
 choice4d(){
-    read -rp " 请输入选项 [0-16]:" menuInput
+    read -rp " 请输入选项 [0-16]: " menuInput
     case "$menuInput" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
@@ -1281,7 +1281,7 @@ menu0(){
     echo -e ""
     echo -e "VPS IP特征：${RED}纯IPv6的VPS${PLAIN}"
     statustext
-    read -rp " 请输入选项 [0-12]:" menu0Input
+    read -rp " 请输入选项 [0-12]: " menu0Input
     case "$menu0Input" in
         1 ) wgcfmode=0 && install_wgcf ;;
         2 ) wgcfmode=1 && install_wgcf ;;
