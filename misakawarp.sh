@@ -37,7 +37,7 @@ for ((int = 0; int < ${#REGEX[@]}; int++)); do
     [[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]] && SYSTEM="${RELEASE[int]}" && [[ -n $SYSTEM ]] && break
 done
 
-[[ $EUID -ne 0 ]] && red "注意：请在root用户下运行脚本" && exit 1
+[[ $EUID -ne 0 ]] && red "注意: 请在root用户下运行脚本" && exit 1
 
 archAffix(){
     case "$(uname -m)" in
@@ -48,12 +48,12 @@ archAffix(){
         armv7 | armv7l ) echo 'armv7' ;;
         armv8 | arm64 | aarch64 ) echo 'arm64' ;;
         s390x ) echo 's390x' ;;
-        * ) red "不支持的CPU架构！" && exit 1 ;;
+        * ) red "不支持的CPU架构!" && exit 1 ;;
     esac
 }
 
 check_best_mtu(){
-    yellow "正在设置MTU最佳值，请稍等..."
+    yellow "正在设置MTU最佳值, 请稍等..."
     v66=`curl -s6m8 https://ip.gs -k`
     v44=`curl -s4m8 https://ip.gs -k`
     MTUy=1500
@@ -87,9 +87,9 @@ check_best_mtu(){
 }
 
 check_status(){
-    yellow "正在检查VPS系统及IP配置环境，请稍等..."
+    yellow "正在检查VPS系统及IP配置环境, 请稍等..."
     if [[ -z $(type -P curl) ]]; then
-        yellow "检测curl未安装，正在安装中..."
+        yellow "检测curl未安装, 正在安装中..."
         if [[ ! $SYSTEM == "CentOS" ]]; then
             ${PACKAGE_UPDATE[int]}
         fi
@@ -175,15 +175,15 @@ check_tun(){
     if [[ ! $TUN =~ "in bad state"|"处于错误状态"|"ist in schlechter Verfassung" ]]; then
         if [[ $vpsvirt == lxc ]]; then
             if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
-                red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
+                red "检测到未开启TUN模块, 请到VPS厂商的控制面板处开启"
                 exit 1
             else
-                yellow "检测到您的VPS为LXC架构，且支持内核级别的Wireguard，继续安装"
+                return 0
             fi
         elif [[ $vpsvirt == "openvz" ]]; then
             wget -N --no-check-certificate https://gitlab.com/misaka-blog/tun-script/-/raw/master/tun.sh && bash tun.sh
         else
-            red "检测到未开启TUN模块，请到VPS厂商的控制面板处开启"
+            red "检测到未开启TUN模块, 请到VPS厂商的控制面板处开启"
             exit 1
         fi
     fi
@@ -191,7 +191,7 @@ check_tun(){
 
 docker_warn(){
     if [[ -n $(type -P docker) ]]; then
-        yellow "检测到Docker已安装，如继续安装Wgcf-WARP，则有可能会影响你的Docker容器"
+        yellow "检测到Docker已安装, 如继续安装Wgcf-WARP, 则有可能会影响你的Docker容器"
         read -rp "是否继续安装？[Y/N]：" yesno
         if [[ $yesno =~ "Y"|"y" ]]; then
             green "继续安装Wgcf-WARP"
@@ -203,7 +203,7 @@ docker_warn(){
 }
 
 wgcfFailAction(){
-    red "无法启动Wgcf-WARP，正在尝试重启，重试次数：$retry_time"
+    red "无法启动Wgcf-WARP, 正在尝试重启, 重试次数：$retry_time"
     wg-quick down wgcf >/dev/null 2>&1
     wg-quick up wgcf >/dev/null 2>&1
     WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -213,12 +213,12 @@ wgcfFailAction(){
     if [[ $retry_time == 6 ]]; then
         uninstall_wgcf
         echo ""
-        red "由于Wgcf-WARP启动重试次数过多，已自动卸载Wgcf-WARP"
+        red "由于Wgcf-WARP启动重试次数过多, 已自动卸载Wgcf-WARP"
         green "建议如下："
-        yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-        yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-        yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
-        yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+        yellow "1. 建议使用系统官方源升级系统及内核加速! 如已使用第三方源及内核加速, 请务必更新到最新版, 或重置为系统官方源! "
+        yellow "2. 部分VPS系统过于精简, 相关依赖需自行安装后再重试"
+        yellow "3. 检查 https://www.cloudflarestatus.com/ 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用Wgcf-WARP"
+        yellow "4. 脚本可能跟不上时代, 建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
         exit 1
     fi
 }
@@ -244,7 +244,7 @@ wgcfcheck4(){
     
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
+    yellow "Wgcf-WARP的IPv4 IP为: $WgcfIPv4"
 }
 
 wgcfcheck6(){
@@ -260,7 +260,7 @@ wgcfcheck6(){
     
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
+    yellow "Wgcf-WARP的IPv6 IP为: $WgcfIPv6"
 }
 
 wgcfcheckd(){
@@ -278,8 +278,8 @@ wgcfcheckd(){
     WgcfIPv4=$(curl -s4m8 https://ip.gs -k)
     WgcfIPv6=$(curl -s6m8 https://ip.gs -k)
     green "Wgcf-WARP 已启动成功"
-    yellow "Wgcf-WARP的IPv4 IP为：$WgcfIPv4"
-    yellow "Wgcf-WARP的IPv6 IP为：$WgcfIPv6"
+    yellow "Wgcf-WARP的IPv4 IP为: $WgcfIPv4"
+    yellow "Wgcf-WARP的IPv6 IP为: $WgcfIPv6"
 }
 
 wgcfdns4(){
@@ -325,8 +325,8 @@ install_wgcf(){
     [[ $SYSTEM == "Ubuntu" ]] && [[ ${vsid} -lt 16 ]] && yellow "当前系统版本：${CMD} \nWgcf-WARP模式仅支持Ubuntu 16.04及以上版本的系统" && exit 1
     
     if [[ $c4 == "Hong Kong" || $c6 == "Hong Kong" ]]; then
-        red "检测到地区为 Hong Kong 的VPS！"
-        yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf，因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
+        red "检测到地区为 Hong Kong 的VPS!"
+        yellow "由于 CloudFlare 对 Hong Kong 屏蔽了 Wgcf, 因此无法使用 Wgcf-WARP。请使用其他地区的VPS"
         exit 1
     fi
     
@@ -401,19 +401,19 @@ install_wgcf(){
     fi
     
     until [[ -a wgcf-account.toml ]]; do
-        yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
+        yellow "正在向CloudFlare WARP申请账号, 如提示429 Too Many Requests错误请耐心等待即可"
         yes | wgcf register
         sleep 5
     done
     chmod +x wgcf-account.toml
     
     if [[ ! $wgcfFile == 1 ]]; then
-        yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
+        yellow "使用WARP免费版账户请按回车跳过 \n如需启用WARP+账户, 请复制WARP+的许可证密钥(26个字符)后回车"
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
+            green "注册WARP+账户中, 如下方显示: 400 Bad Request, 则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -462,14 +462,14 @@ wgcf_switch(){
     if [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; then
         wg-quick down wgcf >/dev/null 2>&1
         systemctl disable wg-quick@wgcf >/dev/null 2>&1
-        green "Wgcf-WARP关闭成功！"
+        green "Wgcf-WARP关闭成功!"
         exit 1
     fi
     
     if [[ $WgcfWARP4Status == off ]] || [[ $WgcfWARP6Status == off ]]; then
         wg-quick up wgcf >/dev/null 2>&1
         systemctl enable wg-quick@wgcf >/dev/null 2>&1
-        green "Wgcf-WARP启动成功！"
+        green "Wgcf-WARP启动成功!"
         exit 1
     fi
 }
@@ -487,7 +487,7 @@ uninstall_wgcf(){
     if [[ -e /etc/gai.conf ]]; then
         sed -i '/^precedence[ ]*::ffff:0:0\/96[ ]*100/d' /etc/gai.conf
     fi
-    green "Wgcf-WARP 已彻底卸载成功！"
+    green "Wgcf-WARP 已彻底卸载成功!"
 }
 
 install_warpcli(){
@@ -501,7 +501,7 @@ install_warpcli(){
     
     check_tun
     
-    [[ ! $(archAffix) == "amd64" ]] && red "WARP-Cli暂时不支持目前VPS的CPU架构，请使用CPU架构为amd64的VPS" && exit 1
+    [[ ! $(archAffix) == "amd64" ]] && red "WARP-Cli暂时不支持目前VPS的CPU架构, 请使用CPU架构为amd64的VPS" && exit 1
     
     v66=`curl -s6m8 https://ip.gs -k`
     v44=`curl -s4m8 https://ip.gs -k`
@@ -509,7 +509,7 @@ install_warpcli(){
     WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
     
     if [[ -n ${v66} && -z ${v44} ]]; then
-        red "WARP-Cli 代理模式不支持纯IPv6的VPS！！"
+        red "WARP-Cli 代理模式不支持纯IPv6的VPS!"
         exit 1
     fi
     
@@ -541,25 +541,25 @@ install_warpcli(){
     fi
     
     warp-cli --accept-tos register >/dev/null 2>&1
-    yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
+    yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户, 请复制WARP+的许可证密钥(26个字符)后回车"
     read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
     if [[ -n $WPPlusKey ]]; then
         warp-cli --accept-tos set-license "$WPPlusKey" >/dev/null 2>&1 && sleep 1
         if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
             green "WARP+账户启用成功"
         else
-            red "WARP+账户启用失败，即将使用WARP免费版账户"
+            red "WARP+账户启用失败, 即将使用WARP免费版账户"
         fi
     fi
     warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
     
-    read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+    read -rp "请输入WARP-Cli使用的代理端口 (默认40000): " WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
     if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
         until [[ -z $(netstat -ntlp | grep "$WARPCliPort") ]]; do
             if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
                 yellow "你设置的端口目前已被占用，请重新输入端口"
-                read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+                read -rp "请输入WARP-Cli使用的代理端口 (默认40000): " WARPCliPort
             fi
         done
     fi
@@ -570,54 +570,56 @@ install_warpcli(){
     warp-cli --accept-tos enable-always-on >/dev/null 2>&1
     sleep 5
     socks5IP=$(curl -sx socks5h://localhost:$WARPCliPort ip.gs -k --connect-timeout 8)
-    green "WARP-Cli代理模式已启动成功！"
-    yellow "本地Socks5代理为： 127.0.0.1:$WARPCliPort"
-    yellow "WARP-Cli代理模式的IP为：$socks5IP"
+    green "WARP-Cli代理模式已启动成功!"
+    yellow "本地Socks5代理为: 127.0.0.1:$WARPCliPort"
+    yellow "WARP-Cli代理模式的IP为: $socks5IP"
 }
 
 change_warpcli_port() {
     if [[ $(warp-cli --accept-tos status) =~ Connected ]]; then
         warp-cli --accept-tos disconnect >/dev/null 2>&1
     fi
-    read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+
+    read -rp "请输入WARP-Cli使用的代理端口 (默认40000): " WARPCliPort
     [[ -z $WARPCliPort ]] && WARPCliPort=40000
     if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
         until [[ -z $(netstat -ntlp | grep "$WARPCliPort") ]]; do
             if [[ -n $(netstat -ntlp | grep "$WARPCliPort") ]]; then
                 yellow "你设置的端口目前已被占用，请重新输入端口"
-                read -rp "请输入WARP-Cli使用的代理端口（默认40000）：" WARPCliPort
+                read -rp "请输入WARP-Cli使用的代理端口 (默认40000): " WARPCliPort
             fi
         done
     fi
+
     warp-cli --accept-tos set-proxy-port "$WARPCliPort" >/dev/null 2>&1
     yellow "正在启动Warp-Cli代理模式"
     warp-cli --accept-tos connect >/dev/null 2>&1
     warp-cli --accept-tos enable-always-on >/dev/null 2>&1
     socks5IP=$(curl -sx socks5h://localhost:$WARPCliPort ip.gs -k --connect-timeout 8)
     green "WARP-Cli代理模式已启动成功并成功修改代理端口！"
-    yellow "本地Socks5代理为： 127.0.0.1:$WARPCliPort"
-    yellow "WARP-Cli代理模式的IP为：$socks5IP"
+    yellow "本地Socks5代理为: 127.0.0.1:$WARPCliPort"
+    yellow "WARP-Cli代理模式的IP为: $socks5IP"
 }
 
 warpcli_switch(){
     if [[ $(warp-cli --accept-tos status) =~ Connected ]]; then
         warp-cli --accept-tos disconnect >/dev/null 2>&1
-        green "WARP-Cli代理模式关闭成功！"
+        green "WARP-Cli代理模式关闭成功! "
         exit 1
     fi
     if [[ $(warp-cli --accept-tos status) =~ Disconnected ]]; then
         yellow "正在启动Warp-Cli代理模式"
         warp-cli --accept-tos connect >/dev/null 2>&1
         until [[ $(warp-cli --accept-tos status) =~ Connected ]]; do
-            red "启动Warp-Cli代理模式失败，正在尝试重启"
+            red "启动Warp-Cli代理模式失败, 正在尝试重启"
             warp-cli --accept-tos disconnect >/dev/null 2>&1
             warp-cli --accept-tos connect >/dev/null 2>&1
             sleep 5
         done
         warp-cli --accept-tos enable-always-on >/dev/null 2>&1
         WARPCliPort=$(warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}')
-        green "WARP-Cli代理模式启动成功！"
-        yellow "本地Socks5代理为：127.0.0.1:$WARPCliPort"
+        green "WARP-Cli代理模式启动成功! "
+        yellow "本地Socks5代理为: 127.0.0.1:$WARPCliPort"
         exit 1
     fi
 }
@@ -628,7 +630,7 @@ uninstall_warpcli(){
     warp-cli --accept-tos delete >/dev/null 2>&1
     ${PACKAGE_UNINSTALL[int]} cloudflare-warp
     systemctl disable --now warp-svc >/dev/null 2>&1
-    green "WARP-Cli代理模式已彻底卸载成功！"
+    green "WARP-Cli代理模式已彻底卸载成功!"
 }
 
 wireproxyFailAction(){
@@ -640,12 +642,12 @@ wireproxyFailAction(){
     if [[ $retry_time == 6 ]]; then
         uninstall_wireproxy
         echo ""
-        red "由于WireProxy-WARP 代理模式启动重试次数过多，已自动卸载WireProxy-WARP 代理模式"
+        red "由于WireProxy-WARP 代理模式启动重试次数过多 ,已自动卸载WireProxy-WARP 代理模式"
         green "建议如下："
-        yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为系统官方源！"
-        yellow "2. 部分VPS系统过于精简，相关依赖需自行安装后再重试"
-        yellow "3. 检查 https://www.cloudflarestatus.com/， 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用WireProxy-WARP 代理模式"
-        yellow "4. 脚本可能跟不上时代，建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+        yellow "1. 建议使用系统官方源升级系统及内核加速！如已使用第三方源及内核加速 ,请务必更新到最新版 ,或重置为系统官方源！"
+        yellow "2. 部分VPS系统过于精简 ,相关依赖需自行安装后再重试"
+        yellow "3. 检查 https://www.cloudflarestatus.com/ 查询VPS就近区域。如处于黄色的【Re-routed】状态则不可使用WireProxy-WARP 代理模式"
+        yellow "4. 脚本可能跟不上时代, 建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
         exit 1
     fi
     sleep 8
@@ -680,19 +682,19 @@ install_wireproxy(){
     fi
     
     until [[ -a wgcf-account.toml ]]; do
-        yellow "正在向CloudFlare WARP申请账号，如提示429 Too Many Requests错误请耐心等待即可"
+        yellow "正在向CloudFlare WARP申请账号, 如提示429 Too Many Requests错误请耐心等待即可"
         yes | wgcf register
         sleep 5
     done
     chmod +x wgcf-account.toml
     
     if [[ ! $wgcfFile == 1 ]]; then
-        yellow "使用WARP免费版账户请按回车跳过 \n启用WARP+账户，请复制WARP+的许可证密钥(26个字符)后回车"
+        yellow "使用WARP免费版账户请按回车跳过 \n如需启用WARP+账户, 请复制WARP+的许可证密钥(26个字符)后回车"
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             sed -i "s/license_key.*/license_key = \"$WPPlusKey\"/g" wgcf-account.toml
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
+            green "注册WARP+账户中, 如下方显示: 400 Bad Request, 则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -715,13 +717,13 @@ install_wireproxy(){
         check_best_mtu
     fi
     
-    read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+    read -rp "请输入WireProxy-WARP使用的代理端口 (默认40000): " WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
         until [[ -z $(netstat -ntlp | grep "$WireProxyPort") ]]; do
             if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
                 yellow "你设置的端口目前已被占用，请重新输入端口"
-                read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+                read -rp "请输入WireProxy-WARP使用的代理端口 (默认40000): " WireProxyPort
             fi
         done
     fi
@@ -778,20 +780,20 @@ TEXT
     sleep 5
     systemctl enable wireproxy-warp >/dev/null 2>&1
     socks5IP=$(curl -sx socks5h://localhost:$WireProxyPort https://ip.gs -k --connect-timeout 8)
-    green "WireProxy-WARP代理模式已启动成功！"
-    yellow "本地Socks5代理为： 127.0.0.1:$WireProxyPort"
-    yellow "WireProxy-WARP代理模式的IP为：$socks5IP"
+    green "WireProxy-WARP代理模式已启动成功!"
+    yellow "本地Socks5代理为:  127.0.0.1:$WireProxyPort"
+    yellow "WireProxy-WARP代理模式的IP为: $socks5IP"
 }
 
 change_wireproxy_port(){
     systemctl stop wireproxy-warp
-    read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+    read -rp "请输入WireProxy-WARP使用的代理端口 (默认40000): " WireProxyPort
     [[ -z $WireProxyPort ]] && WireProxyPort=40000
     if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
         until [[ -z $(netstat -ntlp | grep "$WireProxyPort") ]]; do
             if [[ -n $(netstat -ntlp | grep "$WireProxyPort") ]]; then
                 yellow "你设置的端口目前已被占用，请重新输入端口"
-                read -rp "请输入WireProxy-WARP使用的代理端口（默认40000）：" WireProxyPort
+                read -rp "请输入WireProxy-WARP使用的代理端口 (默认40000): " WireProxyPort
             fi
         done
     fi
@@ -815,12 +817,12 @@ wireproxy_switch(){
     if [[ $w5s =~ "on"|"plus" ]]; then
         systemctl stop wireproxy-warp
         systemctl disable wireproxy-warp
-        green "WireProxy-WARP代理模式关闭成功！"
+        green "WireProxy-WARP代理模式关闭成功!"
     fi
     if [[ $w5s =~ "off" ]] || [[ -z $w5s ]]; then
         systemctl start wireproxy-warp
         systemctl enable wireproxy-warp
-        green "WireProxy-WARP代理模式已启动成功！"
+        green "WireProxy-WARP代理模式已启动成功!"
     fi
 }
 
@@ -835,17 +837,18 @@ uninstall_wireproxy(){
 }
 
 warpup(){
-    yellow "获取CloudFlare WARP账号信息方法："
-    green "电脑：下载并安装CloudFlare WARP→设置→偏好设置→复制设备ID到脚本中"
-    green "手机：下载并安装1.1.1.1 APP→菜单→高级→诊断→复制设备ID到脚本中"
+    yellow "获取CloudFlare WARP账号信息方法: "
+    green "电脑: 下载并安装CloudFlare WARP→设置→偏好设置→复制设备ID到脚本中"
+    green "手机: 下载并安装1.1.1.1 APP→菜单→高级→诊断→复制设备ID到脚本中"
     echo ""
     yellow "请按照下面指示，输入您的CloudFlare WARP账号信息："
     read -rp "请输入您的WARP设备ID (36位字符): " license
     read -rp "请输入你期望刷到的流量 (单位: GB): " flowdata
     echo ""
-    echo -e "已设置你期望刷到的WARP+流量为：$flowdata GB"
+    echo -e "已设置你期望刷到的WARP+流量为: $flowdata GB"
+    yellow "正在准备刷WARP+流量, 请稍等30秒-1分钟..."
     for ((i = 0; i < ${flowdata}; i++)); do
-        [[ $i == 0 ]] && sleep_try=30 && sleep_min=20 && sleep_max=600 && echo $(date) Mission $flowdata GB
+        [[ $i == 0 ]] && sleep_try=30 && sleep_min=20 && sleep_max=600
 
         install_id=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 22) && \
         curl -X POST -m 10 -sA "okhttp/3.12.1" -H 'content-type: application/json' -H 'Host: api.cloudflareclient.com' \
@@ -892,12 +895,13 @@ warpsw_teams(){
     wpteamprivatekey=$(expr "$teamsconfig" : '.*private_key&quot;>\([^<]*\).*')
     wpteamv6address=$(expr "$teamsconfig" : '.*v6&quot;:&quot;\([^[&]*\).*')
     wpteamv4address=$(expr "$teamsconfig" : '.*v4&quot;:&quot;\(172[^&]*\).*')
-    green "你的WARP Teams配置文件信息如下："
+    green "你的WARP Teams配置文件信息如下:"
     yellow "PublicKey: $wpteampublickey"
     yellow "PrivateKey: $wpteamprivatekey"
     yellow "IPv4地址: $wpteamv4address"
     yellow "IPv6地址: $wpteamv6address"
-    read -rp "确认配置信息信息正确请输入y，其他按键退出升级过程：" wpteamconfirm
+    echo ""
+    read -rp "确认配置信息信息正确请输入y, 其他按键退出升级过程: " wpteamconfirm
 }
 
 warpsw1(){
@@ -930,7 +934,7 @@ warpsw1(){
         if [[ $WgcfWARP4Status == "on" ]] || [[ $WgcfWARP6Status == "on" ]]; then
             green "Wgcf-WARP 账户类型切换为 WARP 免费账户 成功！"
         elif [[ $WgcfWARP4Status == "on" ]] || [[ $WgcfWARP6Status == "on" ]]; then
-            green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+            green "有可能CF出了bug, 已经自动给你白嫖了WARP+账户！"
         else
             red "切换 Wgcf-WARP 账户类型失败，请卸载后重新切换账户！"
         fi
@@ -948,7 +952,7 @@ warpsw1(){
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
+            green "注册WARP+账户中, 如下方显示:400 Bad Request, 则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -969,12 +973,12 @@ warpsw1(){
             if [[ $WgcfWARP4Status == "plus" ]] || [[ $WgcfWARP6Status == "plus" ]]; then
                 green "Wgcf-WARP 账户类型切换为 WARP+ 成功！"
             elif [[ $WgcfWARP4Status == "plus" ]] || [[ $WgcfWARP6Status == "plus" ]]; then
-                red "WARP+ 配置有误，已自动降级至WARP 免费账户！"
+                red "WARP+ 配置有误, 已自动降级至WARP 免费账户！"
             else
                 red "切换 Wgcf-WARP 账户类型失败，请卸载后重新切换账户！"
             fi
         else
-            red "未输入WARP账户许可证密钥，无法升级！"
+            red "未输入WARP账户许可证密钥, 无法升级！"
         fi
     fi
     if [[ $accountInput == 3 ]]; then
@@ -988,12 +992,12 @@ warpsw1(){
             sed -i "s#Address.*128#Address = $wpteamv6address/128#g" /etc/wireguard/wgcf.conf;
             
             wg-quick up wgcf >/dev/null 2>&1
-            yellow "正在检查WARP Teams账户连通性，请稍等..."
+            yellow "正在检查WARP Teams账户连通性, 请稍等..."
             WgcfWARP4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WgcfWARP6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             retry_time=1
             until [[ $WgcfWARP4Status =~ on|plus ]] || [[ $WgcfWARP6Status =~ on|plus ]]; do
-                red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
+                red "无法联通WARP Teams账户, 正在尝试重启, 重试次数：$retry_time"
                 retry_time=$((${retry_time} + 1))
                 
                 if [[ $retry_time == 4 ]]; then
@@ -1007,12 +1011,12 @@ warpsw1(){
                     
                     wg-quick up wgcf >/dev/null 2>&1
                     
-                    red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+                    red "WARP Teams配置有误, 已自动降级至WARP 免费账户 / WARP+"
                 fi
             done
             green "Wgcf-WARP 账户类型切换为 WARP Teams 成功！"
         else
-            red "已退出WARP Teams账号升级过程！"
+            red "已退出WARP Teams账号升级过程!"
         fi
     fi
 }
@@ -1030,7 +1034,7 @@ warpsw2(){
     if [[ $(warp-cli --accept-tos account) =~ Limited ]]; then
         green "WARP-Cli 账户类型切换为 WARP+ 成功！"
     else
-        red "WARP+账户启用失败，已自动降级至WARP免费版账户"
+        red "WARP+账户启用失败, 已自动降级至WARP免费版账户"
     fi
 }
 
@@ -1063,7 +1067,7 @@ warpsw3(){
         if [[ $WireProxyStatus == "on" ]]; then
             green "WireProxy-WARP代理模式 账户类型切换为 WARP 免费账户 成功！"
         elif [[ $WireProxyStatus == "plus" ]]; then
-            green "有可能CF出了bug，已经自动给你白嫖了WARP+账户！"
+            green "有可能CF出了bug, 已经自动给你白嫖了WARP+账户！"
         else
             red "切换 WireProxy-WARP 代理模式账户类型失败，请卸载后重新切换账户！"
         fi
@@ -1081,7 +1085,7 @@ warpsw3(){
         read -rp "输入WARP账户许可证密钥 (26个字符):" WPPlusKey
         if [[ -n $WPPlusKey ]]; then
             read -rp "请输入自定义设备名，如未输入则使用默认随机设备名：" WPPlusName
-            green "注册WARP+账户中，如下方显示：400 Bad Request，则使用WARP免费版账户"
+            green "注册WARP+账户中, 如下方显示: 400 Bad Request, 则使用WARP免费版账户"
             if [[ -n $WPPlusName ]]; then
                 wgcf update --name $(echo $WPPlusName | sed s/[[:space:]]/_/g)
             else
@@ -1101,12 +1105,12 @@ warpsw3(){
             if [[ $WireProxyStatus == "plus" ]]; then
                 green "WireProxy-WARP代理模式 账户类型切换为 WARP+ 成功！"
             elif [[ $WireProxyStatus == "plus" ]]; then
-                red "WARP+ 配置有误，已自动降级至WARP 免费账户！"
+                red "WARP+ 配置有误, 已自动降级至WARP 免费账户！"
             else
                 red "切换 WireProxy-WARP 代理模式账户类型失败，请卸载后重新切换账户！"
             fi
         else
-            red "未输入WARP账户许可证密钥，无法升级！"
+            red "未输入WARP账户许可证密钥, 无法升级！"
         fi
     fi
     if [[ $accountInput == 3 ]]; then
@@ -1119,11 +1123,11 @@ warpsw3(){
             sed -i "s#Address.*32#Address = $wpteamv4address/32#g" /etc/wireguard/proxy.conf;
             
             systemctl start wireproxy-warp
-            yellow "正在检查WARP Teams账户连通性，请稍等..."
+            yellow "正在检查WARP Teams账户连通性, 请稍等..."
             WireProxyStatus=$(curl -sx socks5h://localhost:$w5p https://www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 8 | grep warp | cut -d= -f2)
             retry_time=1
             until [[ $WireProxyStatus == "plus" ]]; do
-                red "无法联通WARP Teams账户，正在尝试重启，重试次数：$retry_time"
+                red "无法联通WARP Teams账户, 正在尝试重启, 重试次数：$retry_time"
                 retry_time=$((${retry_time} + 1))
                 
                 if [[ $retry_time == 4 ]]; then
@@ -1136,12 +1140,12 @@ warpsw3(){
                     warpsw3_freeplus
                     
                     systemctl start wireproxy-warp
-                    red "WARP Teams配置有误，已自动降级至WARP 免费账户 / WARP+！"
+                    red "WARP Teams配置有误, 已自动降级至WARP 免费账户 / WARP+"
                 fi
             done
             green "WireProxy-WARP代理模式 账户类型切换为 WARP Teams 成功！"
         else
-            red "已退出WARP Teams账号升级过程！"
+            red "已退出WARP Teams账号升级过程!"
         fi
     fi
 }
