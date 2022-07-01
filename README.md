@@ -16,6 +16,9 @@ wget -N --no-check-certificate https://raw.githubusercontents.com/Misaka-blog/Mi
 
 快捷方式 `bash misakawarp.sh`
 
+> 如提示 `wget: command not found` 请安装wget后再执行本脚本
+> CentOS: `yum install -y wget` Debian / Ubuntu: `apt install -y wget`
+
 ## WARP的一些好处
 
 解锁奈飞流媒体 （部分地区的WARP IP已凉）
