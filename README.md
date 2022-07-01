@@ -74,6 +74,10 @@ WARP Teams：https://owo.misaka.rest/cf-teams/
 
 如使用本脚本安装wgcf-warp时，安装wireproxy-warp会自动使用wgcf-warp的账号配置文件，反之同理
 
+### 4. 无法在Wgcf-WARP或Wireproxy-WARP使用WARP+账号？
+
+这是因为你的WARP+流量不够导致的，还是乖乖刷好足够流量再尝试吧
+
 ## 赞助我们
 
 ![afdian-MisakaNo.jpg](https://s2.loli.net/2021/12/25/SimocqwhVg89NQJ.jpg)
