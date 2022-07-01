@@ -342,6 +342,10 @@ install_wgcf(){
                 chmod +x /usr/bin/wireguard-go
             fi
         fi
+        if [[ $vsid == 9 ]] && [[ -z $(type -P resolvconf) ]]; then
+            wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/resolvconf -O /usr/sbin/resolvconf
+            chmod +x /usr/sbin/resolvconf
+        fi
     fi
     if [[ $SYSTEM == "Fedora" ]]; then
         ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
