@@ -11,11 +11,7 @@
 ## 使用方法
 
 ```shell
-<<<<<<< HEAD
-wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh
-=======
 wget -N --no-check-certificate https://raw.githubusercontents.com/misaka-gh/Misaka-WARP-Script/master/misakawarp.sh && bash misakawarp.sh
->>>>>>> cc9d0c60218575670aad28ba4c4c4147f550d76f
 ```
 
 快捷方式 `bash misakawarp.sh`
