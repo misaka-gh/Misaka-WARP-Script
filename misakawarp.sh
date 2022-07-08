@@ -181,7 +181,7 @@ check_tun(){
                 return 0
             fi
         elif [[ $vpsvirt == "openvz" ]]; then
-            wget -N --no-check-certificate https://gitlab.com/misaka-blog/tun-script/-/raw/master/tun.sh && bash tun.sh
+            wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/tun-script/master/tun.sh && bash tun.sh
         else
             red "检测到未开启TUN模块, 请到VPS厂商的控制面板处开启"
             exit 1
@@ -338,12 +338,12 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
-                wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
+                wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
                 chmod +x /usr/bin/wireguard-go
             fi
         fi
         if [[ $vsid == 9 ]] && [[ -z $(type -P resolvconf) ]]; then
-            wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/resolvconf -O /usr/sbin/resolvconf
+            wget -N https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/files/resolvconf -O /usr/sbin/resolvconf
             chmod +x /usr/sbin/resolvconf
         fi
     fi
@@ -351,7 +351,7 @@ install_wgcf(){
         ${PACKAGE_INSTALL[int]} sudo curl wget iproute net-tools wireguard-tools iptables htop screen iputils
         if [[ $main -lt 5 ]] || [[ $minor -lt 6 ]]; then
             if [[ $vpsvirt =~ "kvm"|"xen"|"microsoft"|"vmware"|"qemu" ]]; then
-                wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
+                wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
                 chmod +x /usr/bin/wireguard-go
             fi
         fi
@@ -385,11 +385,11 @@ install_wgcf(){
     fi
     
     if [[ $vpsvirt =~ lxc|openvz|zvm ]]; then
-        wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
+        wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/files/wireguard-go-$(archAffix) -O /usr/bin/wireguard-go
         chmod +x /usr/bin/wireguard-go
     fi
     
-    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
     
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
@@ -667,10 +667,10 @@ install_wireproxy(){
         ${PACKAGE_INSTALL[int]} sudo curl wget htop inetutils-ping screen
     fi
     
-    wget -N https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
+    wget -N https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/files/wireproxy-$(archAffix) -O /usr/local/bin/wireproxy
     chmod +x /usr/local/bin/wireproxy
     
-    wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
+    wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/files/wgcf-latest-linux-$(archAffix) -O /usr/local/bin/wgcf
     chmod +x /usr/local/bin/wgcf
     
     if [[ -f /etc/wireguard/wgcf-account.toml ]]; then
@@ -1172,10 +1172,10 @@ warpnf(){
     green "4. WireProxy-WARP 代理模式"
     read -rp "请选择客户端 [1-4]: " clientInput
     case "$clientInput" in
-        1 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
-        2 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
-        3 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
-        4 ) wget -N --no-check-certificate https://gitlab.com/misaka-blog/warp-script/-/raw/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
+        1 ) wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/wgcf-warp/netfilx4.sh && bash netfilx4.sh ;;
+        2 ) wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/wgcf-warp/netfilx6.sh && bash netfilx6.sh ;;
+        3 ) wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/warp-cli/netfilxcli.sh && bash netfilxcli.sh ;;
+        4 ) wget -N --no-check-certificate https://raw.githubusercontent.com/misaka-gh/Misaka-WARP-Script/master/wireproxy-warp/netfilx-wireproxy.sh && bash netfilx-wireproxy.sh ;;
     esac
 }
 
